@@ -7,12 +7,12 @@ use FACTFinder\Loader as FF;
 class ParameterTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
-     * @var FACTFinder\Util\LoggerInterface
+     * @var \FACTFinder\Util\LoggerInterface
      */
     private $log;
 
     /**
-     * @var FACTFinder\Util\Parameters
+     * @var \FACTFinder\Util\Parameters
      */
     protected $parameters;
 
@@ -209,7 +209,7 @@ class ParameterTest extends \FACTFinder\Test\BaseTestCase
         );
 
         $expectedParameters = array(
-            'a b' => 'c',
+            'a_b' => 'c',
             'd' => 'e f',
         );
         $this->assertEquals($expectedParameters, $parameters->getArray());
@@ -252,7 +252,6 @@ class ParameterTest extends \FACTFinder\Test\BaseTestCase
         );
 
         $expectedParameters = array(
-            '' => array('', '3', '4'),
         );
 
         $this->assertEquals($expectedParameters, $parameters->getArray());
@@ -268,7 +267,7 @@ class ParameterTest extends \FACTFinder\Test\BaseTestCase
         );
 
         $expectedParameters = array(
-            'a b' => 'c',
+            'a_b' => 'c',
             'd' => 'e f',
         );
         $this->assertEquals($expectedParameters, $parameters->getArray());
@@ -299,9 +298,8 @@ class ParameterTest extends \FACTFinder\Test\BaseTestCase
         );
 
         $expectedParameters = array(
-            'a' => array('1', '2'),
-            'b' => array('3', '4'),
-            'b[]' => '5'
+            'a' => '2',
+            'b' => '5'
         );
         $this->assertEquals($expectedParameters, $parameters->getArray());
     }
@@ -315,7 +313,20 @@ class ParameterTest extends \FACTFinder\Test\BaseTestCase
         );
 
         $expectedParameters = array(
-            '' => array('1', '2', '', '3'),
+        );
+        $this->assertEquals($expectedParameters, $parameters->getArray());
+    }
+
+    public function testParametersFromJavaQueryStringWithMultipleSelections()
+    {
+        $parameters = FF::getInstance(
+            'Util\Parameters',
+            'a[]=123&a[]=321',
+            true
+        );
+
+        $expectedParameters = array(
+            'a' => array('123', '321'),
         );
         $this->assertEquals($expectedParameters, $parameters->getArray());
     }
