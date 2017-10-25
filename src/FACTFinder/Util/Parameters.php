@@ -386,7 +386,10 @@ class Parameters implements \ArrayAccess, \Countable
 
             if (is_array($pair)) {
                 foreach ($pair as $item) {
-                    $this->add(rawurldecode($key), rawurldecode($item));
+                    if (is_string($item)) {
+                        $item = rawurldecode($item);
+                    }
+                    $this->add(rawurldecode($key), $item);
                 }
             } else {
                 $this->add(rawurldecode($key), rawurldecode($pair));
@@ -407,7 +410,10 @@ class Parameters implements \ArrayAccess, \Countable
 
             if (is_array($pair)) {
                 foreach ($pair as $item) {
-                    $this->add(urldecode($key), urldecode($item));
+                    if (is_string($item)) {
+                        $item = urldecode($item);
+                    }
+                    $this->add(urldecode($key), $item);
                 }
             } else {
                 $this->add(urldecode($key), urldecode($pair));
