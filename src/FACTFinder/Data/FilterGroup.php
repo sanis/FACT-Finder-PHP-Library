@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 use FACTFinder\Loader as FF;
@@ -44,15 +45,19 @@ class FilterGroup extends \ArrayIterator
     private $showPreviewImages;
 
     /**
-     * @param Filter[] $filters The Filter objects to add to the group.
-     * @param int $foundRecordsCount Total number of records found for the
-     *        search these records are from. This can be greater than
-     *        count($records), because $records may just be the records from a
-     *        single page, while $foundRecordsCount refers to all records found
-     *        by the search.
+     * @param Filter[]                 $filters The Filter objects to add to the group.
+     * @param string                   $name
+     * @param FilterStyle|null         $style
+     * @param int                      $detailedLinkCount
+     * @param string                   $unit
+     * @param FilterSelectionType|null $selectionType
+     * @param FilterType|null          $type
+     * @param bool                     $showPreviewImages
+     *
+     * @throws \Exception
      */
     public function __construct(
-        array $filters = array(),
+        array $filters = [],
         $name = '',
         FilterStyle $style = null,
         $detailedLinkCount = 0,
@@ -148,9 +153,11 @@ class FilterGroup extends \ArrayIterator
      */
     public function hasSelectedItems()
     {
-        foreach ($this->getArrayCopy() as $filter)
-            if ($filter->isSelected())
+        foreach ($this->getArrayCopy() as $filter) {
+            if ($filter->isSelected()) {
                 return true;
+            }
+        }
 
         return false;
     }

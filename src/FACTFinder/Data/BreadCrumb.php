@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 use FACTFinder\Loader as FF;
@@ -16,20 +17,15 @@ class BreadCrumb extends Item
     private $fieldName;
 
     /**
-     * @param string $label
-     * @param string $url
-     * @param bool $isSelected
+     * @param string         $label
+     * @param string         $url
+     * @param bool           $isSelected
      * @param BreadCrumbType $type
-     * @param string $fieldName Only for filter-type items. The field by which
-     *        was filtered.
+     * @param string         $fieldName Only for filter-type items. The field by which
+     *                                  was filtered.
      */
-    public function __construct(
-        $label,
-        $url,
-        $isSelected = false,
-        BreadCrumbType $type = null,
-        $fieldName = ''
-    ) {
+    public function __construct($label, $url, $isSelected = false, BreadCrumbType $type = null, $fieldName = '')
+    {
         parent::__construct($label, $url, $isSelected);
 
         $this->type = $type ?: BreadCrumbType::Search();

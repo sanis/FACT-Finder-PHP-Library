@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 /**
@@ -29,12 +30,12 @@ class SliderFilter extends Filter
 
     /**
      * @param string $baseUrl The URL for this item, WITHOUT the actual filter
-     *        parameter. This will be appended programmatically.
+     *                        parameter. This will be appended programmatically.
      * @param string $fieldName
-     * @param float $absoluteMinimum
-     * @param float $absoluteMaximum
-     * @param float $selectedMinimum
-     * @param float $selectedMaximum
+     * @param int    $absoluteMinimum
+     * @param int    $absoluteMaximum
+     * @param int    $selectedMinimum
+     * @param int    $selectedMaximum
      */
     public function __construct(
         $baseUrl,
@@ -45,7 +46,7 @@ class SliderFilter extends Filter
         $selectedMaximum = 0
     ) {
         $selected = $selectedMinimum != $absoluteMinimum
-                    || $selectedMaximum != $absoluteMaximum;
+            || $selectedMaximum != $absoluteMaximum;
         parent::__construct('', $baseUrl, $selected, $fieldName);
 
         $this->absoluteMinimum = $absoluteMinimum;
@@ -57,28 +58,31 @@ class SliderFilter extends Filter
     /**
      * Returns the URL with appended filter parameter but no value. Use this to
      * append the value ('min-max') in JavaScript.
+     *
      * @return string
      */
     public function getBaseUrl()
     {
         return parent::getUrl() . '&'
-               . 'filter' . $this->getFieldName() . '=';
+            . 'filter' . $this->getFieldName() . '=';
     }
 
     /**
      * Returns the full URL for the current configuration (including selected
      * minimum and maximum).
+     *
      * @return string
      */
     public function getUrl()
     {
         return $this->getBaseUrl() . $this->selectedMinimum
-                             . '-' . $this->selectedMaximum;
+            . '-' . $this->selectedMaximum;
     }
-    
+
     /**
      * Return URL without any added params.
      * Like Item::getUrl()
+     *
      * @return string
      */
     public function getParentUrl()

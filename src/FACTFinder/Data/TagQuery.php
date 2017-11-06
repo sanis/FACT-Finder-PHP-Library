@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 /**
@@ -10,12 +11,12 @@ class TagQuery extends Item
     private $searchCount;
 
     /**
-     * @param string $query The search term - will be used as the item's label.
+     * @param string $query       The search term - will be used as the item's label.
      * @param string $url
      * @param bool True, if this tag corresponds to the current search result.
-     * @param float $weight Optional value between 0.0 and 1.0.
-     * @param int $searchCount Indicates how often this query has been searched
-     *        for.
+     * @param float  $weight      Optional value between 0.0 and 1.0.
+     * @param int    $searchCount Indicates how often this query has been searched
+     *                            for.
      */
     public function __construct(
         $query,
@@ -32,14 +33,16 @@ class TagQuery extends Item
     /**
      * @return float
      */
-    public function getWeight() {
+    public function getWeight()
+    {
         return $this->weight;
     }
 
     /**
      * @return int
      */
-    public function getSearchCount() {
+    public function getSearchCount()
+    {
         return $this->searchCount;
     }
 }

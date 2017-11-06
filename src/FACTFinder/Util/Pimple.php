@@ -35,12 +35,12 @@ namespace FACTFinder\Util;
  */
 class Pimple implements \ArrayAccess
 {
-    private $values = array();
+    private $values = [];
     private $factories;
     private $protected;
-    private $frozen = array();
-    private $raw = array();
-    private $keys = array();
+    private $frozen = [];
+    private $raw = [];
+    private $keys = [];
 
     /**
      * Instantiate the container.
@@ -49,7 +49,7 @@ class Pimple implements \ArrayAccess
      *
      * @param array $values The parameters or objects.
      */
-    public function __construct(array $values = array())
+    public function __construct(array $values = [])
     {
         $this->factories = new \SplObjectStorage();
         $this->protected = new \SplObjectStorage();
@@ -68,8 +68,9 @@ class Pimple implements \ArrayAccess
      * as function names (strings) are callable (creating a function with
      * the same name as an existing parameter would break your container).
      *
-     * @param  string           $id    The unique identifier for the parameter or object
-     * @param  mixed            $value The value of the parameter or a closure to define an object
+     * @param  string $id    The unique identifier for the parameter or object
+     * @param  mixed  $value The value of the parameter or a closure to define an object
+     *
      * @throws RuntimeException Prevent override of a frozen service
      */
     public function offsetSet($id, $value)

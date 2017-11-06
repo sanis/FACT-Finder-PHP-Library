@@ -1,15 +1,11 @@
 <?php
+
 namespace FACTFinder\Adapter;
 
 use FACTFinder\Loader as FF;
 
 class TagCloud extends AbstractAdapter
 {
-    /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
     /**
      * @var FACTFinder\Data\TagQuery[]
      */
@@ -21,16 +17,12 @@ class TagCloud extends AbstractAdapter
     private $lastRequestQuery = null;
 
     public function __construct(
-        $loggerClass,
         \FACTFinder\Core\ConfigurationInterface $configuration,
         \FACTFinder\Core\Server\Request $request,
         \FACTFinder\Core\Client\UrlBuilder $urlBuilder,
         \FACTFinder\Core\AbstractEncodingConverter $encodingConverter = null
     ) {
-        parent::__construct($loggerClass, $configuration, $request,
-                            $urlBuilder, $encodingConverter);
-
-        $this->log = $loggerClass::getLogger(__CLASS__);
+        parent::__construct($configuration, $request, $urlBuilder, $encodingConverter);
 
         $this->request->setAction('TagCloud.ff');
         $this->parameters['do'] = 'getTagCloud';
@@ -48,9 +40,7 @@ class TagCloud extends AbstractAdapter
      */
     public function getTagCloud($requestQuery = null)
     {
-        if (is_null($this->tagCloud)
-            || $requestQuery != $this->lastRequestQuery
-        ) {
+        if (null === $this->tagCloud || $requestQuery != $this->lastRequestQuery) {
             $this->tagCloud = $this->createTagCloud($requestQuery);
             $this->lastRequestQuery = $requestQuery;
         }
@@ -62,20 +52,15 @@ class TagCloud extends AbstractAdapter
      * Set the maximum amount of tag queries to be fetched.
      *
      * @param int $wordCount The number of tag queries to be fetched. Something
-     *        else than a positive integer is passed, the word count will be
-     *        unlimited (or determined by FACT-Finder).
+     *                       else than a positive integer is passed, the word count will be
+     *                       unlimited (or determined by FACT-Finder).
      */
     public function setWordCount($wordCount)
     {
         $parameters = $this->request->getParameters();
-        if (is_numeric($wordCount)
-            && (int)$wordCount == (float)$wordCount // Is integer?
-            && $wordCount > 0
-        ) {
+        if (is_numeric($wordCount) && (int)$wordCount == (float)$wordCount && $wordCount > 0) {
             $parameters['wordCount'] = $wordCount;
-        }
-        else
-        {
+        } else {
             unset($parameters['wordCount']);
         }
         // Make sure that the tag cloud is fetched again. In theory, we only
@@ -85,13 +70,11 @@ class TagCloud extends AbstractAdapter
 
     private function createTagCloud($requestQuery = null)
     {
-        $tagCloud = array();
+        $tagCloud = [];
 
         $tagCloudData = $this->getResponseContent();
-        if (parent::isValidResponse($tagCloudData))
-        {
-            foreach ($tagCloudData as $tagQueryData)
-            {
+        if (parent::isValidResponse($tagCloudData)) {
+            foreach ($tagCloudData as $tagQueryData) {
                 $query = $tagQueryData['query'];
 
                 // TODO: Once JIRA issue FF-5328 is fixed, retrieve the

@@ -1,8 +1,10 @@
 <?php
+
 namespace FACTFinder\Data;
 
 /**
  * Enum for type of a bread crumb item.
+ *
  * @see FilterStyle for documentation of the enum workaround.
  */
 class BreadCrumbType
@@ -12,28 +14,39 @@ class BreadCrumbType
     static private $advisor;
 
     static private $nextID = 0;
+    static private $initialized = false;
     private $id;
+
     private function __construct()
     {
         $this->id = self::$nextID++;
     }
 
-    static private $initialized = false;
-    static public function initialize()
+    public static function initialize()
     {
-        if (!self::$initialized)
-        {
-            self::$search      = new BreadCrumbType();
-            self::$filter      = new BreadCrumbType();
-            self::$advisor     = new BreadCrumbType();
+        if (!self::$initialized) {
+            self::$search = new BreadCrumbType();
+            self::$filter = new BreadCrumbType();
+            self::$advisor = new BreadCrumbType();
 
             self::$initialized = true;
         }
     }
 
-    static public function Search()      { return self::$search; }
-    static public function Filter()      { return self::$filter; }
-    static public function Advisor()     { return self::$advisor; }
+    public static function Search()
+    {
+        return self::$search;
+    }
+
+    public static function Filter()
+    {
+        return self::$filter;
+    }
+
+    public static function Advisor()
+    {
+        return self::$advisor;
+    }
 }
 
 BreadCrumbType::initialize();

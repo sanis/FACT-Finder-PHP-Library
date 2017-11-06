@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 /**
@@ -39,21 +40,21 @@ class Record
     private $keywords;
 
     /**
-     * @param string $id
-     * @param string[] fields
-     * @param float $similarity
-     * @param int $position If the record is part of a result, this indicates
-     *        the position within that result.
-     * @param string $seoPath
+     * @param string   $id
+     * @param array    $fields
+     * @param int      $similarity
+     * @param int      $position If the record is part of a result, this indicates
+     *                           the position within that result.
+     * @param string   $seoPath
      * @param string[] $keywords
-    **/
+     */
     public function __construct(
         $id,
-        $fields = array(),
+        $fields = [],
         $similarity = 100,
         $position = 0,
         $seoPath = '',
-        $keywords = array()
+        $keywords = []
     ) {
         $this->id = trim($id);
         $this->fields = $fields;
@@ -98,6 +99,7 @@ class Record
 
     /**
      * @param string $name The name of the field to be retrieved.
+     *
      * @return string
      */
     public function getField($name)

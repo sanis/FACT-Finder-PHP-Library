@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 /**
@@ -20,11 +21,8 @@ class FilterStyle
     // different instances will return false (since '==' object comparison is
     // decided by attributes).
     static private $nextID = 0;
+    static private $initialized = false;
     private $id;
-    private function __construct()
-    {
-        $this->id = self::$nextID++;
-    }
 
     // Another workaround! We need to initialize those private properties with
     // instances of the class, but PHP does not allow calling functions
@@ -35,25 +33,44 @@ class FilterStyle
     // calling the initializer again will have no effect.
     // By the way, alternatively we could generate these instances lazily in all
     // the getters at the bottom.
-    static private $initialized = false;
-    static public function initialize()
+
+    private function __construct()
     {
-        if (!self::$initialized)
-        {
-            self::$regular       = new FilterStyle();
-            self::$slider        = new FilterStyle();
-            self::$tree          = new FilterStyle();
-            self::$multiSelect   = new FilterStyle();
+        $this->id = self::$nextID++;
+    }
+
+    public static function initialize()
+    {
+        if (!self::$initialized) {
+            self::$regular = new FilterStyle();
+            self::$slider = new FilterStyle();
+            self::$tree = new FilterStyle();
+            self::$multiSelect = new FilterStyle();
 
             self::$initialized = true;
         }
     }
 
     // Let's provide read-access to those instances.
-    static public function Regular()     { return self::$regular; }
-    static public function Slider()      { return self::$slider; }
-    static public function Tree()        { return self::$tree; }
-    static public function MultiSelect() { return self::$multiSelect; }
+    public static function Regular()
+    {
+        return self::$regular;
+    }
+
+    public static function Slider()
+    {
+        return self::$slider;
+    }
+
+    public static function Tree()
+    {
+        return self::$tree;
+    }
+
+    public static function MultiSelect()
+    {
+        return self::$multiSelect;
+    }
 }
 
 // And finally we call the class initializer.

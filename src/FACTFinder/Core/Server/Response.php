@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Core\Server;
 
 /**
@@ -26,12 +27,8 @@ class Response
      */
     private $connectionError;
 
-    public function __construct(
-        $content,
-        $httpCode,
-        $connectionErrorCode,
-        $connectionError
-    ) {
+    public function __construct($content, $httpCode, $connectionErrorCode, $connectionError)
+    {
         $this->content = $content;
         $this->httpCode = $httpCode;
         $this->connectionErrorCode = $connectionErrorCode;

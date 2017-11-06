@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Core;
 
 /**
@@ -7,12 +8,12 @@ namespace FACTFinder\Core;
  */
 class XmlConfiguration extends AbstractConfiguration
 {
-    const HTTP_AUTHENTICATION     = 'http';
-    const SIMPLE_AUTHENTICATION   = 'simple';
+    const HTTP_AUTHENTICATION = 'http';
+    const SIMPLE_AUTHENTICATION = 'simple';
     const ADVANCED_AUTHENTICATION = 'advanced';
 
     /**
-     * @var SimpleXMLElement XML representation of the configuration.
+     * @var \SimpleXMLElement XML representation of the configuration.
      */
     private $configuration;
 
@@ -34,17 +35,22 @@ class XmlConfiguration extends AbstractConfiguration
      * Create a new configuration from an XML file. The outer element in the XML
      * tree must be named <configuration>. The actual data is read from a child
      * of this element whose name can be specified through the second argument.
+     *
      * @param string $fileName Name of configuration file.
-     * @param type $element Name of the XML element from which to read
-     *                      configuration data.
-     * @return XmlConfiguration
+     * @param type   $element  Name of the XML element from which to read
+     *                         configuration data.
+     *
+     * @param bool   $data_is_url
+     *
+     * @throws \Exception
      */
     public function __construct($fileName, $element, $data_is_url = true)
     {
         libxml_use_internal_errors(true);
         $xmlData = new \SimpleXMLElement($fileName, 0, $data_is_url);
-        if (!isset($xmlData->$element))
+        if (!isset($xmlData->$element)) {
             throw new \Exception("Specified configuration file does not contain section $element");
+        }
         $this->configuration = $xmlData->$element;
     }
 
@@ -103,16 +109,6 @@ class XmlConfiguration extends AbstractConfiguration
         return $this->retrieveAuthenticationType() == self::ADVANCED_AUTHENTICATION;
     }
 
-    private function retrieveAuthenticationType()
-    {
-        if (is_null($this->authenticationType))
-            $this->authenticationType = (string)$this->configuration
-                                                     ->connection
-                                                     ->authentication
-                                                     ->type;
-        return strtolower($this->authenticationType);
-    }
-
     public function makeHttpAuthenticationType()
     {
         $this->authenticationType = self::HTTP_AUTHENTICATION;
@@ -168,19 +164,6 @@ class XmlConfiguration extends AbstractConfiguration
         return $this->serverMappings;
     }
 
-    private function retrieveMappings(\SimpleXMLElement $section)
-    {
-        $mappings = array();
-        if (isset($section->mapping)) {
-            //load mappings
-            foreach($section->mapping as $rule) {
-                $mappings[(string)$rule->attributes()->from] =
-                    (string)$rule->attributes()->to;
-            }
-        }
-        return $mappings;
-    }
-
     public function getIgnoredClientParameters()
     {
         if ($this->ignoredClientParameters == null) {
@@ -199,18 +182,6 @@ class XmlConfiguration extends AbstractConfiguration
             );
         }
         return $this->ignoredServerParameters;
-    }
-
-    private function retrieveIgnoredParameters(\SimpleXMLElement $section)
-    {
-        $ignoredParameters = array();
-        if (isset($section->ignore)) {
-            //load ignore rules
-            foreach($section->ignore as $rule) {
-                $ignoredParameters[(string)$rule->attributes()->name] = true;
-            }
-        }
-        return $ignoredParameters;
     }
 
     public function getWhitelistClientParameters()
@@ -236,18 +207,6 @@ class XmlConfiguration extends AbstractConfiguration
         return $this->whitelistServerParameters;
     }
 
-    private function retrieveWhitelistParameters(\SimpleXMLElement $section)
-    {
-        $whitelist = array();
-        if (isset($section->whitelist)) {
-            //load whitelist
-            foreach($section->whitelist as $rule) {
-                $whitelist[(string)$rule->attributes()->name] = true;
-            }
-        }
-        return $whitelist;
-    }
-
     public function getRequiredClientParameters()
     {
         if ($this->requiredClientParameters == null) {
@@ -266,19 +225,6 @@ class XmlConfiguration extends AbstractConfiguration
             );
         }
         return $this->requiredServerParameters;
-    }
-
-    private function retrieveRequiredParameters(\SimpleXMLElement $section)
-    {
-        $requiredParameters = array();
-        if (isset($section->require)) {
-            //load require rules
-            foreach($section->require as $rule) {
-                $requiredParameters[(string)$rule->attributes()->name] =
-                    (string)$rule->attributes()->default;
-            }
-        }
-        return $requiredParameters;
     }
 
     public function getDefaultConnectTimeout()
@@ -323,18 +269,11 @@ class XmlConfiguration extends AbstractConfiguration
 
     public function getPageContentEncoding()
     {
-        if (is_null($this->pageContentEncoding))
+        if (null === $this->pageContentEncoding) {
             $this->pageContentEncoding = (string)$this->configuration->encoding->pageContent;
+        }
 
         return $this->pageContentEncoding;
-    }
-
-    public function getClientUrlEncoding()
-    {
-        if (is_null($this->clientUrlEncoding))
-            $this->clientUrlEncoding = (string)$this->configuration->encoding->clientUrl;
-
-        return $this->clientUrlEncoding;
     }
 
     public function setPageContentEncoding($encoding)
@@ -342,8 +281,73 @@ class XmlConfiguration extends AbstractConfiguration
         $this->pageContentEncoding = (string)$encoding;
     }
 
+    public function getClientUrlEncoding()
+    {
+        if (null === $this->clientUrlEncoding) {
+            $this->clientUrlEncoding = (string)$this->configuration->encoding->clientUrl;
+        }
+
+        return $this->clientUrlEncoding;
+    }
+
     public function setClientUrlEncoding($encoding)
     {
         $this->clientUrlEncoding = (string)$encoding;
+    }
+
+    private function retrieveAuthenticationType()
+    {
+        if (null === $this->authenticationType) {
+            $this->authenticationType = (string)$this->configuration->connection->authentication->type;
+        }
+        return strtolower($this->authenticationType);
+    }
+
+    private function retrieveMappings(\SimpleXMLElement $section)
+    {
+        $mappings = [];
+        if (isset($section->mapping)) {
+            //load mappings
+            foreach ($section->mapping as $rule) {
+                $mappings[(string)$rule->attributes()->from] = (string)$rule->attributes()->to;
+            }
+        }
+        return $mappings;
+    }
+
+    private function retrieveIgnoredParameters(\SimpleXMLElement $section)
+    {
+        $ignoredParameters = [];
+        if (isset($section->ignore)) {
+            //load ignore rules
+            foreach ($section->ignore as $rule) {
+                $ignoredParameters[(string)$rule->attributes()->name] = true;
+            }
+        }
+        return $ignoredParameters;
+    }
+
+    private function retrieveWhitelistParameters(\SimpleXMLElement $section)
+    {
+        $whitelist = [];
+        if (isset($section->whitelist)) {
+            //load whitelist
+            foreach ($section->whitelist as $rule) {
+                $whitelist[(string)$rule->attributes()->name] = true;
+            }
+        }
+        return $whitelist;
+    }
+
+    private function retrieveRequiredParameters(\SimpleXMLElement $section)
+    {
+        $requiredParameters = [];
+        if (isset($section->require)) {
+            //load require rules
+            foreach ($section->require as $rule) {
+                $requiredParameters[(string)$rule->attributes()->name] = (string)$rule->attributes()->default;
+            }
+        }
+        return $requiredParameters;
     }
 }

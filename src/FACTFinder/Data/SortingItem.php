@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 use FACTFinder\Loader as FF;
@@ -19,11 +20,11 @@ class SortingItem extends Item
     private $name;
 
     /**
-     * @param string $name
+     * @param string           $name
      * @param SortingDirection $order
-     * @param string $label
-     * @param string $url
-     * @param bool $isSelected
+     * @param string           $label
+     * @param string           $url
+     * @param bool             $isSelected
      */
     public function __construct(
         $name,

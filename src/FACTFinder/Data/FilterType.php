@@ -1,8 +1,10 @@
 <?php
+
 namespace FACTFinder\Data;
 
 /**
  * Enum for filter types of groups within the After Search Navigation (ASN).
+ *
  * @see FilterStyle for documentation of the enum workaround.
  */
 class FilterType
@@ -12,26 +14,33 @@ class FilterType
     static private $number;
 
     static private $nextID = 0;
+    static private $initialized = false;
     private $id;
+
     private function __construct()
     {
         $this->id = self::$nextID++;
     }
 
-    static private $initialized = false;
-    static public function initialize()
+    public static function initialize()
     {
-        if (!self::$initialized)
-        {
-            self::$text         = new FilterType();
-            self::$number       = new FilterType();
+        if (!self::$initialized) {
+            self::$text = new FilterType();
+            self::$number = new FilterType();
 
             self::$initialized = true;
         }
     }
 
-    static public function Text()     { return self::$text; }
-    static public function Number()   { return self::$number; }
+    public static function Text()
+    {
+        return self::$text;
+    }
+
+    public static function Number()
+    {
+        return self::$number;
+    }
 }
 
 FilterType::initialize();

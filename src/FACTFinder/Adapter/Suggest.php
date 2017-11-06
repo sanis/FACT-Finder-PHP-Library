@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Adapter;
 
 use FACTFinder\Loader as FF;
@@ -10,26 +11,17 @@ use FACTFinder\Loader as FF;
 class Suggest extends AbstractAdapter
 {
     /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var FACTFinder\Data\SuggestQuery[]
      */
     private $suggestions;
 
     public function __construct(
-        $loggerClass,
         \FACTFinder\Core\ConfigurationInterface $configuration,
         \FACTFinder\Core\Server\Request $request,
         \FACTFinder\Core\Client\UrlBuilder $urlBuilder,
         \FACTFinder\Core\AbstractEncodingConverter $encodingConverter = null
     ) {
-        parent::__construct($loggerClass, $configuration, $request,
-                            $urlBuilder, $encodingConverter);
-
-        $this->log = $loggerClass::getLogger(__CLASS__);
+        parent::__construct($configuration, $request, $urlBuilder, $encodingConverter);
 
         $this->request->setAction('Suggest.ff');
 
@@ -44,43 +36,62 @@ class Suggest extends AbstractAdapter
      */
     public function getSuggestions()
     {
-        if (is_null($this->suggestions))
+        if (null === $this->suggestions) {
             $this->suggestions = $this->createSuggestions();
+        }
 
         return $this->suggestions;
     }
 
+    /**
+     * Get the suggestions from FACT-Finder as the string returned by the
+     * server.
+     *
+     * @param string $format   Optional. Either 'json' or 'jsonp'. Use to
+     *                         overwrite the 'format' parameter.
+     * @param string $callback Optional name to overwrite the 'callback'
+     *                         parameter, which determines the name of the
+     *                         callback the response is wrapped in.
+     *
+     * @return string
+     */
+    public function getRawSuggestions($format = null, $callback = null)
+    {
+        $this->usePassthroughResponseContentProcessor();
+
+        if (null !== $format) {
+            $this->parameters['format'] = $format;
+        }
+        if (null !== $callback) {
+            $this->parameters['callback'] = $callback;
+        }
+
+        return $this->getResponseContent();
+    }
+
     private function createSuggestions()
     {
-        $suggestions = array();
+        $suggestions = [];
 
         $this->useJsonResponseContentProcessor();
 
-        if (isset($this->parameters['format']))
+        if (isset($this->parameters['format'])) {
             $oldFormat = $this->parameters['format'];
+        }
 
         $this->parameters['format'] = 'json';
         $suggestData = $this->getResponseContent();
-        if (parent::isValidResponse($suggestData))
-        {
-            if (isset($suggestData['suggestions']))
-            {
+        if (parent::isValidResponse($suggestData)) {
+            if (isset($suggestData['suggestions'])) {
                 $suggestData = $suggestData['suggestions'];
             }
-            
-            foreach ($suggestData as $suggestQueryData)
-            {
-                $suggestLink = $this->convertServerQueryToClientUrl(
-                    $suggestQueryData['searchParams']
-                );
 
-                $suggestAttributes = null;
-                if (isset($suggestQueryData['attributes'])
-                    && is_array($suggestQueryData['attributes'])
-                ) {
+            foreach ($suggestData as $suggestQueryData) {
+                $suggestLink = $this->convertServerQueryToClientUrl($suggestQueryData['searchParams']);
+
+                $suggestAttributes = [];
+                if (isset($suggestQueryData['attributes']) && is_array($suggestQueryData['attributes'])) {
                     $suggestAttributes = $suggestQueryData['attributes'];
-                } else {
-                    $suggestAttributes = array();
                 }
 
                 $suggestions[] = FF::getInstance(
@@ -95,33 +106,10 @@ class Suggest extends AbstractAdapter
             }
         }
 
-        if (isset($oldFormat))
+        if (isset($oldFormat)) {
             $this->parameters['format'] = $oldFormat;
+        }
 
         return $suggestions;
-    }
-
-    /**
-     * Get the suggestions from FACT-Finder as the string returned by the
-     * server.
-     *
-     * @param string $format Optional. Either 'json' or 'jsonp'. Use to
-     *                       overwrite the 'format' parameter.
-     * @param string $callback Optional name to overwrite the 'callback'
-     *                         parameter, which determines the name of the
-     *                         callback the response is wrapped in.
-     *
-     * @return string
-     */
-    public function getRawSuggestions($format = null, $callback = null)
-    {
-        $this->usePassthroughResponseContentProcessor();
-
-        if (!is_null($format))
-            $this->parameters['format'] = $format;
-        if (!is_null($callback))
-            $this->parameters['callback'] = $callback;
-
-        return $this->getResponseContent();
     }
 }

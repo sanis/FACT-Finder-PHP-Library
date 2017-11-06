@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Util;
 
 /**
@@ -13,7 +14,7 @@ class CurlMultiHandle
      *            only integers, which are the $ch the CurlStub hands out in
      *            place of resources.
      */
-    public $handles = array();
+    public $handles = [];
 
     /**
      * @var mixed[] Map-like array of options that are set on the multi handle
@@ -22,13 +23,13 @@ class CurlMultiHandle
      * This feature is not yet supported, since PHP's cURL implementation did
      * not add curl_multi_setopt until PHP 5.5.0.
      */
-    public $options = array();
+    public $options = [];
 
     /**
      * @var array[] Queue-like array of messages to be returned by
      *              multi_info_read.
      */
-    public $messageQueue = array();
+    public $messageQueue = [];
 
     /**
      * @var bool

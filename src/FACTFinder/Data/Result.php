@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 /**
@@ -13,12 +14,12 @@ class Result extends \ArrayIterator
     private $foundRecordsCount;
 
     /**
-     * @param Record[] $records The Record objects to add to the result.
-     * @param int $foundRecordsCount Total number of records found for the
-     *        search these records are from. This can be greater than
-     *        count($records), because $records may just be the records from a
-     *        single page, while $foundRecordsCount refers to all records found
-     *        by the search.
+     * @param Record[] $records           The Record objects to add to the result.
+     * @param int      $foundRecordsCount Total number of records found for the
+     *                                    search these records are from. This can be greater than
+     *                                    count($records), because $records may just be the records from a
+     *                                    single page, while $foundRecordsCount refers to all records found
+     *                                    by the search.
      */
     public function __construct(
         array $records,

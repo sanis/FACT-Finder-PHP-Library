@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 class Page extends Item
@@ -9,10 +10,10 @@ class Page extends Item
     private $pageNumber;
 
     /**
-     * @param int $pageNumber
+     * @param int    $pageNumber
      * @param string $label
      * @param string $url
-     * @param bool $isSelected
+     * @param bool   $isSelected
      */
     public function __construct(
         $pageNumber,

@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 /**
@@ -9,7 +10,7 @@ class SingleWordSearchItem extends SuggestQuery
     /**
      * @var Record[]
      */
-    private $previewRecords = array();
+    private $previewRecords = [];
 
     public function addPreviewRecord(
         Record $record
@@ -23,8 +24,9 @@ class SingleWordSearchItem extends SuggestQuery
     public function addPreviewRecords(
         array $records
     ) {
-        foreach ($records as $record)
+        foreach ($records as $record) {
             $this->addPreviewRecord($record);
+        }
     }
 
     /**

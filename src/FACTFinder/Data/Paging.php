@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 class Paging extends \ArrayIterator
@@ -35,14 +36,14 @@ class Paging extends \ArrayIterator
 
     /**
      * @param Page[] $pages Array of page links.
-     * @param int $pageCount
-     * @param Page $currentPage
-     * @param Page $firstPage
-     * @param Page $lastPage
-     * @param Page $previousPage
-     * @param Page $nextPage
+     * @param int    $pageCount
+     * @param Page   $currentPage
+     * @param Page   $firstPage
+     * @param Page   $lastPage
+     * @param Page   $previousPage
+     * @param Page   $nextPage
      */
-    public function __construct (
+    public function __construct(
         array $pages,
         $pageCount,
         Page $currentPage,
@@ -63,6 +64,7 @@ class Paging extends \ArrayIterator
 
     /**
      * @var int
+     * @return int
      */
     public function getPageCount()
     {

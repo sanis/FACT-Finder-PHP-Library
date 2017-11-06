@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 class AdvisorQuestion
@@ -14,15 +15,12 @@ class AdvisorQuestion
     private $answer;
 
     /**
-     * @param string $text
+     * @param string          $text
      * @param AdvisorAnswer[] $answers
      */
-    public function __construct(
-        $text,
-        array $answers = array()
-    ) {
+    public function __construct($text, array $answers = [])
+    {
         $this->text = (string)$text;
-
         $this->answers = $answers;
     }
 
@@ -39,8 +37,9 @@ class AdvisorQuestion
      */
     public function addAnswers(array $answers)
     {
-        foreach ($answers as $question)
+        foreach ($answers as $question) {
             $this->answers[] = $question;
+        }
     }
 
     /**

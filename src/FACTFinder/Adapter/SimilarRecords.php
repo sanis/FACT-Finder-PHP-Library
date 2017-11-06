@@ -1,15 +1,11 @@
 <?php
+
 namespace FACTFinder\Adapter;
 
 use FACTFinder\Loader as FF;
 
 class SimilarRecords extends ConfigurableResponse
 {
-    /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
     /**
      * @var mixed[]
      * @see getSimilarAttributes()
@@ -22,16 +18,12 @@ class SimilarRecords extends ConfigurableResponse
     private $similarRecords;
 
     public function __construct(
-        $loggerClass,
         \FACTFinder\Core\ConfigurationInterface $configuration,
         \FACTFinder\Core\Server\Request $request,
         \FACTFinder\Core\Client\UrlBuilder $urlBuilder,
         \FACTFinder\Core\AbstractEncodingConverter $encodingConverter = null
     ) {
-        parent::__construct($loggerClass, $configuration, $request,
-                            $urlBuilder, $encodingConverter);
-
-        $this->log = $loggerClass::getLogger(__CLASS__);
+        parent::__construct($configuration, $request, $urlBuilder, $encodingConverter);
 
         $this->request->setAction('SimilarRecords.ff');
         $this->parameters['format'] = 'json';
@@ -44,20 +36,15 @@ class SimilarRecords extends ConfigurableResponse
      * Set the maximum amount of similar records to be fetched.
      *
      * @param int $recordCount The number of records to be fetched. Something
-     *        else than a positive integer is passed, the record count will be
-     *        unlimited (or determined by FACT-Finder).
+     *                         else than a positive integer is passed, the record count will be
+     *                         unlimited (or determined by FACT-Finder).
      */
     public function setRecordCount($recordCount)
     {
         $parameters = $this->request->getParameters();
-        if (is_numeric($recordCount)
-            && (int)$recordCount == (float)$recordCount // Is integer?
-            && $recordCount > 0
-        ) {
+        if (is_numeric($recordCount) && (int)$recordCount == (float)$recordCount && $recordCount > 0) {
             $parameters['maxRecordCount'] = $recordCount;
-        }
-        else
-        {
+        } else {
             unset($parameters['maxRecordCount']);
         }
         // Make sure that the records are fetched again. In principle, we only
@@ -87,39 +74,12 @@ class SimilarRecords extends ConfigurableResponse
      */
     public function getSimilarAttributes()
     {
-        if (is_null($this->similarAttributes)
-            || !$this->upToDate
-        ) {
+        if (null === $this->similarAttributes || !$this->upToDate) {
             $this->similarAttributes = $this->createSimilarAttributes();
             $this->upToDate = true;
         }
 
         return $this->similarAttributes;
-    }
-
-    private function createSimilarAttributes()
-    {
-        $attributes = array();
-
-        $parameters = $this->request->getParameters();
-        if (!isset($parameters['id']))
-        {
-            $this->log->warn('Similar attributes cannot be loaded without a product ID. '
-                           . 'Use setProductID() first.');
-        }
-        else
-        {
-            $jsonData = $this->getResponseContent();
-            if(parent::isValidResponse($jsonData))
-            {
-                foreach($jsonData['attributes'] as $attributeData)
-                {
-                    $attributes[$attributeData['name']] = $attributeData['value'];
-                }
-            }
-        }
-
-        return $attributes;
     }
 
     /**
@@ -131,9 +91,7 @@ class SimilarRecords extends ConfigurableResponse
      */
     public function getSimilarRecords()
     {
-        if (is_null($this->similarRecords)
-            || !$this->upToDate
-        ) {
+        if (null === $this->similarRecords || !$this->upToDate) {
             $this->request->resetLoaded();
             $this->similarRecords = $this->createSimilarRecords();
             $this->upToDate = true;
@@ -142,45 +100,53 @@ class SimilarRecords extends ConfigurableResponse
         return $this->similarRecords;
     }
 
-    private function createSimilarRecords()
+    private function createSimilarAttributes()
     {
-        $records = array();
+        $attributes = [];
 
         $parameters = $this->request->getParameters();
-        if (!isset($parameters['id']))
-        {
-            $this->log->warn('Similar records cannot be loaded without a product ID. '
-                           . 'Use setProductID() first.');
+        if (!isset($parameters['id'])) {
+            $this->logger && $this->logger->warning(
+                'Similar attributes cannot be loaded without a product ID. '
+                . 'Use setProductID() first.'
+            );
+        } else {
+            $jsonData = $this->getResponseContent();
+            if (parent::isValidResponse($jsonData)) {
+                foreach ($jsonData['attributes'] as $attributeData) {
+                    $attributes[$attributeData['name']] = $attributeData['value'];
+                }
+            }
         }
-        else
-        {
+
+        return $attributes;
+    }
+
+    private function createSimilarRecords()
+    {
+        $records = [];
+
+        $parameters = $this->request->getParameters();
+        if (!isset($parameters['id'])) {
+            $this->logger && $this->logger->warning(
+                'Similar records cannot be loaded without a product ID. '
+                . 'Use setProductID() first.'
+            );
+        } else {
             $position = 1;
             $jsonData = $this->getResponseContent();
-            if(parent::isValidResponse($jsonData))
-            {
-                foreach($jsonData['records'] as $recordData)
-                {
+            if (parent::isValidResponse($jsonData)) {
+                foreach ($jsonData['records'] as $recordData) {
                     $records[] = $this->createRecord($recordData, $position++);
                 }
             }
         }
 
-        return FF::getInstance(
-            'Data\Result',
-            $records,
-            null,
-            count($records)
-        );
+        return FF::getInstance('Data\Result', $records, null, count($records));
     }
 
     private function createRecord($recordData, $position)
     {
-        return FF::getInstance(
-            'Data\Record',
-            (string)$recordData['id'],
-            $recordData['record'],
-            100.0,
-            $position
-        );
+        return FF::getInstance('Data\Record', (string)$recordData['id'], $recordData['record'], 100.0, $position);
     }
 }

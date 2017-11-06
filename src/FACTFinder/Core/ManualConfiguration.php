@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Core;
 
 /**
@@ -8,18 +9,18 @@ namespace FACTFinder\Core;
  */
 class ManualConfiguration extends AbstractConfiguration
 {
-    const HTTP_AUTHENTICATION     = 'http';
-    const SIMPLE_AUTHENTICATION   = 'simple';
+    const HTTP_AUTHENTICATION = 'http';
+    const SIMPLE_AUTHENTICATION = 'simple';
     const ADVANCED_AUTHENTICATION = 'advanced';
 
-    private $configuration ;
+    private $configuration;
 
-    function __construct($configuration = null)
+    public function __construct($configuration = null)
     {
-        $this->configuration = $configuration ?: array();
+        $this->configuration = $configuration ?: [];
     }
 
-    function __set($name, $value)
+    public function __set($name, $value)
     {
         $this->configuration[$name] = $value;
     }
@@ -77,11 +78,6 @@ class ManualConfiguration extends AbstractConfiguration
     public function isAdvancedAuthenticationType()
     {
         return $this->retrieveType() == self::ADVANCED_AUTHENTICATION;
-    }
-
-    private function retrieveType()
-    {
-        return $this->configuration['authenticationType'];
     }
 
     public function getUserName()
@@ -192,6 +188,11 @@ class ManualConfiguration extends AbstractConfiguration
     public function getClientUrlEncoding()
     {
         return $this->configuration['clientUrlEncoding'];
+    }
+
+    private function retrieveType()
+    {
+        return $this->configuration['authenticationType'];
     }
 }
 

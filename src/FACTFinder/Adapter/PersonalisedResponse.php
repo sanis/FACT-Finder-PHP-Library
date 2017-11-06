@@ -1,7 +1,6 @@
 <?php
-namespace FACTFinder\Adapter;
 
-use FACTFinder\Loader as FF;
+namespace FACTFinder\Adapter;
 
 /**
  * Base class for all adapters which support the personalisation.
@@ -12,30 +11,26 @@ abstract class PersonalisedResponse extends ConfigurableResponse
      * @var string
      */
     protected $sid = false;
-    
+
     /**
-     * @param string $loggerClass Class name of logger to use. The class should
-     *        implement FACTFinder\Util\LoggerInterface.
-     * @param \FACTFinder\Core\ConfigurationInterface $configuration
-     *        Configuration object to use.
-     * @param \FACTFinder\Core\Server\Request $request The request object from
-     *        which to obtain the server data.
-     * @param \FACTFinder\Core\Client\UrlBuilder $urlBuilder
-     *        Client URL builder object to use.
-     * @param \FACTFinder\Core\encodingConverter $encodingConverter
-     *        Encoding converter object to use
+     * @param \FACTFinder\Core\ConfigurationInterface    $configuration
+     *                                                             Configuration object to use.
+     * @param \FACTFinder\Core\Server\Request            $request  The request object from
+     *                                                             which to obtain the server data.
+     * @param \FACTFinder\Core\Client\UrlBuilder         $urlBuilder
+     *                                                             Client URL builder object to use.
+     * @param \FACTFinder\Core\AbstractEncodingConverter $encodingConverter
+     *                                                             Encoding converter object to use
      */
     public function __construct(
-        $loggerClass,
         \FACTFinder\Core\ConfigurationInterface $configuration,
         \FACTFinder\Core\Server\Request $request,
         \FACTFinder\Core\Client\UrlBuilder $urlBuilder,
         \FACTFinder\Core\AbstractEncodingConverter $encodingConverter = null
     ) {
-        parent::__construct($loggerClass, $configuration, $request,
-                            $urlBuilder, $encodingConverter);
+        parent::__construct($configuration, $request, $urlBuilder, $encodingConverter);
     }
-    
+
     /**
      * Set the session id for personalization.
      *
@@ -49,4 +44,4 @@ abstract class PersonalisedResponse extends ConfigurableResponse
             $this->upToDate = false;
         }
     }
- }
+}

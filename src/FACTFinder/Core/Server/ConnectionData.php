@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Core\Server;
 
 use FACTFinder\Loader as FF;
@@ -28,7 +29,7 @@ class ConnectionData
     /**
      * @var mixed[]
      */
-    private $connectionOptions = array();
+    private $connectionOptions = [];
 
     /**
      * @var Response
@@ -42,15 +43,16 @@ class ConnectionData
 
     /**
      * Optionally takes a Parameters object to initialize the query parameters.
+     *
      * @param \FACTFinder\Util\Parameters $parameters
-     * @return type
      */
     public function __construct($parameters = null)
     {
-        if (FF::isInstanceOf($parameters, 'Util\Parameters'))
+        if (FF::isInstanceOf($parameters, 'Util\Parameters')) {
             $this->parameters = $parameters;
-        else
+        } else {
             $this->parameters = FF::getInstance('Util\Parameters');
+        }
 
         $this->httpHeaderFields = FF::getInstance('Util\Parameters');
         $this->action = '';
@@ -69,16 +71,6 @@ class ConnectionData
     }
 
     /**
-     * Set the action to be queried on the FACT-Finder server. e.g. "Search.ff".
-     *
-     * @param string $action
-     */
-    public function setAction($action)
-    {
-        $this->action = $action;
-    }
-
-    /**
      * Get the action to be queried on the FACT-Finder server. e.g. "Search.ff".
      *
      * @return string
@@ -86,6 +78,16 @@ class ConnectionData
     public function getAction()
     {
         return $this->action;
+    }
+
+    /**
+     * Set the action to be queried on the FACT-Finder server. e.g. "Search.ff".
+     *
+     * @param string $action
+     */
+    public function setAction($action)
+    {
+        $this->action = $action;
     }
 
     /**
@@ -105,9 +107,9 @@ class ConnectionData
      * up (e.g. cURL or socket). We simply provide an array to store options
      * specific to this connection.
      *
-     * @param mixed $name The option's identifier. This can be any value that is
-     *        a valid array index in PHP (hence, it SHOULD be a string or an
-     *        integer; all other types will be interpreted as a string).
+     * @param mixed $name  The option's identifier. This can be any value that is
+     *                     a valid array index in PHP (hence, it SHOULD be a string or an
+     *                     integer; all other types will be interpreted as a string).
      * @param mixed $value The option's value.
      */
     public function setConnectionOption($name, $value)
@@ -116,23 +118,8 @@ class ConnectionData
     }
 
     /**
-     * Sets all given connection options at once. If an option with the same
-     * name already exists, the old value will be replaced. Options that are not
-     * contained in the $options parameter will retain their value(s).
-     * @param mixed[] $options An array of options. For more information on
-     *        valid keys and values see setConnectionOption($name, $value).
-     */
-    public function setConnectionOptions($options)
-    {
-        // We cannot use array_merge() here, because that does not preserve
-        // numeric keys. Implementing this with a loop also has the advantage
-        // of not creating a new, third array.
-        foreach ($options as $k => $v)
-            $this->connectionOptions[$k] = $v;
-    }
-
-    /**
      * @param mixed $name The option's identifier.
+     *
      * @return bool
      */
     public function issetConnectionOption($name)
@@ -142,6 +129,7 @@ class ConnectionData
 
     /**
      * @param mixed $name The option's identifier.
+     *
      * @return mixed The option's value.
      */
     public function getConnectionOption($name)
@@ -151,6 +139,7 @@ class ConnectionData
 
     /**
      * Get an array of all set connection options.
+     *
      * @return mixed[]
      */
     public function getConnectionOptions()
@@ -159,15 +148,21 @@ class ConnectionData
     }
 
     /**
-     * Set a response for the current connection settings along with the URL
-     * which was used to obtain the response.
-     * @param Response $response
-     * @param string $url The URL corresponding to $response.
+     * Sets all given connection options at once. If an option with the same
+     * name already exists, the old value will be replaced. Options that are not
+     * contained in the $options parameter will retain their value(s).
+     *
+     * @param mixed[] $options An array of options. For more information on
+     *                         valid keys and values see setConnectionOption($name, $value).
      */
-    public function setResponse(Response $response, $url)
+    public function setConnectionOptions($options)
     {
-        $this->response = $response;
-        $this->previousUrl = $url;
+        // We cannot use array_merge() here, because that does not preserve
+        // numeric keys. Implementing this with a loop also has the advantage
+        // of not creating a new, third array.
+        foreach ($options as $k => $v) {
+            $this->connectionOptions[$k] = $v;
+        }
     }
 
     /**
@@ -188,6 +183,19 @@ class ConnectionData
     public function getResponse()
     {
         return $this->response;
+    }
+
+    /**
+     * Set a response for the current connection settings along with the URL
+     * which was used to obtain the response.
+     *
+     * @param Response $response
+     * @param string   $url The URL corresponding to $response.
+     */
+    public function setResponse(Response $response, $url)
+    {
+        $this->response = $response;
+        $this->previousUrl = $url;
     }
 
     /**

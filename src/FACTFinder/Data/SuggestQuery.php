@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 /**
@@ -12,14 +13,14 @@ class SuggestQuery extends Item
     private $attributes;
 
     /**
-     * @param string $query The query's name - will be used as the item's label.
+     * @param string $query      The query's name - will be used as the item's label.
      * @param string $url
-     * @param int $hitCount Indicates how many products this suggestions will
-     *        lead to.
-     * @param string $type Simple string which describes where this suggest
-     *        query comes from (e.g. product name, category, log file).
+     * @param int    $hitCount   Indicates how many products this suggestions will
+     *                           lead to.
+     * @param string $type       Simple string which describes where this suggest
+     *                           query comes from (e.g. product name, category, log file).
      * @param string $imageUrl
-     * @param array $attributes Additional return data fields
+     * @param array  $attributes Additional return data fields
      */
     public function __construct(
         $query,
@@ -27,7 +28,7 @@ class SuggestQuery extends Item
         $hitCount = 0,
         $type = '',
         $imageUrl = '',
-        array $attributes = array()
+        array $attributes = []
     ) {
         // Suggestions are never pre-selected.
         parent::__construct($query, $url, false);
@@ -40,7 +41,8 @@ class SuggestQuery extends Item
     /**
      * @return int Indicates how many products this suggestions will lead to.
      */
-    public function getHitCount() {
+    public function getHitCount()
+    {
         return $this->hitCount;
     }
 
@@ -48,21 +50,24 @@ class SuggestQuery extends Item
      * @return string Indicates where this suggest query comes from (e.g.
      *         product name, category, log file).
      */
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
     /**
      * @return string
      */
-    public function getImageUrl() {
+    public function getImageUrl()
+    {
         return $this->imageUrl;
     }
 
     /**
      * @return array Returns the additional return data fields
      */
-    public function getAttributes() {
+    public function getAttributes()
+    {
         return $this->attributes;
     }
 }

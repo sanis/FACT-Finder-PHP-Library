@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Adapter;
 
 use FACTFinder\Loader as FF;
@@ -6,26 +7,22 @@ use FACTFinder\Loader as FF;
 class Recommendation extends PersonalisedResponse
 {
     /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var FACTFinder\Data\Result
      */
     private $recommendations;
 
     public function __construct(
-        $loggerClass,
         \FACTFinder\Core\ConfigurationInterface $configuration,
         \FACTFinder\Core\Server\Request $request,
         \FACTFinder\Core\Client\UrlBuilder $urlBuilder,
         \FACTFinder\Core\AbstractEncodingConverter $encodingConverter = null
     ) {
-        parent::__construct($loggerClass, $configuration, $request,
-                            $urlBuilder, $encodingConverter);
-
-        $this->log = $loggerClass::getLogger(__CLASS__);
+        parent::__construct(
+            $configuration,
+            $request,
+            $urlBuilder,
+            $encodingConverter
+        );
 
         $this->request->setAction('Recommender.ff');
         $this->parameters['do'] = 'getRecommendation';
@@ -39,8 +36,8 @@ class Recommendation extends PersonalisedResponse
      * Set the maximum amount of recommendations to be fetched.
      *
      * @param int $recordCount The number of records to be fetched. Something
-     *        else than a positive integer is passed, the record count will be
-     *        unlimited (or determined by FACT-Finder).
+     *                         else than a positive integer is passed, the record count will be
+     *                         unlimited (or determined by FACT-Finder).
      */
     public function setRecordCount($recordCount)
     {
@@ -50,9 +47,7 @@ class Recommendation extends PersonalisedResponse
             && $recordCount > 0
         ) {
             $parameters['maxResults'] = $recordCount;
-        }
-        else
-        {
+        } else {
             unset($parameters['maxResults']);
         }
         // Make sure that the recommendations are fetched again. In theory,
@@ -94,7 +89,7 @@ class Recommendation extends PersonalisedResponse
      */
     public function getRecommendations()
     {
-        if (is_null($this->recommendations)
+        if (null === $this->recommendations
             || !$this->upToDate
         ) {
             $this->request->resetLoaded();
@@ -105,58 +100,12 @@ class Recommendation extends PersonalisedResponse
         return $this->recommendations;
     }
 
-    private function createRecommendations()
-    {
-        $records = array();
-
-        $parameters = $this->request->getParameters();
-        if (!isset($parameters['id']))
-        {
-            $this->log->warn('Recommendations cannot be loaded without a product ID. '
-                           . 'Use setProductIDs() or addProductIDs() first.');
-        }
-        else
-        {
-            $recommenderData = $this->getResponseContent();
-            if (parent::isValidResponse($recommenderData))
-            {
-                if (isset($recommenderData['resultRecords']))
-                {
-                    $recommenderData = $recommenderData['resultRecords'];
-                }
-                $position = 1;
-                foreach($recommenderData as $recordData)
-                {
-                    $records[] = $this->createRecord($recordData, $position++);
-                }
-            }
-        }
-
-        return FF::getInstance(
-            'Data\Result',
-            $records,
-            null,
-            count($records)
-        );
-    }
-
-    private function createRecord($recordData, $position)
-    {
-        return FF::getInstance(
-            'Data\Record',
-            (string)$recordData['id'],
-            $recordData['record'],
-            100.0,
-            $position
-        );
-    }
-    
     /**
      * Get the recommendations from FACT-Finder as the string returned by the
      * server.
      *
-     * @param string $format Optional. Either 'json' or 'jsonp'. Use to
-     *                       overwrite the 'format' parameter.
+     * @param string $format   Optional. Either 'json' or 'jsonp'. Use to
+     *                         overwrite the 'format' parameter.
      * @param string $callback Optional name to overwrite the 'callback'
      *                         parameter, which determines the name of the
      *                         callback the response is wrapped in.
@@ -167,11 +116,44 @@ class Recommendation extends PersonalisedResponse
     {
         $this->usePassthroughResponseContentProcessor();
 
-        if (!is_null($format))
+        if (null !== $format) {
             $this->parameters['format'] = $format;
-        if (!is_null($callback))
+        }
+        if (null !== $callback) {
             $this->parameters['callback'] = $callback;
+        }
 
         return $this->getResponseContent();
+    }
+
+    private function createRecommendations()
+    {
+        $records = [];
+
+        $parameters = $this->request->getParameters();
+        if (!isset($parameters['id'])) {
+            $this->logger && $this->logger->warning(
+                'Recommendations cannot be loaded without a product ID. '
+                . 'Use setProductIDs() or addProductIDs() first.'
+            );
+        } else {
+            $recommenderData = $this->getResponseContent();
+            if (parent::isValidResponse($recommenderData)) {
+                if (isset($recommenderData['resultRecords'])) {
+                    $recommenderData = $recommenderData['resultRecords'];
+                }
+                $position = 1;
+                foreach ($recommenderData as $recordData) {
+                    $records[] = $this->createRecord($recordData, $position++);
+                }
+            }
+        }
+
+        return FF::getInstance('Data\Result', $records, null, count($records));
+    }
+
+    private function createRecord($recordData, $position)
+    {
+        return FF::getInstance('Data\Record', (string)$recordData['id'], $recordData['record'], 100.0, $position);
     }
 }

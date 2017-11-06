@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Adapter;
 
 use FACTFinder\Loader as FF;
@@ -6,32 +7,22 @@ use FACTFinder\Loader as FF;
 class ProductCampaign extends PersonalisedResponse
 {
     /**
-     * @var FACTFinder\Util\LoggerInterface
+     * @var bool
      */
-    private $log;
-
+    protected $isShoppingCartCampaign = false;
+    protected $isLandingPageCampaign = false;
     /**
      * @var FACTFinder\Data\Result
      */
     private $campaigns;
 
-    /**
-     * @var bool
-     */
-    protected $isShoppingCartCampaign = false;    
-    protected $isLandingPageCampaign = false;
-
     public function __construct(
-        $loggerClass,
         \FACTFinder\Core\ConfigurationInterface $configuration,
         \FACTFinder\Core\Server\Request $request,
         \FACTFinder\Core\Client\UrlBuilder $urlBuilder,
         \FACTFinder\Core\AbstractEncodingConverter $encodingConverter = null
     ) {
-        parent::__construct($loggerClass, $configuration, $request,
-                            $urlBuilder, $encodingConverter);
-
-        $this->log = $loggerClass::getLogger(__CLASS__);
+        parent::__construct($configuration, $request, $urlBuilder, $encodingConverter);
 
         $this->request->setAction('ProductCampaign.ff');
         $this->parameters['do'] = 'getProductCampaigns';
@@ -67,7 +58,7 @@ class ProductCampaign extends PersonalisedResponse
         $parameters->add('productNumber', $productNumbers);
         $this->upToDate = false;
     }
-    
+
     /**
      * Set the page id to get landing page campaigns.
      *
@@ -101,7 +92,7 @@ class ProductCampaign extends PersonalisedResponse
         $this->upToDate = false;
         $this->parameters['do'] = 'getShoppingCartCampaigns';
     }
-    
+
     /**
      * Sets the adapter up for fetching campaigns on landing pages
      */
@@ -120,7 +111,7 @@ class ProductCampaign extends PersonalisedResponse
      */
     public function getCampaigns()
     {
-        if (is_null($this->campaigns)
+        if (null === $this->campaigns
             || !$this->upToDate
         ) {
             $this->request->resetLoaded();
@@ -131,32 +122,87 @@ class ProductCampaign extends PersonalisedResponse
         return $this->campaigns;
     }
 
+    /**
+     * Get the product campaigns from FACT-Finder as the string returned by the
+     * server.
+     *
+     * @param string $format   Optional. Either 'json' or 'jsonp'. Use to
+     *                         overwrite the 'format' parameter.
+     * @param string $callback Optional name to overwrite the 'callback'
+     *                         parameter, which determines the name of the
+     *                         callback the response is wrapped in.
+     *
+     * @return string
+     */
+    public function getRawProductCampaigns($format = null, $callback = null)
+    {
+        $this->usePassthroughResponseContentProcessor();
+
+        if (null !== $format) {
+            $this->parameters['format'] = $format;
+        }
+        if (null !== $callback) {
+            $this->parameters['callback'] = $callback;
+        }
+
+        return $this->getResponseContent();
+    }
+
+    /**
+     * @param \FACTFinder\Data\Campaign $campaign     The campaign object to be
+     *                                                filled.
+     * @param mixed[]                   $campaignData An associative array corresponding to the
+     *                                                JSON for that campaign.
+     */
+    protected function fillCampaignWithFeedback(\FACTFinder\Data\Campaign $campaign, array $campaignData)
+    {
+        if (!empty($campaignData['feedbackTexts'])) {
+            $feedback = [];
+
+            foreach ($campaignData['feedbackTexts'] as $feedbackData) {
+                // If present, add the feedback to both the label and the ID.
+                $html = $feedbackData['html'];
+                $text = $feedbackData['text'];
+                if (!$html) {
+                    $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+                }
+
+                $label = $feedbackData['label'];
+                if ($label !== '') {
+                    $feedback[$label] = $text;
+                }
+
+                $id = $feedbackData['id'];
+                if ($id !== null) {
+                    $feedback[$id] = $text;
+                }
+            }
+
+            $campaign->addFeedback($feedback);
+        }
+    }
+
     private function createCampaigns()
     {
-        $campaigns = array();
-        
-        if ($this->isLandingPageCampaign && !isset($this->parameters['pageId']))
-        {
-            $this->log->warn('Page campaigns cannot be loaded without a page ID. '
-                           . 'Use setPageId() first.');
-        }
-        else if (!$this->isLandingPageCampaign && !isset($this->parameters['productNumber']))
-        {
-            $this->log->warn('Product campaigns cannot be loaded without a product ID. '
-                           . 'Use setProductIDs() or addProductIDs() first.');
-        }
-        else
-        {
-            if ($this->isShoppingCartCampaign || $this->isLandingPageCampaign)
-            {
+        $campaigns = [];
+
+        if ($this->isLandingPageCampaign && !isset($this->parameters['pageId'])) {
+            $this->logger && $this->logger->warning(
+                'Page campaigns cannot be loaded without a page ID. '
+                . 'Use setPageId() first.'
+            );
+        } elseif (!$this->isLandingPageCampaign && !isset($this->parameters['productNumber'])) {
+            $this->logger && $this->logger->warning(
+                'Product campaigns cannot be loaded without a product ID. '
+                . 'Use setProductIDs() or addProductIDs() first.'
+            );
+        } else {
+            if ($this->isShoppingCartCampaign || $this->isLandingPageCampaign) {
                 $jsonData = $this->getResponseContent();
-            }
-            else
-            {
+            } else {
                 // Use only the first product ID
                 $productIDs = $this->parameters['productNumber'];
-                if (is_array($productIDs) && !empty($productIDs))
-                {
+                if (is_array($productIDs) && !empty($productIDs)) {
                     $this->parameters['productNumber'] = $productIDs[0];
                 }
                 $jsonData = $this->getResponseContent();
@@ -165,8 +211,7 @@ class ProductCampaign extends PersonalisedResponse
                 $this->parameters['productNumber'] = $productIDs;
             }
 
-            if(parent::isValidResponse($jsonData))
-            {
+            if (parent::isValidResponse($jsonData)) {
                 foreach ($jsonData as $campaignData) {
                     $campaign = $this->createEmptyCampaignObject($campaignData);
 
@@ -175,19 +220,17 @@ class ProductCampaign extends PersonalisedResponse
 
                     $campaigns[] = $campaign;
                 }
-            }        
+            }
         }
 
-        $campaignIterator = FF::getInstance(
-            'Data\CampaignIterator',
-            $campaigns
-        );
+        $campaignIterator = FF::getInstance('Data\CampaignIterator', $campaigns);
         return $campaignIterator;
     }
 
     /**
      * @param mixed[] $campaignData An associative array corresponding to the
-     *        JSON for a single campaign.
+     *                              JSON for a single campaign.
+     *
      * @return \FACTFinder\Data\Campaign
      */
     private function createEmptyCampaignObject(array $campaignData)
@@ -201,58 +244,17 @@ class ProductCampaign extends PersonalisedResponse
     }
 
     /**
-     * @param \FACTFinder\Data\Campaign $campaign The campaign object to be
-     *        filled.
-     * @param mixed[] $campaignData An associative array corresponding to the
-     *        JSON for that campaign.
+     * @param \FACTFinder\Data\Campaign $campaign     The campaign object to be
+     *                                                filled.
+     * @param mixed[]                   $campaignData An associative array corresponding to the
+     *                                                JSON for that campaign.
      */
-    protected function fillCampaignWithFeedback(
-        \FACTFinder\Data\Campaign $campaign,
-        array $campaignData
-    ) {
-        if (!empty($campaignData['feedbackTexts']))
-        {
-            $feedback = array();
+    private function fillCampaignWithPushedProducts(\FACTFinder\Data\Campaign $campaign, array $campaignData)
+    {
+        if (!empty($campaignData['pushedProductsRecords'])) {
+            $pushedProducts = [];
 
-            foreach ($campaignData['feedbackTexts'] as $feedbackData)
-            {
-                // If present, add the feedback to both the label and the ID.
-                $html = $feedbackData['html'];
-                $text = $feedbackData['text'];
-                if (!$html)
-                {
-                    $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
-                }
-
-                $label = $feedbackData['label'];
-                if ($label !== '')
-                    $feedback[$label] = $text;
-
-                $id = $feedbackData['id'];
-                if ($id !== null)
-                    $feedback[$id] = $text;
-            }
-
-            $campaign->addFeedback($feedback);
-        }
-    }
-
-    /**
-     * @param \FACTFinder\Data\Campaign $campaign The campaign object to be
-     *        filled.
-     * @param mixed[] $campaignData An associative array corresponding to the
-     *        JSON for that campaign.
-     */
-    private function fillCampaignWithPushedProducts(
-        \FACTFinder\Data\Campaign $campaign,
-        array $campaignData
-    ) {
-        if (!empty($campaignData['pushedProductsRecords']))
-        {
-            $pushedProducts = array();
-
-            foreach ($campaignData['pushedProductsRecords'] as $recordData)
-            {
+            foreach ($campaignData['pushedProductsRecords'] as $recordData) {
                 $pushedProducts[] = FF::getInstance(
                     'Data\Record',
                     (string)$recordData['id'],
@@ -262,29 +264,5 @@ class ProductCampaign extends PersonalisedResponse
 
             $campaign->addPushedProducts($pushedProducts);
         }
-    }
-
-    /**
-     * Get the product campaigns from FACT-Finder as the string returned by the
-     * server.
-     *
-     * @param string $format Optional. Either 'json' or 'jsonp'. Use to
-     *                       overwrite the 'format' parameter.
-     * @param string $callback Optional name to overwrite the 'callback'
-     *                         parameter, which determines the name of the
-     *                         callback the response is wrapped in.
-     *
-     * @return string
-     */
-    public function getRawProductCampaigns($format = null, $callback = null)
-    {
-        $this->usePassthroughResponseContentProcessor();
-
-        if (!is_null($format))
-            $this->parameters['format'] = $format;
-        if (!is_null($callback))
-            $this->parameters['callback'] = $callback;
-
-        return $this->getResponseContent();
     }
 }

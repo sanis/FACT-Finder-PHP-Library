@@ -1,44 +1,42 @@
 <?php
+
 namespace FACTFinder\Core\Client;
 
+use FACTFinder\Core\AbstractEncodingConverter;
+use FACTFinder\Core\ParametersConverter;
 use FACTFinder\Loader as FF;
+use FACTFinder\Util\Parameters;
+use Psr\Log\LoggerAwareTrait;
 
 /**
  * Generates URLs to be used in requests to the client.
  */
 class UrlBuilder
 {
-    /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
+    use LoggerAwareTrait;
 
     /**
-     * @var FACTFinder\Core\ParametersConverter
+     * @var ParametersConverter
      */
     private $parametersConverter;
 
     /**
-     * @var FACTFinder\Core\Client\RequestParser
+     * @var RequestParser
      */
     private $requestParser;
 
     /**
-     * @var FACTFinder\Core\AbstractEncodingConverter
+     * @var AbstractEncodingConverter
      */
     private $encodingConverter;
 
     public function __construct(
-        $loggerClass,
         \FACTFinder\Core\ConfigurationInterface $configuration,
         \FACTFinder\Core\Client\RequestParser $requestParser,
         \FACTFinder\Core\AbstractEncodingConverter $encodingConverter = null
     ) {
-        $this->log = $loggerClass::getLogger(__CLASS__);
-
         $this->parametersConverter = FF::getInstance(
             'Core\ParametersConverter',
-            $loggerClass,
             $configuration
         );
         $this->requestParser = $requestParser;
@@ -53,33 +51,35 @@ class UrlBuilder
      *
      * TODO: Should the signature be more similar to that of \Server\UrlBuilder?
      *
-     * @param FACTFinder\Util\Parameters $parameters The server parameters that
-     *        should be retrieved when the link is followed.
-     * @param string $target An optional request target. If omitted, the target
-     *        of the current request will be used. For instance, this parameter
-     *        can be used if a product detail page needs a different target.
+     * @param Parameters $parameters The server parameters that
+     *                                               should be retrieved when the link is followed.
+     * @param string     $target An optional request target. If omitted, the target
+     *                                               of the current request will be used. For instance, this parameter
+     *                                               can be used if a product detail page needs a different target.
      *
      * @return string
      */
     public function generateUrl($parameters, $target = null)
     {
-        $parameters = $this->parametersConverter
-                           ->convertServerToClientParameters($parameters);
+        $parameters = $this->parametersConverter->convertServerToClientParameters($parameters);
 
-        $parameters = $this->encodingConverter != null ? $this->encodingConverter->encodeClientUrlData($parameters) : $parameters;
+        $parameters = $this->encodingConverter != null ? $this->encodingConverter->encodeClientUrlData(
+            $parameters
+        ) : $parameters;
 
-        if (!is_string($target))
+        if (!is_string($target)) {
             $target = $this->requestParser->getRequestTarget();
+        }
 
         if ($parameters->offsetExists('seoPath')) {
             $seoPath = $parameters['seoPath'];
             $parameters->offsetUnset('seoPath');
-            $seoPathPosition = strrpos($target, "/s/");
+            $seoPathPosition = strrpos($target, '/s/');
             if ($seoPathPosition > -1) {
-                $target = substr($target, 0, $seoPathPosition);    
-            }            
+                $target = substr($target, 0, $seoPathPosition);
+            }
             $url = rtrim($target, '/') . '/s' . urldecode($seoPath) . '?' . $parameters->toPhpQueryString();
-        } else {    
+        } else {
             $url = $target . '?' . $parameters->toPhpQueryString();
         }
         return $url;

@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 /**
@@ -12,7 +13,7 @@ class SearchParameters
     /**
      * @var string
      */
-    private $query;    
+    private $query;
     private $seoPath;
     private $channel;
     private $advisorStatus;
@@ -36,8 +37,8 @@ class SearchParameters
     private $navigationEnabled;
 
     /**
-     * @param Parameters $parameters The server parameters used for the current
-     *                               request.
+     * @param \FACTFinder\Util\Parameters $parameters The server parameters used for the current
+     *                                                request.
      */
     public function __construct(
         \FACTFinder\Util\Parameters $parameters
@@ -49,35 +50,35 @@ class SearchParameters
         // Properly prepared server parameters will always have a channel set
         $this->channel = $parameters['channel'];
 
-        $this->advisorStatus   = isset($parameters['advisorStatus'])
-                                 ? $parameters['advisorStatus']
-                                 : '';
+        $this->advisorStatus = isset($parameters['advisorStatus'])
+            ? $parameters['advisorStatus']
+            : '';
 
         $this->productsPerPage = isset($parameters['productsPerPage'])
-                                 ? $parameters['productsPerPage']
-                                 : -1;
-        $this->currentPage     = isset($parameters['page'])
-                                 ? $parameters['page']
-                                 : 1;
-        $this->followSearch    = isset($parameters['followSearch'])
-                                 ? $parameters['followSearch']
-                                 : 0;
+            ? $parameters['productsPerPage']
+            : -1;
+        $this->currentPage = isset($parameters['page'])
+            ? $parameters['page']
+            : 1;
+        $this->followSearch = isset($parameters['followSearch'])
+            ? $parameters['followSearch']
+            : 0;
 
         $this->navigationEnabled = (isset($parameters['catalog']) && $parameters['catalog'] == 'true')
-                                   || (isset($parameters['navigation']) && $parameters['navigation'] == 'true');
+            || (isset($parameters['navigation']) && $parameters['navigation'] == 'true');
 
-        $this->filters  = array();
-        $this->sortings = array();
+        $this->filters = [];
+        $this->sortings = [];
 
         // TODO: Let Parameters implement the necessary interface so that it
         //       can be used directly in foreach.
-        foreach ($parameters->getArray() as $key => $value)
-        {
-            if (strpos($key, 'filter') === 0)
+        foreach ($parameters->getArray() as $key => $value) {
+            if (strpos($key, 'filter') === 0) {
                 $this->filters[substr($key, strlen('filter'))] = $value;
-            else if (strpos($key, 'sort') === 0
-                     && ($value == 'asc' || $value == 'desc'))
+            } elseif (strpos($key, 'sort') === 0
+                && ($value == 'asc' || $value == 'desc')) {
                 $this->sortings[substr($key, strlen('sort'))] = $value;
+            }
         }
     }
 

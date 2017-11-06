@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 
@@ -28,7 +29,7 @@ class Item
     /**
      * @param string $label
      * @param string $url
-     * @param bool $isSelected
+     * @param bool   $isSelected
      */
     public function __construct(
         $label,
@@ -55,9 +56,11 @@ class Item
     {
         return $this->url;
     }
-    
+
     /**
-     * @return string
+     * @param $url
+     *
+     * @return void
      */
     public function setUrl($url)
     {

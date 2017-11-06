@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Core\Server;
 
 /**
@@ -11,37 +12,24 @@ namespace FACTFinder\Core\Server;
 class Request
 {
     /**
-     * @var \FACTFinder\Util\LoggerInterface
+     * @var ConnectionData
      */
-    private $log;
-
+    protected $blLoaded;
     /**
      * @var int
      */
     private $id;
-
     /**
      * @var ConnectionData
      */
     private $connectionData;
-
-    /**
-     * @var ConnectionData
-     */
-    protected $blLoaded;
-
     /**
      * @var AbstractDataProvider
      */
     private $dataProvider;
 
-    public function __construct(
-        $loggerClass,
-        ConnectionData $connectionData,
-        AbstractDataProvider $dataProvider
-    ) {
-        $this->log = $loggerClass::getLogger(__CLASS__);
-
+    public function __construct(ConnectionData $connectionData, AbstractDataProvider $dataProvider)
+    {
         $this->id = $dataProvider->register($connectionData);
 
         $this->connectionData = $connectionData;
@@ -107,16 +95,16 @@ class Request
      */
     public function getResponse()
     {
-        if(!$this->blLoaded) {
+        if (!$this->blLoaded) {
             $this->dataProvider->loadResponse($this->id);
             $this->blLoaded = true;
         }
         return $this->connectionData->getResponse();
     }
-    
+
     /**
      * Reset loaded state of request to force reloading from server.
-     * 
+     *
      * @return void
      */
     public function resetLoaded()

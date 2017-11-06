@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 class Campaign
@@ -21,39 +22,40 @@ class Campaign
     /**
      * @var Record[]
      */
-    private $pushedProducts = array();
+    private $pushedProducts = [];
 
     /**
      * @var string[]
      */
-    private $feedback = array();
+    private $feedback = [];
 
     /**
      * @var AdvisorQuestion[]
      */
-    private $activeQuestions = array();
+    private $activeQuestions = [];
 
     /**
      * @var AdvisorQuestion[]
      */
-    private $advisorTree = array();
+    private $advisorTree = [];
 
     /**
-     * @param string $name
-     * @param string $category
-     * @param string $redirectUrl
+     * @param string   $name
+     * @param string   $category
+     * @param string   $redirectUrl
      * @param Record[] $pushedProducts
-     * @param array feedback; array of strings with labels as keys
-     * @param array activeQuestions; array of FACTFinder_AdvisorQuestion objects
+     * @param array    $feedback
+     * @param array    $activeQuestions
+     * @param array    $advisorTree
      */
     public function __construct(
         $name,
         $category = '',
         $redirectUrl = '',
-        array $pushedProducts = array(),
-        array $feedback = array(),
-        array $activeQuestions = array(),
-        array $advisorTree = array()
+        array $pushedProducts = [],
+        array $feedback = [],
+        array $activeQuestions = [],
+        array $advisorTree = []
     ) {
         $this->name = (string)$name;
         $this->category = (string)$category;
@@ -101,8 +103,9 @@ class Campaign
      */
     public function addPushedProducts(array $pushedProducts)
     {
-        foreach ($pushedProducts as $product)
+        foreach ($pushedProducts as $product) {
             $this->pushedProducts[] = $product;
+        }
     }
 
     /**
@@ -129,36 +132,39 @@ class Campaign
      */
     public function addFeedback(array $feedback)
     {
-        foreach($feedback as $label => $text)
+        foreach ($feedback as $label => $text) {
             $this->feedback[$label] = (string)$text;
+        }
     }
 
     /**
      * @param string $label Optional label to check.
+     *
      * @return bool If $label parameter is given, this returns true if there is
      *         any feedback for that particular label. If $label is ommitted,
      *         this returns true if there is any feedback at all.
      */
     public function hasFeedback($label = null)
     {
-        if (is_null($label))
-            return count($this->feedback) > 0
-                   && implode('', $this->feedback) != '';
-        else
-            return isset($this->feedback[$label])
-                   && $this->feedback[$label] != '';
+        if (null === $label) {
+            return count($this->feedback) > 0 && implode('', $this->feedback) != '';
+        } else {
+            return isset($this->feedback[$label]) && $this->feedback[$label] != '';
+        }
     }
 
     /**
      * @param string $label
+     *
      * @return string
      */
     public function getFeedback($label)
     {
-        if (isset($this->feedback[$label]))
+        if (isset($this->feedback[$label])) {
             return $this->feedback[$label];
-        else
+        } else {
             return '';
+        }
     }
 
     /**
@@ -174,8 +180,9 @@ class Campaign
      */
     public function addActiveQuestions(array $activeQuestions)
     {
-        foreach ($activeQuestions as $question)
+        foreach ($activeQuestions as $question) {
             $this->activeQuestions[] = $question;
+        }
     }
 
     /**
@@ -201,8 +208,9 @@ class Campaign
      */
     public function addToAdvisorTree(array $advisorTree)
     {
-        foreach ($advisorTree as $question)
+        foreach ($advisorTree as $question) {
             $this->advisorTree[] = $question;
+        }
     }
 
     /**

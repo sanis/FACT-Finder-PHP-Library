@@ -1,26 +1,16 @@
 <?php
-namespace FACTFinder\Adapter;
 
-use FACTFinder\Loader as FF;
+namespace FACTFinder\Adapter;
 
 class Import extends AbstractAdapter
 {
-    /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
     public function __construct(
-        $loggerClass,
         \FACTFinder\Core\ConfigurationInterface $configuration,
         \FACTFinder\Core\Server\Request $request,
         \FACTFinder\Core\Client\UrlBuilder $urlBuilder,
         \FACTFinder\Core\AbstractEncodingConverter $encodingConverter = null
     ) {
-        parent::__construct($loggerClass, $configuration, $request,
-                            $urlBuilder, $encodingConverter);
-
-        $this->log = $loggerClass::getLogger(__CLASS__);
+        parent::__construct($configuration, $request, $urlBuilder, $encodingConverter);
 
         // Don't set request action yet, because it depends on the kind of
         // import to be done.
@@ -41,7 +31,7 @@ class Import extends AbstractAdapter
     {
         //this function changes parameters, action, ... so reload of response is neccessary
         $this->request->resetLoaded();
-        
+
         $this->request->setAction('Import.ff');
 
         $this->parameters['download'] = $download ? 'true' : 'false';
@@ -59,7 +49,7 @@ class Import extends AbstractAdapter
     {
         //this function changes parameters, action, ... so reload of response is neccessary
         $this->request->resetLoaded();
-        
+
         $this->request->setAction('Import.ff');
 
         $this->parameters['download'] = $download ? 'true' : 'false';
@@ -83,7 +73,7 @@ class Import extends AbstractAdapter
     {
         //this function changes parameters, action, ... so reload of response is neccessary
         $this->request->resetLoaded();
-        
+
         $this->request->setAction('Recommender.ff');
 
         $this->parameters['download'] = $download ? 'true' : 'false';

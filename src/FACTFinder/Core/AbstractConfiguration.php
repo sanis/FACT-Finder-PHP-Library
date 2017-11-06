@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Core;
 
 /**
@@ -8,6 +9,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
 {
     /**
      * @param string name
+     *
      * @return string value
      */
     public function getCustomValue($name)
@@ -40,7 +42,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getServerPort()
     {
@@ -134,7 +136,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      */
     public function getClientMappings()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -144,7 +146,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      */
     public function getServerMappings()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -154,7 +156,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      */
     public function getIgnoredClientParameters()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -164,83 +166,83 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      */
     public function getIgnoredServerParameters()
     {
-        return array();
+        return [];
     }
 
     /**
      * Get parameters which are allowed in client URLs.
-     * 
+     *
      * @return array with string as key and boolean true as value for each item
      */
     public function getWhitelistClientParameters()
     {
-        return array();
+        return [];
     }
 
     /**
      * Get parameters which are allowed in server URLs.
-     * 
+     *
      * @return array with string as key and boolean true as value for each item
      */
     public function getWhitelistServerParameters()
     {
-        return array(
-            '/^filter.*/' => true,
-            '/^sort.*/' => true,
-            '/^substringFilter.*/' => true,
-            'advisorStatus' => true,
-            'callback' => true,
-            'campaign' => true,
-            'catalog' => true,
-            'channel' => true,
-            'cookieId' => true,
-            'count' => true,
-            'do' => true,
-            'event' => true,
-            'followSearch' => true,
-            'format' => true,
-            'id' => true,
-            'ids' => true,
-            'idsOnly' => true,
-            'ignoreForCache' => true,
-            'instoreAds' => true,
-            'isArticleNumber' => true,
-            'log' => true,
-            'mainId' => true,
-            'masterId' => true,
-            'maxRecordCount' => true,
-            'maxResults' => true,
-            'navigation' => true,
+        return [
+            '/^filter.*/'           => true,
+            '/^sort.*/'             => true,
+            '/^substringFilter.*/'  => true,
+            'advisorStatus'         => true,
+            'callback'              => true,
+            'campaign'              => true,
+            'catalog'               => true,
+            'channel'               => true,
+            'cookieId'              => true,
+            'count'                 => true,
+            'do'                    => true,
+            'event'                 => true,
+            'followSearch'          => true,
+            'format'                => true,
+            'id'                    => true,
+            'ids'                   => true,
+            'idsOnly'               => true,
+            'ignoreForCache'        => true,
+            'instoreAds'            => true,
+            'isArticleNumber'       => true,
+            'log'                   => true,
+            'mainId'                => true,
+            'masterId'              => true,
+            'maxRecordCount'        => true,
+            'maxResults'            => true,
+            'navigation'            => true,
             'noArticleNumberSearch' => true,
-            'omitContextName' => true,
-            'origPageSize' => true,
-            'origPos' => true,
-            'page' => true,
-            'pageId' => true,
-            'pageSize' => true,
-            'pos' => true,
-            'price' => true,
-            'productNumber' => true,
-            'productsPerPage' => true,
-            'query' => true,
-            'queryFromSuggest' => true,
-            'searchField' => true,
-            'seoPath' => true,
-            'sid' => true,
-            'simi' => true,
-            'title' => true,
-            'useAsn' => true,
-            'useAso' => true,
-            'useCampaigns' => true,
-            'useFoundWords' => true,
-            'useKeywords' => true,
-            'usePersonalization' => true,
-            'userId' => true,
-            'userInput' => true,
-            'useSemanticEnhancer' => true,
-            'verbose' => true,
-            'wordCount' => true
-        );
+            'omitContextName'       => true,
+            'origPageSize'          => true,
+            'origPos'               => true,
+            'page'                  => true,
+            'pageId'                => true,
+            'pageSize'              => true,
+            'pos'                   => true,
+            'price'                 => true,
+            'productNumber'         => true,
+            'productsPerPage'       => true,
+            'query'                 => true,
+            'queryFromSuggest'      => true,
+            'searchField'           => true,
+            'seoPath'               => true,
+            'sid'                   => true,
+            'simi'                  => true,
+            'title'                 => true,
+            'useAsn'                => true,
+            'useAso'                => true,
+            'useCampaigns'          => true,
+            'useFoundWords'         => true,
+            'useKeywords'           => true,
+            'usePersonalization'    => true,
+            'userId'                => true,
+            'userInput'             => true,
+            'useSemanticEnhancer'   => true,
+            'verbose'               => true,
+            'wordCount'             => true,
+        ];
     }
 
     /**
@@ -250,7 +252,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      */
     public function getRequiredClientParameters()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -260,7 +262,7 @@ abstract class AbstractConfiguration implements ConfigurationInterface
      */
     public function getRequiredServerParameters()
     {
-        return array();
+        return [];
     }
 
     /**

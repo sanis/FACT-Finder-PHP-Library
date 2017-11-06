@@ -1,5 +1,8 @@
 <?php
+
 namespace FACTFinder\Core\Server;
+
+use Psr\Log\LoggerAwareTrait;
 
 /**
  * Data providers take care of retrieving pre-configured requests with
@@ -7,11 +10,12 @@ namespace FACTFinder\Core\Server;
  */
 abstract class AbstractDataProvider
 {
-    /**
-     * @var \FACTFinder\Util\LoggerInterface
-     */
-    private $log;
+    use LoggerAwareTrait;
 
+    /**
+     * @var int
+     */
+    static private $nextID = 0;
     /**
      * @var \FACTFinder\Core\ConfigurationInterface
      */
@@ -23,19 +27,12 @@ abstract class AbstractDataProvider
      */
     protected $connectionData;
 
-    /**
-     * @var int
-     */
-    static private $nextID = 0;
-
     public function __construct(
-        $loggerClass,
         \FACTFinder\Core\ConfigurationInterface $configuration
     ) {
-        $this->log = $loggerClass::getLogger(__CLASS__);
         $this->configuration = $configuration;
 
-        $this->connectionData = array();
+        $this->connectionData = [];
     }
 
     /**
@@ -43,11 +40,12 @@ abstract class AbstractDataProvider
      * for it (basically, a handle).
      *
      * @param ConnectionData $connectionData The connection data object to be
-     *        registered.
+     *                                       registered.
      *
      * @param int The ID by which to refer to the connection data in the future.
      *
-     * @throws InvalidArgumentException if the $id is already in use.
+     * @return int
+     * @throws \InvalidArgumentException if the $id is already in use.
      */
     public function register(ConnectionData $connectionData)
     {
@@ -55,7 +53,7 @@ abstract class AbstractDataProvider
 
         $this->connectionData[$id] = $connectionData;
 
-        $this->log->debug("Registered connection data for ID $id.");
+        $this->logger && $this->logger->debug("Registered connection data for ID $id.");
 
         return $id;
     }
@@ -64,13 +62,13 @@ abstract class AbstractDataProvider
      * Remove all references to the connection data object identified by $id.
      *
      * @param mixed $id The ID corresponding to the connection data object to be
-     *        removed from the DataProvider.
+     *                  removed from the DataProvider.
      */
     public function unregister($id)
     {
         unset($this->connectionData[$id]);
 
-        $this->log->debug("Unregistered connection data for ID $id.");
+        $this->logger && $this->logger->debug("Unregistered connection data for ID $id.");
     }
 
     /**
@@ -78,9 +76,9 @@ abstract class AbstractDataProvider
      * implementation of this abstract class is free to ignore this timeout, but
      * it should respect it if the underlying connection mechanism allows.
      *
-     * @param mixed $id The ID of the connection data for which to set the
-     *        timeout.
-     * @param int $timeout The timeout in seconds.
+     * @param mixed $id      The ID of the connection data for which to set the
+     *                       timeout.
+     * @param int   $timeout The timeout in seconds.
      */
     abstract public function setConnectTimeout($id, $timeout);
 
@@ -90,9 +88,9 @@ abstract class AbstractDataProvider
      * timeout, but it should respect it if the underlying connection mechanism
      * allows.
      *
-     * @param mixed $id The ID of the connection data for which to set the
-     *        timeout.
-     * @param int $timeout The timeout in seconds.
+     * @param mixed $id      The ID of the connection data for which to set the
+     *                       timeout.
+     * @param int   $timeout The timeout in seconds.
      */
     abstract public function setTimeout($id, $timeout);
 
@@ -102,7 +100,7 @@ abstract class AbstractDataProvider
      * response.
      *
      * @param mixed $id The ID of the connection data for which to retrieve a
-     *        response.
+     *                  response.
      *
      * @return void The response is NOT returned by this function. It has to be
      *         obtained directly from the ConnectionData object.

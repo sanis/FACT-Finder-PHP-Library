@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Core;
 
 /**
@@ -6,8 +7,8 @@ namespace FACTFinder\Core;
  */
 class ArrayConfiguration extends AbstractConfiguration
 {
-    const HTTP_AUTHENTICATION     = 'http';
-    const SIMPLE_AUTHENTICATION   = 'simple';
+    const HTTP_AUTHENTICATION = 'http';
+    const SIMPLE_AUTHENTICATION = 'simple';
     const ADVANCED_AUTHENTICATION = 'advanced';
 
     /**
@@ -26,16 +27,17 @@ class ArrayConfiguration extends AbstractConfiguration
 
     /**
      * Create a new configuration from an array
-     * @param array $config The configuration data as array
+     *
+     * @param array  $config  The configuration data as array
      * @param string $section The configuration section
-     * @return ArrayConfiguration
      *
      * @throws \Exception
      */
     public function __construct(array $config, $section)
     {
-        if (!isset($config[$section]))
+        if (!isset($config[$section])) {
             throw new \Exception("Specified configuration array does not contain section $section");
+        }
 
         $this->configuration = $config[$section];
     }
@@ -95,11 +97,6 @@ class ArrayConfiguration extends AbstractConfiguration
         return $this->retrieveAuthenticationType() === self::ADVANCED_AUTHENTICATION;
     }
 
-    private function retrieveAuthenticationType()
-    {
-        return strtolower($this->configuration['connection']['authentication']['type']);
-    }
-
     public function makeHttpAuthenticationType()
     {
         $this->configuration['connection']['authentication']['type'] = self::HTTP_AUTHENTICATION;
@@ -151,18 +148,6 @@ class ArrayConfiguration extends AbstractConfiguration
         return $this->serverMappings;
     }
 
-    private function retrieveMappings($section)
-    {
-        $mappings = array();
-        if (isset($section['mapping']) && is_array($section['mapping'])) {
-            //load mappings
-            foreach($section['mapping'] as $rule) {
-                $mappings[$rule['from']] = $rule['to'];
-            }
-        }
-        return $mappings;
-    }
-
     public function getIgnoredClientParameters()
     {
         if ($this->ignoredClientParameters == null) {
@@ -181,18 +166,6 @@ class ArrayConfiguration extends AbstractConfiguration
             );
         }
         return $this->ignoredServerParameters;
-    }
-
-    private function retrieveIgnoredParameters($section)
-    {
-        $ignoredParameters = array();
-        if (isset($section['ignore']) && is_array($section['ignore'])) {
-            //load ignore rules
-            foreach($section['ignore'] as $name) {
-                $ignoredParameters[$name] = true;
-            }
-        }
-        return $ignoredParameters;
     }
 
     public function getWhitelistClientParameters()
@@ -218,18 +191,6 @@ class ArrayConfiguration extends AbstractConfiguration
         return $this->whitelistServerParameters;
     }
 
-    private function retrieveWhitelistParameters($section)
-    {
-        $whitelist = array();
-        if (isset($section['whitelist']) && is_array($section['whitelist'])) {
-            //load whitelist
-            foreach($section['whitelist'] as $name) {
-                $whitelist[$name] = true;
-            }
-        }
-        return $whitelist;
-    }
-
     public function getRequiredClientParameters()
     {
         if ($this->requiredClientParameters == null) {
@@ -248,18 +209,6 @@ class ArrayConfiguration extends AbstractConfiguration
             );
         }
         return $this->requiredServerParameters;
-    }
-
-    private function retrieveRequiredParameters($section)
-    {
-        $requiredParameters = array();
-        if (isset($section['require']) && is_array($section['require'])) {
-            //load require rules
-            foreach($section['require'] as $rule) {
-                $requiredParameters[$rule['name']] = $rule['default'];
-            }
-        }
-        return $requiredParameters;
     }
 
     public function getDefaultConnectTimeout()
@@ -320,5 +269,58 @@ class ArrayConfiguration extends AbstractConfiguration
     public function setClientUrlEncoding($encoding)
     {
         $this->configuration['encoding']['clientUrl'] = $encoding;
+    }
+
+    private function retrieveAuthenticationType()
+    {
+        return strtolower($this->configuration['connection']['authentication']['type']);
+    }
+
+    private function retrieveMappings($section)
+    {
+        $mappings = [];
+        if (isset($section['mapping']) && is_array($section['mapping'])) {
+            //load mappings
+            foreach ($section['mapping'] as $rule) {
+                $mappings[$rule['from']] = $rule['to'];
+            }
+        }
+        return $mappings;
+    }
+
+    private function retrieveIgnoredParameters($section)
+    {
+        $ignoredParameters = [];
+        if (isset($section['ignore']) && is_array($section['ignore'])) {
+            //load ignore rules
+            foreach ($section['ignore'] as $name) {
+                $ignoredParameters[$name] = true;
+            }
+        }
+        return $ignoredParameters;
+    }
+
+    private function retrieveWhitelistParameters($section)
+    {
+        $whitelist = [];
+        if (isset($section['whitelist']) && is_array($section['whitelist'])) {
+            //load whitelist
+            foreach ($section['whitelist'] as $name) {
+                $whitelist[$name] = true;
+            }
+        }
+        return $whitelist;
+    }
+
+    private function retrieveRequiredParameters($section)
+    {
+        $requiredParameters = [];
+        if (isset($section['require']) && is_array($section['require'])) {
+            //load require rules
+            foreach ($section['require'] as $rule) {
+                $requiredParameters[$rule['name']] = $rule['default'];
+            }
+        }
+        return $requiredParameters;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Core\Server;
 
 use FACTFinder\Loader as FF;
@@ -13,98 +14,81 @@ use FACTFinder\Loader as FF;
 class EasyCurlDataProvider extends AbstractDataProvider
 {
     /**
-     * @var \FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var UrlBuilder
      */
     protected $urlBuilder;
-
     /**
      * @var \FACTFinder\Util\CurlInterface
      */
     protected $curl;
-
     protected $defaultCurlOptions;
     protected $necessaryCurlOptions;
 
     public function __construct(
-        $loggerClass,
         \FACTFinder\Core\ConfigurationInterface $configuration,
         \FACTFinder\Util\CurlInterface $curl,
         UrlBuilder $urlBuilder
     ) {
-        parent::__construct($loggerClass, $configuration);
-
-        $this->log = $loggerClass::getLogger(__CLASS__);
+        parent::__construct($configuration);
 
         $this->urlBuilder = $urlBuilder;
 
         $this->curl = $curl;
 
-        $this->defaultCurlOptions = array(
+        $this->defaultCurlOptions = [
             CURLOPT_CONNECTTIMEOUT => $this->configuration->getDefaultConnectTimeout(),
             CURLOPT_TIMEOUT        => $this->configuration->getDefaultTimeout(),
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_ENCODING       => '',
-        );
+        ];
 
-        $this->necessaryCurlOptions = array(
+        $this->necessaryCurlOptions = [
             CURLOPT_RETURNTRANSFER => true,
-        );
+        ];
     }
 
     public function setConnectTimeout($id, $timeout)
     {
-        if (!isset($this->connectionData[$id]))
+        if (!isset($this->connectionData[$id])) {
             throw new \InvalidArgumentException('Tried to set timeout for invalid ID $id.');
+        }
 
-        $this->connectionData[$id]->setConnectionOption(
-            CURLOPT_CONNECTTIMEOUT,
-            $timeout
-        );
+        $this->connectionData[$id]->setConnectionOption(CURLOPT_CONNECTTIMEOUT, $timeout);
     }
 
     public function setTimeout($id, $timeout)
     {
-        if (!isset($this->connectionData[$id]))
+        if (!isset($this->connectionData[$id])) {
             throw new \InvalidArgumentException('Tried to set timeout for invalid ID $id.');
+        }
 
-        $this->connectionData[$id]->setConnectionOption(
-            CURLOPT_TIMEOUT,
-            $timeout
-        );
+        $this->connectionData[$id]->setConnectionOption(CURLOPT_TIMEOUT, $timeout);
     }
 
     // TODO: Could this be refactored some more?
     public function loadResponse($id)
     {
-        if (!isset($this->connectionData[$id]))
+        if (!isset($this->connectionData[$id])) {
             throw new \InvalidArgumentException('Tried to get response for invalid ID $id.');
+        }
 
-        if (!$this->hasUrlChanged($id))
+        if (!$this->hasUrlChanged($id)) {
             return;
+        }
 
         $connectionData = $this->connectionData[$id];
 
         $action = $connectionData->getAction();
-        if (empty($action))
-        {
-            $this->log->error('Request type missing.');
+        if (empty($action)) {
+            $this->logger && $this->logger->error('Request type missing.');
             $connectionData->setNullResponse();
             return;
         }
 
         $httpHeaderFields = $this->prepareHttpHeaders($connectionData);
         $parameters = $this->prepareParameters($connectionData);
-        $url = $this->prepareConnectionOptions(
-            $connectionData,
-            $httpHeaderFields,
-            $parameters
-        );
+        $url = $this->prepareConnectionOptions($connectionData, $httpHeaderFields, $parameters);
 
         $response = $this->retrieveResponse($connectionData);
 
@@ -118,8 +102,9 @@ class EasyCurlDataProvider extends AbstractDataProvider
         $httpHeaderFields = clone $connectionData->getHttpHeaderFields();
 
         $language = $this->configuration->getLanguage();
-        if (!empty($language))
+        if (!empty($language)) {
             $httpHeaderFields['Accept-Language'] = $language;
+        }
 
         return $httpHeaderFields;
     }
@@ -128,36 +113,26 @@ class EasyCurlDataProvider extends AbstractDataProvider
     {
         $parameters = clone $connectionData->getParameters();
 
-        if ($this->configuration->isDebugEnabled())
+        if ($this->configuration->isDebugEnabled()) {
             $parameters['verbose'] = 'true';
+        }
 
         return $parameters;
     }
 
-    private function prepareConnectionOptions(
-        $connectionData,
-        $httpHeaderFields,
-        $parameters
-    ) {
+    private function prepareConnectionOptions($connectionData, $httpHeaderFields, $parameters)
+    {
         if ($this->configuration->isDebugEnabled()
-            && isset($_SERVER['HTTP_REFERER'])
-            && !$connectionData->issetConnectionOption(CURLOPT_REFERER)
-        ) {
+            && isset($_SERVER['HTTP_REFERER']) && !$connectionData->issetConnectionOption(CURLOPT_REFERER)) {
             $connectionData->setConnectionOption(
                 CURLOPT_REFERER,
                 $_SERVER['HTTP_REFERER']
             );
         }
 
-        $connectionData->setConnectionOption(
-            CURLOPT_HTTPHEADER,
-            $httpHeaderFields->toHttpHeaderFields()
-        );
+        $connectionData->setConnectionOption(CURLOPT_HTTPHEADER, $httpHeaderFields->toHttpHeaderFields());
 
-        $url = $this->urlBuilder->getAuthenticationUrl(
-            $connectionData->getAction(),
-            $parameters
-        );
+        $url = $this->urlBuilder->getAuthenticationUrl($connectionData->getAction(), $parameters);
 
         $connectionData->setConnectionOption(CURLOPT_URL, $url);
 
@@ -167,24 +142,21 @@ class EasyCurlDataProvider extends AbstractDataProvider
     private function retrieveResponse($connectionData)
     {
         $curlHandle = $this->curl->init();
-        if ($curlHandle === false)
-        {
-            $this->log->error("curl_init() did not return a handle for ID $id. "
-                            . 'Setting an empty response...');
+        if ($curlHandle === false) {
+            $this->logger && $this->logger->error(
+                "curl_init() did not return a handle for ID $id. "
+                . 'Setting an empty response...'
+            );
             return FF::getInstance('Core\Server\NullResponse');
         }
 
         // We cannot use array_merge() here, because that does not preserve
         // numeric keys. So we use array union instead. However, as opposed to
         // array_merge(), the left-hand operator's keys will be preserved.
-        $curlOptions = $this->necessaryCurlOptions
-                     + $connectionData->getConnectionOptions()
-                     + $this->defaultCurlOptions;
+        $curlOptions =
+            $this->necessaryCurlOptions + $connectionData->getConnectionOptions() + $this->defaultCurlOptions;
 
-        $this->curl->setopt_array(
-            $curlHandle,
-            $curlOptions
-        );
+        $this->curl->setopt_array($curlHandle, $curlOptions);
 
         $responseText = $this->curl->exec($curlHandle);
         $httpCode = (int)$this->curl->getinfo($curlHandle, CURLINFO_HTTP_CODE);
@@ -193,12 +165,7 @@ class EasyCurlDataProvider extends AbstractDataProvider
 
         $this->curl->close($curlHandle);
 
-        return FF::getInstance('Core\Server\Response',
-            $responseText,
-            $httpCode,
-            $curlErrorNumber,
-            $curlError
-        );
+        return FF::getInstance('Core\Server\Response', $responseText, $httpCode, $curlErrorNumber, $curlError);
     }
 
     private function logResult($response)
@@ -206,11 +173,11 @@ class EasyCurlDataProvider extends AbstractDataProvider
         $httpCode = $response->getHttpCode();
         $curlError = $response->getConnectionError();
         if ($httpCode >= 400) {
-            $this->log->error("Connection failed. HTTP code: $httpCode");
-        } else if ($httpCode == 0) {
-            $this->log->error("Connection refused. cURL error: $curlError");
-        } else if (floor($httpCode / 100) == 2) { // all successful status codes (2**)
-            $this->log->info("Request successful!");
+            $this->logger && $this->logger->error("Connection failed. HTTP code: $httpCode");
+        } elseif ($httpCode == 0) {
+            $this->logger && $this->logger->error("Connection refused. cURL error: $curlError");
+        } elseif (floor($httpCode / 100) == 2) { // all successful status codes (2**)
+            $this->logger && $this->logger->info('Request successful!');
         }
     }
 
@@ -218,8 +185,9 @@ class EasyCurlDataProvider extends AbstractDataProvider
     {
         $connectionData = $this->connectionData[$id];
 
-        if (FF::isInstanceOf($connectionData->getResponse(), 'Core\Server\NullResponse'))
+        if (FF::isInstanceOf($connectionData->getResponse(), 'Core\Server\NullResponse')) {
             return true;
+        }
 
         $url = $this->urlBuilder->getNonAuthenticationUrl(
             $connectionData->getAction(),

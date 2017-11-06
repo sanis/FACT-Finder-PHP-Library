@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Util;
 
 /**
@@ -12,9 +13,8 @@ namespace FACTFinder\Util;
 class Curl implements CurlInterface
 {
     /**
-     * Easy interface
+     * @param $ch
      */
-
     public function close($ch)
     {
         curl_close($ch);
@@ -61,9 +61,12 @@ class Curl implements CurlInterface
     }
 
     /**
-     * Multi interface
+     *
+     * @param $mh
+     * @param $ch
+     *
+     * @return int
      */
-
     public function multi_add_handle($mh, $ch)
     {
         return curl_multi_add_handle($mh, $ch);
@@ -105,9 +108,10 @@ class Curl implements CurlInterface
     }
 
     /**
-     * Miscellaneous
+     * @param int $age
+     *
+     * @return array
      */
-
     public function version($age = CURLVERSION_NOW)
     {
         return curl_version($age);

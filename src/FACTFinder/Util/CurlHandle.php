@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Util;
 
 /**
@@ -11,7 +12,7 @@ class CurlHandle
      *              Option-identifying integers as keys, mixed-type option
      *              values as values.
      */
-    public $options = array();
+    public $options = [];
 
     /**
      * @var bool

@@ -1,8 +1,10 @@
 <?php
+
 namespace FACTFinder\Data;
 
 /**
  * Enum for sorting directions.
+ *
  * @see FilterStyle for documentation of the enum workaround.
  */
 class SortingDirection
@@ -12,26 +14,33 @@ class SortingDirection
     static private $desc;
 
     static private $nextID = 0;
+    static private $initialized = false;
     private $id;
+
     private function __construct()
     {
         $this->id = self::$nextID++;
     }
 
-    static private $initialized = false;
-    static public function initialize()
+    public static function initialize()
     {
-        if (!self::$initialized)
-        {
-            self::$asc         = new SortingDirection();
-            self::$desc       = new SortingDirection();
+        if (!self::$initialized) {
+            self::$asc = new SortingDirection();
+            self::$desc = new SortingDirection();
 
             self::$initialized = true;
         }
     }
 
-    static public function Ascending()     { return self::$asc; }
-    static public function Descending()   { return self::$desc; }
+    public static function Ascending()
+    {
+        return self::$asc;
+    }
+
+    public static function Descending()
+    {
+        return self::$desc;
+    }
 }
 
 SortingDirection::initialize();

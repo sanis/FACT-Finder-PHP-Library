@@ -1,7 +1,8 @@
 <?php
+
 namespace FACTFinder\Core\Server;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Core\ConfigurationInterface;
 
 /**
  * Assembles URLs to the FACT-Finder server for different kinds of
@@ -10,30 +11,15 @@ use FACTFinder\Loader as FF;
 class UrlBuilder
 {
     /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var ConfigurationInterface
      */
     protected $configuration;
 
-
     /**
-     * @param string $loggerClass Class name of logger to use. The class should
-     *        implement FACTFinder\Util\LoggerInterface.
      * @param ConfigurationInterface $configuration
-     * @param FACTFinder\Util\Parameters $parameters Optional parameters object
-     *        to initialize the UrlBuilder with.
      */
-    public function __construct(
-        $loggerClass,
-        \FACTFinder\Core\ConfigurationInterface $configuration
-    ) {
-        $this->log = $loggerClass::getLogger(__CLASS__);
-        $this->log->info("Initializing URL Builder.");
-
+    public function __construct(\FACTFinder\Core\ConfigurationInterface $configuration)
+    {
         $this->configuration = $configuration;
     }
 
@@ -42,23 +28,18 @@ class UrlBuilder
      * Note that this method may set a channel parameter if there is none
      * already.
      *
-     * @param string $action The action to be targeted on the FACT-Finder
-     *        server.
-     * @param FACTFinder\Util\Parameters $parameters The parameters object from
-     *        which to build the URL.
+     * @param string                      $action     The action to be targeted on the FACT-Finder
+     *                                                server.
+     * @param \FACTFinder\Util\Parameters $parameters The parameters object from
+     *                                                which to build the URL.
      *
      * @return string The full URL.
      */
-    public function getNonAuthenticationUrl(
-        $action,
-        \FACTFinder\Util\Parameters $parameters
-    ) {
-        $configuration = $this->configuration;
-
+    public function getNonAuthenticationUrl($action, \FACTFinder\Util\Parameters $parameters)
+    {
         $this->ensureChannelParameter($parameters);
 
-        $url = $this->buildAddress($action)
-             . (count($parameters) ? '?' : '') . $parameters->toJavaQueryString();
+        $url = $this->buildAddress($action) . (count($parameters) ? '?' : '') . $parameters->toJavaQueryString();
 
         return $url;
     }
@@ -69,110 +50,103 @@ class UrlBuilder
      * Note that this method may set a channel parameter if there is none
      * already.
      *
-     * @param string $action The action to be targeted on the FACT-Finder
-     *        server.
-     * @param FACTFinder\Util\Parameters $parameters The parameters object from
-     *        which to build the URL.
+     * @param string                      $action     The action to be targeted on the FACT-Finder
+     *                                                server.
+     * @param \FACTFinder\Util\Parameters $parameters The parameters object from
+     *                                                which to build the URL.
      *
      * @return string The full URL.
      *
-     * @throws Exception if no valid authentication type was configured.
+     * @throws \Exception
      */
-    public function getAuthenticationUrl(
-        $action,
-        \FACTFinder\Util\Parameters $parameters
-    ) {
+    public function getAuthenticationUrl($action, \FACTFinder\Util\Parameters $parameters)
+    {
         $this->ensureChannelParameter($parameters);
 
         $c = $this->configuration;
-        if ($c->isAdvancedAuthenticationType())
+        if ($c->isAdvancedAuthenticationType()) {
             return $this->getAdvancedAuthenticationUrl($action, $parameters);
-        else if ($c->isSimpleAuthenticationType())
+        } elseif ($c->isSimpleAuthenticationType()) {
             return $this->getSimpleAuthenticationUrl($action, $parameters);
-        else if ($c->isHttpAuthenticationType())
+        } elseif ($c->isHttpAuthenticationType()) {
             return $this->getHttpAuthenticationUrl($action, $parameters);
-        else
+        } else {
             throw new \Exception('Invalid authentication type configured.');
+        }
     }
 
     /**
      * Get URL with advanced authentication encryption.
      *
-     * @param string $action The action to be targeted on the FACT-Finder
-     *        server.
-     * @param FACTFinder\Util\Parameters $parameters The parameters object from
-     *        which to build the URL.
+     * @param string                      $action     The action to be targeted on the FACT-Finder
+     *                                                server.
+     * @param \FACTFinder\Util\Parameters $parameters The parameters object from
+     *                                                which to build the URL.
      *
      * @return string The full URL.
      */
-    protected function getAdvancedAuthenticationUrl(
-        $action,
-        \FACTFinder\Util\Parameters $parameters
-    ) {
+    protected function getAdvancedAuthenticationUrl($action, \FACTFinder\Util\Parameters $parameters)
+    {
         $configuration = $this->configuration;
 
-        $ts         = time() . '000'; //milliseconds needed
-        $prefix     = $configuration->getAuthenticationPrefix();
-        $postfix    = $configuration->getAuthenticationPostfix();
-        $hashedPW   = md5($prefix
-                    . $ts
-                    . md5($configuration->getPassword())
-                    . $postfix);
-        $authenticationParameters = 'timestamp=' . $ts
-                                  . '&username=' . $configuration->getUserName()
-                                  . '&password=' . $hashedPW;
+        $ts = time() . '000'; //milliseconds needed
+        $prefix = $configuration->getAuthenticationPrefix();
+        $postfix = $configuration->getAuthenticationPostfix();
+        $hashedPW = md5(
+            $prefix
+            . $ts
+            . md5($configuration->getPassword())
+            . $postfix
+        );
+        $authenticationParameters = 'timestamp=' . $ts . '&username=' . $configuration->getUserName() . '&password='
+            . $hashedPW;
 
-        $url = $this->buildAddress($action)
-             . '?' . $parameters->toJavaQueryString()
-             . (count($parameters) ? '&' : '') . $authenticationParameters;
+        $url = $this->buildAddress($action) . '?' . $parameters->toJavaQueryString()
+            . (count($parameters) ? '&' : '') . $authenticationParameters;
 
-        $this->log->info("Request Url: " . $url);
+        $this->logger && $this->logger->info('Request Url: ' . $url);
         return $url;
     }
 
     /**
      * Get URL with simple authentication encryption.
      *
-     * @param string $action The action to be targeted on the FACT-Finder
-     *        server.
-     * @param FACTFinder\Util\Parameters $parameters The parameters object from
-     *        which to build the URL.
+     * @param string                      $action     The action to be targeted on the FACT-Finder
+     *                                                server.
+     * @param \FACTFinder\Util\Parameters $parameters The parameters object from
+     *                                                which to build the URL.
      *
      * @return string The full URL.
      */
-    protected function getSimpleAuthenticationUrl(
-        $action,
-        \FACTFinder\Util\Parameters $parameters
-    ) {
+    protected function getSimpleAuthenticationUrl($action, \FACTFinder\Util\Parameters $parameters)
+    {
         $configuration = $this->configuration;
 
         $ts = time() . '000'; //milliseconds needed but won't be considered
-        $authenticationParameters = "timestamp=" . $ts
-                        . '&username=' . $configuration->getUserName()
-                        . '&password=' . md5($configuration->getPassword());
+        $authenticationParameters = 'timestamp=' . $ts
+            . '&username=' . $configuration->getUserName()
+            . '&password=' . md5($configuration->getPassword());
 
         $url = $this->buildAddress($action)
-             . '?' . $parameters->toJavaQueryString()
-             . (count($parameters) ? '&' : '') . $authenticationParameters;
+            . '?' . $parameters->toJavaQueryString()
+            . (count($parameters) ? '&' : '') . $authenticationParameters;
 
-        $this->log->info("Request Url: " . $url);
+        $this->logger && $this->logger->info('Request Url: ' . $url);
         return $url;
     }
 
     /**
      * Get URL with HTTP authentication.
      *
-     * @param string $action The action to be targeted on the FACT-Finder
-     *        server.
-     * @param FACTFinder\Util\Parameters $parameters The parameters object from
-     *        which to build the URL.
+     * @param string                      $action     The action to be targeted on the FACT-Finder
+     *                                                server.
+     * @param \FACTFinder\Util\Parameters $parameters The parameters object from
+     *                                                which to build the URL.
      *
      * @return string The full URL.
      */
-    protected function getHttpAuthenticationUrl(
-        $action,
-        \FACTFinder\Util\Parameters $parameters
-    ) {
+    protected function getHttpAuthenticationUrl($action, \FACTFinder\Util\Parameters $parameters)
+    {
         $configuration = $this->configuration;
 
         $authentication = sprintf(
@@ -180,12 +154,14 @@ class UrlBuilder
             $configuration->getUserName(),
             $configuration->getPassword()
         );
-        if ($authentication == ':@') $authentication = '';
+        if ($authentication == ':@') {
+            $authentication = '';
+        }
 
         $url = $this->buildAddress($action, true)
-             . (count($parameters) ? '?' : '') . $parameters->toJavaQueryString();
+            . (count($parameters) ? '?' : '') . $parameters->toJavaQueryString();
 
-        $this->log->info("Request Url: " . $url);
+        $this->logger && $this->logger->info('Request Url: ' . $url);
         return $url;
     }
 
@@ -193,13 +169,12 @@ class UrlBuilder
      * If no channel is set, try to fill it from configuration data.
      *
      * @param FACTFinder\Util\Parameters $parameters The parameters object to
-     *        check.
+     *                                               check.
      */
-    protected function ensureChannelParameter($parameters) {
-        if ((!isset($parameters['channel'])
-            || $parameters['channel'] == '')
-            && $this->configuration->getChannel() != ''
-        ) {
+    protected function ensureChannelParameter($parameters)
+    {
+        if ((!isset($parameters['channel']) || $parameters['channel'] == '')
+            && $this->configuration->getChannel() != '') {
             $parameters['channel'] = $this->configuration->getChannel();
         }
     }
@@ -209,21 +184,14 @@ class UrlBuilder
         $configuration = $this->configuration;
 
         $authentication = '';
-        if ($includeHttpAuthentication
-            && $configuration->getUserName() != ''
-            && $configuration->getPassword() != ''
-        ) {
-            $authentication = sprintf(
-                '%s:%s@',
-                $configuration->getUserName(),
-                $configuration->getPassword()
-            );
+        if ($includeHttpAuthentication && $configuration->getUserName() != '' && $configuration->getPassword() != '') {
+            $authentication = sprintf('%s:%s@', $configuration->getUserName(), $configuration->getPassword());
         }
 
         return $configuration->getRequestProtocol() . '://'
-             . $authentication . $configuration->getServerAddress()
-             . ':' . $configuration->getServerPort()
-             . '/' . $configuration->getContext()
-             . '/' . $action;
+            . $authentication . $configuration->getServerAddress()
+            . ':' . $configuration->getServerPort()
+            . '/' . $configuration->getContext()
+            . '/' . $action;
     }
 }

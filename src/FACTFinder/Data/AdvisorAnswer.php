@@ -1,4 +1,5 @@
 <?php
+
 namespace FACTFinder\Data;
 
 class AdvisorAnswer extends Item
@@ -9,16 +10,13 @@ class AdvisorAnswer extends Item
     private $followUpQuestions;
 
     /**
-     * @param string $text The answer text to be displayed.
-     * @param string $url
+     * @param string            $text              The answer text to be displayed.
+     * @param string            $url
      * @param AdvisorQuestion[] $followUpQuestions Optional array of questions
-     *        that will follow this answer.
+     *                                             that will follow this answer.
      */
-    public function __construct(
-        $text,
-        $url,
-        $followUpQuestions = array()
-    ) {
+    public function __construct($text, $url, $followUpQuestions = [])
+    {
         parent::__construct($text, $url);
 
         $this->followUpQuestions = $followUpQuestions;
@@ -26,6 +24,7 @@ class AdvisorAnswer extends Item
 
     /**
      * This is just an alias.
+     *
      * @see Item::getLabel()
      */
     public function getText()
@@ -38,8 +37,9 @@ class AdvisorAnswer extends Item
      */
     public function addFollowUpQuestions(array $followUpQuestions)
     {
-        foreach ($followUpQuestions as $question)
+        foreach ($followUpQuestions as $question) {
             $this->followUpQuestions[] = $question;
+        }
     }
 
     /**

@@ -1,7 +1,8 @@
 <?php
+
 namespace FACTFinder\Core\Server;
 
-use \FACTFinder\Loader as FF;
+use FACTFinder\Loader as FF;
 
 /**
  * This implementation backs the Request with a MultiCurlDataProvider.
@@ -9,16 +10,9 @@ use \FACTFinder\Loader as FF;
 class MultiCurlRequestFactory implements RequestFactoryInterface
 {
     /**
-     * @var \FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-    private $loggerClass;
-
-    /**
      * @var \FACTFinder\Core\ConfigurationInterface
      */
     protected $configuration;
-
     /**
      * @var MultiCurlDataProvider
      */
@@ -30,30 +24,23 @@ class MultiCurlRequestFactory implements RequestFactoryInterface
     private $requestParameters;
 
     /**
-     * @param string $loggerClass
      * @param \FACTFinder\Core\ConfigurationInterface $configuration
-     * @param \FACTFinder\Util\Parameters $requestParameters
-     * @param \FACTFinder\Util\CurlInterface $curl Optional. If omitted, an
-     *        instance of \FACTFinder\Util\Curl will be used.
+     * @param \FACTFinder\Util\Parameters             $requestParameters
+     * @param \FACTFinder\Util\CurlInterface          $curl Optional. If omitted, an
+     *                                                      instance of \FACTFinder\Util\Curl will be used.
      */
     public function __construct(
-        $loggerClass,
         \FACTFinder\Core\ConfigurationInterface $configuration,
         \FACTFinder\Util\Parameters $requestParameters,
         \FACTFinder\Util\CurlInterface $curl = null
     ) {
-        $this->loggerClass = $loggerClass;
-        $this->log = $loggerClass::getLogger(__CLASS__);
         $this->configuration = $configuration;
 
-        $urlBuilder = FF::getInstance('Core\Server\UrlBuilder',
-            $loggerClass,
-            $configuration
-        );
-        $this->dataProvider = FF::getInstance('Core\Server\MultiCurlDataProvider',
-            $loggerClass,
+        $urlBuilder = FF::getInstance('Core\Server\UrlBuilder', $configuration);
+        $this->dataProvider = FF::getInstance(
+            'Core\Server\MultiCurlDataProvider',
             $configuration,
-            is_null($curl) ? FF::getInstance('Util\Curl') : $curl,
+            null === $curl ? FF::getInstance('Util\Curl') : $curl,
             $urlBuilder
         );
 
@@ -62,18 +49,12 @@ class MultiCurlRequestFactory implements RequestFactoryInterface
 
     /**
      * Returns a request object all wired up and ready for use.
+     *
      * @return Request
      */
     public function getRequest()
     {
-        $connectionData = FF::getInstance(
-            'Core\Server\ConnectionData',
-            clone $this->requestParameters
-        );
-        return FF::getInstance('Core\Server\Request',
-            $this->loggerClass,
-            $connectionData,
-            $this->dataProvider
-        );
+        $connectionData = FF::getInstance('Core\Server\ConnectionData', clone $this->requestParameters);
+        return FF::getInstance('Core\Server\Request', $connectionData, $this->dataProvider);
     }
 }
