@@ -42,17 +42,17 @@ abstract class AbstractAdapter
     /**
      * @var \FACTFinder\Util\ContentProcessorInterface
      */
-    private $responseContentProcessor;
+    protected $responseContentProcessor;
 
     /**
      * @var \FACTFinder\Core\Server\Response
      */
-    private $lastResponse = null;
+    protected $lastResponse = null;
 
     /**
      * @var object The processed response content.
      */
-    private $responseContent = null;
+    protected $responseContent = null;
 
     /**
      * @param string $loggerClass Class name of logger to use. The class should

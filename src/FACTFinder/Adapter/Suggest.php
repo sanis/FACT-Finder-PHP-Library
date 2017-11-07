@@ -60,6 +60,12 @@ class Suggest extends AbstractAdapter
 
         $this->parameters['format'] = 'json';
         $suggestData = $this->getResponseContent();
+
+        /** workaround for fact-finder 7.2 */
+        if (isset($suggestData['suggestions'])) {
+            $suggestData = $suggestData['suggestions'];
+        }
+
         if (!empty($suggestData))
         {
             foreach ($suggestData as $suggestQueryData)
@@ -117,5 +123,28 @@ class Suggest extends AbstractAdapter
             $this->parameters['callback'] = $callback;
 
         return $this->getResponseContent();
+    }
+
+    protected function getResponseContent()
+    {
+        $response = $this->request->getResponse();
+
+        // Only reprocess the response content, if the response is new.
+        if (is_null($this->responseContent) || $response !== $this->lastResponse) {
+            $content = $response->getContent();
+
+            /** Workaround for fact-finder 7.2 */
+            $contentDecoded = json_decode($content, true);
+            if (isset($contentDecoded['suggestions'])) {
+                $content = json_encode($contentDecoded['suggestions']);
+            }
+
+            // PHP does not (yet?) support $this->method($args) for callable
+            // properties
+            $this->responseContent = $this->responseContentProcessor->__invoke($content);
+            $this->lastResponse = $response;
+        }
+
+        return $this->responseContent;
     }
 }
