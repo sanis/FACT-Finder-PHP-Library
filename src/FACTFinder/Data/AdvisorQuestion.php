@@ -12,7 +12,7 @@ class AdvisorQuestion
     /**
      * @var AdvisorAnswer[]
      */
-    private $answer;
+    private $answers;
 
     /**
      * @param string          $text

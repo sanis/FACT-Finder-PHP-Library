@@ -197,9 +197,7 @@ class Search extends PersonalisedResponse
             $rppData = $jsonData['searchResult']['resultsPerPageList'];
             if (!empty($rppData)) {
                 foreach ($rppData as $optionData) {
-                    $optionLink = $this->convertServerQueryToClientUrl(
-                        $optionData['searchParams']
-                    );
+                    $optionLink = $this->convertServerQueryToClientUrl($optionData['searchParams']);
 
                     $option = FF::getInstance('Data\Item', $optionData['value'], $optionLink, $optionData['selected']);
 
@@ -410,9 +408,7 @@ class Search extends PersonalisedResponse
                 $item = FF::getInstance(
                     'Data\SingleWordSearchItem',
                     $swsData['word'],
-                    $this->convertServerQueryToClientUrl(
-                        $swsData['searchParams']
-                    ),
+                    $this->convertServerQueryToClientUrl($swsData['searchParams']),
                     $swsData['recordCount']
                 );
 
@@ -543,9 +539,7 @@ class Search extends PersonalisedResponse
      */
     private function createFilter(array $filterData)
     {
-        $filterLink = $this->convertServerQueryToClientUrl(
-            $filterData['searchParams']
-        );
+        $filterLink = $this->convertServerQueryToClientUrl($filterData['searchParams']);
 
         return FF::getInstance(
             'Data\Filter',

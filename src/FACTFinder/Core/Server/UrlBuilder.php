@@ -3,6 +3,7 @@
 namespace FACTFinder\Core\Server;
 
 use FACTFinder\Core\ConfigurationInterface;
+use Psr\Log\LoggerAwareTrait;
 
 /**
  * Assembles URLs to the FACT-Finder server for different kinds of
@@ -10,6 +11,8 @@ use FACTFinder\Core\ConfigurationInterface;
  */
 class UrlBuilder
 {
+    use LoggerAwareTrait;
+
     /**
      * @var ConfigurationInterface
      */

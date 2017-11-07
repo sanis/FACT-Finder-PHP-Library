@@ -255,11 +255,7 @@ class ProductCampaign extends PersonalisedResponse
             $pushedProducts = [];
 
             foreach ($campaignData['pushedProductsRecords'] as $recordData) {
-                $pushedProducts[] = FF::getInstance(
-                    'Data\Record',
-                    (string)$recordData['id'],
-                    $recordData['record']
-                );
+                $pushedProducts[] = FF::getInstance('Data\Record', (string)$recordData['id'], $recordData['record']);
             }
 
             $campaign->addPushedProducts($pushedProducts);

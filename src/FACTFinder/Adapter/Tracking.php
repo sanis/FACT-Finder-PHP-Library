@@ -13,12 +13,7 @@ class Tracking extends AbstractAdapter
         \FACTFinder\Core\Client\UrlBuilder $urlBuilder,
         \FACTFinder\Core\AbstractEncodingConverter $encodingConverter = null
     ) {
-        parent::__construct(
-            $configuration,
-            $request,
-            $urlBuilder,
-            $encodingConverter
-        );
+        parent::__construct($configuration, $request, $urlBuilder, $encodingConverter);
 
         $this->request->setAction('Tracking.ff');
 
@@ -58,8 +53,7 @@ class Tracking extends AbstractAdapter
     {
         if (strlen($sid) > 0) {
             $this->parameters['sid'] = $sid;
-        } elseif (!isset($this->parameters['sid']) || '' === $this->parameters['sid']
-        ) {
+        } elseif (!isset($this->parameters['sid']) || '' === $this->parameters['sid']) {
             $this->parameters['sid'] = session_id();
         }
 
@@ -422,7 +416,14 @@ class Tracking extends AbstractAdapter
      *
      * @return boolean $success
      */
-    public function trackRecommendationClick($id, $mainId, $masterId = null, $sid = null, $cookieId = null, $userId = null) {
+    public function trackRecommendationClick(
+        $id,
+        $mainId,
+        $masterId = null,
+        $sid = null,
+        $cookieId = null,
+        $userId = null
+    ) {
         $this->setupRecommendationClickTracking($id, $mainId, $masterId, $sid, $cookieId, $userId);
         return $this->applyTracking();
     }
@@ -475,7 +476,8 @@ class Tracking extends AbstractAdapter
      *
      * @return boolean $success
      */
-    public function trackLogin($sid = null, $cookieId = null, $userId = null) {
+    public function trackLogin($sid = null, $cookieId = null, $userId = null)
+    {
         $this->setupLoginTracking($sid, $cookieId, $userId);
         return $this->applyTracking();
     }
@@ -485,7 +487,8 @@ class Tracking extends AbstractAdapter
      * the request. This is particularly useful when using the
      * MultiCurlRequestFactory.
      */
-    public function setupLoginTracking($sid = null, $cookieId = null, $userId = null) {
+    public function setupLoginTracking($sid = null, $cookieId = null, $userId = null)
+    {
         if ('' === $sid) {
             $sid = session_id();
         }

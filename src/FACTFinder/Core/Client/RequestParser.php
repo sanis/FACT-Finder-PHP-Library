@@ -42,10 +42,7 @@ class RequestParser
     ) {
         $this->configuration = $configuration;
         $this->encodingConverter = $encodingConverter;
-        $this->parametersConverter = FF::getInstance(
-            'Core\ParametersConverter',
-            $configuration
-        );
+        $this->parametersConverter = FF::getInstance('Core\ParametersConverter', $configuration);
     }
 
     /**
@@ -62,9 +59,7 @@ class RequestParser
         if (null === $this->serverRequestParameters) {
             $clientParameters = $this->getClientRequestParameters();
             $this->serverRequestParameters =
-                $this->parametersConverter->convertClientToServerParameters(
-                    $clientParameters
-                );
+                $this->parametersConverter->convertClientToServerParameters($clientParameters);
         }
 
         return $this->serverRequestParameters;
@@ -136,9 +131,9 @@ class RequestParser
             }
 
             // Convert encoding and then the parameters themselves
-            $this->clientRequestParameters = $this->encodingConverter != null ? $this->encodingConverter->decodeClientUrlData(
-                $parameters
-            ) : $parameters;
+            $this->clientRequestParameters =
+                $this->encodingConverter != null
+                    ? $this->encodingConverter->decodeClientUrlData($parameters) : $parameters;
 
         }
 

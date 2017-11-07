@@ -27,9 +27,7 @@ abstract class AbstractDataProvider
      */
     protected $connectionData;
 
-    public function __construct(
-        \FACTFinder\Core\ConfigurationInterface $configuration
-    ) {
+    public function __construct(\FACTFinder\Core\ConfigurationInterface $configuration) {
         $this->configuration = $configuration;
 
         $this->connectionData = [];

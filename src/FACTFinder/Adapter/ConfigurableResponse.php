@@ -28,12 +28,7 @@ abstract class ConfigurableResponse extends AbstractAdapter
         \FACTFinder\Core\Client\UrlBuilder $urlBuilder,
         \FACTFinder\Core\AbstractEncodingConverter $encodingConverter = null
     ) {
-        parent::__construct(
-            $configuration,
-            $request,
-            $urlBuilder,
-            $encodingConverter
-        );
+        parent::__construct($configuration, $request, $urlBuilder, $encodingConverter);
     }
 
     /**

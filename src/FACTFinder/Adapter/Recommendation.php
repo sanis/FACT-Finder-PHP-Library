@@ -17,12 +17,7 @@ class Recommendation extends PersonalisedResponse
         \FACTFinder\Core\Client\UrlBuilder $urlBuilder,
         \FACTFinder\Core\AbstractEncodingConverter $encodingConverter = null
     ) {
-        parent::__construct(
-            $configuration,
-            $request,
-            $urlBuilder,
-            $encodingConverter
-        );
+        parent::__construct($configuration, $request, $urlBuilder, $encodingConverter);
 
         $this->request->setAction('Recommender.ff');
         $this->parameters['do'] = 'getRecommendation';
@@ -89,9 +84,7 @@ class Recommendation extends PersonalisedResponse
      */
     public function getRecommendations()
     {
-        if (null === $this->recommendations
-            || !$this->upToDate
-        ) {
+        if (null === $this->recommendations || !$this->upToDate) {
             $this->request->resetLoaded();
             $this->recommendations = $this->createRecommendations();
             $this->upToDate = true;

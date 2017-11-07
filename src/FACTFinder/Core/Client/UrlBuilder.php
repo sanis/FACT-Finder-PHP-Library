@@ -35,10 +35,7 @@ class UrlBuilder
         \FACTFinder\Core\Client\RequestParser $requestParser,
         \FACTFinder\Core\AbstractEncodingConverter $encodingConverter = null
     ) {
-        $this->parametersConverter = FF::getInstance(
-            'Core\ParametersConverter',
-            $configuration
-        );
+        $this->parametersConverter = FF::getInstance('Core\ParametersConverter', $configuration);
         $this->requestParser = $requestParser;
         $this->encodingConverter = $encodingConverter;
     }
@@ -63,9 +60,8 @@ class UrlBuilder
     {
         $parameters = $this->parametersConverter->convertServerToClientParameters($parameters);
 
-        $parameters = $this->encodingConverter != null ? $this->encodingConverter->encodeClientUrlData(
-            $parameters
-        ) : $parameters;
+        $parameters = $this->encodingConverter != null
+            ? $this->encodingConverter->encodeClientUrlData($parameters) : $parameters;
 
         if (!is_string($target)) {
             $target = $this->requestParser->getRequestTarget();
