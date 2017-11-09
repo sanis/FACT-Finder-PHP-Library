@@ -118,7 +118,11 @@ abstract class AbstractEncodingConverter
     protected function convert_recursive($inCharset, $outCharset, $data)
     {
         if ($data instanceof Parameters) {
-            $result = new Parameters($this->convert($inCharset, $outCharset, $data->getArray()));
+            if (count($data->getArray()) == 1 && current(array_keys($data->getArray())) == '') {
+                $result = $data;
+            } else {
+                $result = new Parameters($this->convert($inCharset, $outCharset, $data->getArray()));
+            }
         } elseif (is_array($data)) {
             $result = [];
             foreach ($data as $k => $v) {
