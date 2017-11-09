@@ -2,8 +2,6 @@
 
 namespace FACTFinder\Core\Server;
 
-use FACTFinder\Loader as FF;
-
 /**
  * This implementation retrieves the FACT-Finder data by using the cURL's "multi
  * interface".
@@ -181,7 +179,7 @@ class MultiCurlDataProvider extends AbstractDataProvider
                 . 'Setting a empty responses...'
             );
             foreach ($connectionsToFetch as $id => $data) {
-                $data['connection']->setResponse(FF::getInstance('Core\Server\NullResponse'), $data['url']);
+                $data['connection']->setResponse(new NullResponse());
             }
         }
 
@@ -194,7 +192,7 @@ class MultiCurlDataProvider extends AbstractDataProvider
                     "curl_init() did not return a handle for ID $id. "
                     . 'Setting an empty response...'
                 );
-                $data['connection']->setResponse(FF::getInstance('Core\Server\NullResponse'), $data['url']);
+                $data['connection']->setResponse(new NullResponse());
             }
 
             // We cannot use array_merge() here, because that does not preserve
@@ -263,7 +261,7 @@ class MultiCurlDataProvider extends AbstractDataProvider
             $curl->multi_remove_handle($multiHandle, $data['handle']);
             $this->curl->close($data['handle']);
 
-            $response = FF::getInstance('Core\Server\Response', $responseText, $httpCode, $curlErrorNumber, $curlError);
+            $response = new Response($responseText, $httpCode, $curlErrorNumber, $curlError);
 
             $data['connection']->setResponse($response, $data['url']);
             $this->logResult($response);
@@ -287,7 +285,7 @@ class MultiCurlDataProvider extends AbstractDataProvider
     {
         $connectionData = $this->connectionData[$id];
 
-        if (FF::isInstanceOf($connectionData->getResponse(), 'Core\Server\NullResponse')) {
+        if ($connectionData->getResponse() instanceof NullResponse) {
             return true;
         }
 

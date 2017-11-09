@@ -12,13 +12,10 @@ class ResultsPerPageOptions extends \ArrayIterator
     /**
      * @var Item
      */
-    private $selectOption;
+    private $selectedOption;
 
-    public function __construct(
-        array $options,
-        Item $defaultOption = null,
-        Item $selectedOption = null
-    ) {
+    public function __construct(array $options, Item $defaultOption = null, Item $selectedOption = null)
+    {
         parent::__construct($options);
 
         if (null !== $defaultOption) {

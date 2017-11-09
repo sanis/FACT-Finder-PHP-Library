@@ -31,11 +31,8 @@ class Item
      * @param string $url
      * @param bool   $isSelected
      */
-    public function __construct(
-        $label,
-        $url,
-        $isSelected = false
-    ) {
+    public function __construct($label, $url, $isSelected = false)
+    {
         $this->label = (string)$label;
         $this->url = (string)$url;
         $this->selected = (bool)$isSelected;

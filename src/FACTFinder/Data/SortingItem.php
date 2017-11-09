@@ -2,8 +2,6 @@
 
 namespace FACTFinder\Data;
 
-use FACTFinder\Loader as FF;
-
 /**
  * Represents a particular clickable sorting.
  */
@@ -51,8 +49,7 @@ class SortingItem extends Item
      */
     public function isAscending()
     {
-        $orderEnum = FF::getClassName('Data\SortingDirection');
-        return $this->order == $orderEnum::Ascending();
+        return $this->order == SortingDirection::Ascending();
     }
 
     /**
@@ -60,7 +57,6 @@ class SortingItem extends Item
      */
     public function isDescending()
     {
-        $orderEnum = FF::getClassName('Data\SortingDirection');
-        return $this->order == $orderEnum::Descending();
+        return $this->order == SortingDirection::Descending();
     }
 }

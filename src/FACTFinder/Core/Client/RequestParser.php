@@ -5,7 +5,6 @@ namespace FACTFinder\Core\Client;
 use FACTFinder\Core\AbstractEncodingConverter;
 use FACTFinder\Core\ConfigurationInterface;
 use FACTFinder\Core\ParametersConverter;
-use FACTFinder\Loader as FF;
 use FACTFinder\Util\Parameters;
 use Psr\Log\LoggerAwareTrait;
 
@@ -42,7 +41,7 @@ class RequestParser
     ) {
         $this->configuration = $configuration;
         $this->encodingConverter = $encodingConverter;
-        $this->parametersConverter = FF::getInstance('Core\ParametersConverter', $configuration);
+        $this->parametersConverter = new ParametersConverter($configuration);
     }
 
     /**
@@ -87,7 +86,7 @@ class RequestParser
                 //       lead to the same result as in $_REQUEST (save for
                 //       $_COOKIE variables). This todo also goes for the second
                 //       alternative.
-                $parameters = FF::getInstance('Util\Parameters', $_SERVER['QUERY_STRING']);
+                $parameters = new Parameters($_SERVER['QUERY_STRING']);
 
                 $data = $_POST;
 
@@ -111,13 +110,10 @@ class RequestParser
                 // Don't use $_REQUEST, because it also contains $_COOKIE.
                 // Note that we don't have to URL decode here, because _GET is
                 // already URL decoded.
-                $parameters = FF::getInstance(
-                    'Util\Parameters',
-                    array_merge($_POST, $_GET)
-                );
+
+                $parameters = new Parameters(array_merge($_POST, $_GET));
             } else {
-                // For CLI use:
-                $parameters = FF::getInstance('Util\Parameters');
+                $parameters = new Parameters();
             }
 
             if (isset($_SERVER['REQUEST_URI'])) {

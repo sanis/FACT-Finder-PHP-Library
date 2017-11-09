@@ -2,8 +2,6 @@
 
 namespace FACTFinder\Core\Server;
 
-use FACTFinder\Loader as FF;
-
 /**
  * This implementation retrieves the FACT-Finder data by using the "easy cURL
  * interface" (I didn't even make that up; that's what cURL itself calls it:
@@ -144,7 +142,7 @@ class EasyCurlDataProvider extends AbstractDataProvider
                 "curl_init() did not return a handle for ID $id. "
                 . 'Setting an empty response...'
             );
-            return FF::getInstance('Core\Server\NullResponse');
+            return new NullResponse();
         }
 
         // We cannot use array_merge() here, because that does not preserve
@@ -162,7 +160,7 @@ class EasyCurlDataProvider extends AbstractDataProvider
 
         $this->curl->close($curlHandle);
 
-        return FF::getInstance('Core\Server\Response', $responseText, $httpCode, $curlErrorNumber, $curlError);
+        return new Response($responseText, $httpCode, $curlErrorNumber, $curlError);
     }
 
     private function logResult($response)
@@ -182,7 +180,8 @@ class EasyCurlDataProvider extends AbstractDataProvider
     {
         $connectionData = $this->connectionData[$id];
 
-        if (FF::isInstanceOf($connectionData->getResponse(), 'Core\Server\NullResponse')) {
+
+        if ($connectionData->getResponse() instanceof NullResponse) {
             return true;
         }
 

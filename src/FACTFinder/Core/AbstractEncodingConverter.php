@@ -2,7 +2,7 @@
 
 namespace FACTFinder\Core;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Util\Parameters;
 
 /**
  * Takes care of differences in encoding between different participants of the
@@ -117,8 +117,8 @@ abstract class AbstractEncodingConverter
      */
     protected function convert_recursive($inCharset, $outCharset, $data)
     {
-        if (FF::isInstanceOf($data, 'Util\Parameters')) {
-            $result = FF::getInstance('Util\Parameters', $this->convert($inCharset, $outCharset, $data->getArray()));
+        if ($data instanceof Parameters) {
+            $result = new Parameters($this->convert($inCharset, $outCharset, $data->getArray()));
         } elseif (is_array($data)) {
             $result = [];
             foreach ($data as $k => $v) {

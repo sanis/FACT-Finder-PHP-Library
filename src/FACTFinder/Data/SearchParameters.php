@@ -40,9 +40,8 @@ class SearchParameters
      * @param \FACTFinder\Util\Parameters $parameters The server parameters used for the current
      *                                                request.
      */
-    public function __construct(
-        \FACTFinder\Util\Parameters $parameters
-    ) {
+    public function __construct(\FACTFinder\Util\Parameters $parameters)
+    {
         $this->query = isset($parameters['query']) ? $parameters['query'] : '';
 
         $this->seoPath = isset($parameters['seoPath']) ? $parameters['seoPath'] : '';
@@ -50,19 +49,11 @@ class SearchParameters
         // Properly prepared server parameters will always have a channel set
         $this->channel = $parameters['channel'];
 
-        $this->advisorStatus = isset($parameters['advisorStatus'])
-            ? $parameters['advisorStatus']
-            : '';
+        $this->advisorStatus = isset($parameters['advisorStatus']) ? $parameters['advisorStatus'] : '';
 
-        $this->productsPerPage = isset($parameters['productsPerPage'])
-            ? $parameters['productsPerPage']
-            : -1;
-        $this->currentPage = isset($parameters['page'])
-            ? $parameters['page']
-            : 1;
-        $this->followSearch = isset($parameters['followSearch'])
-            ? $parameters['followSearch']
-            : 0;
+        $this->productsPerPage = isset($parameters['productsPerPage']) ? $parameters['productsPerPage'] : -1;
+        $this->currentPage = isset($parameters['page']) ? $parameters['page'] : 1;
+        $this->followSearch = isset($parameters['followSearch']) ? $parameters['followSearch'] : 0;
 
         $this->navigationEnabled = (isset($parameters['catalog']) && $parameters['catalog'] == 'true')
             || (isset($parameters['navigation']) && $parameters['navigation'] == 'true');

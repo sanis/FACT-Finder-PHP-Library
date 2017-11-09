@@ -2,7 +2,8 @@
 
 namespace FACTFinder\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Data\Record;
+use FACTFinder\Data\Result;
 
 class Compare extends ConfigurableResponse
 {
@@ -115,17 +116,11 @@ class Compare extends ConfigurableResponse
             $jsonData = $this->getResponseContent();
             if (parent::isValidResponse($jsonData)) {
                 foreach ($jsonData['records'] as $recordData) {
-                    $records[] = FF::getInstance(
-                        'Data\Record',
-                        (string)$recordData['id'],
-                        $recordData['record'],
-                        100.0,
-                        $position++
-                    );
+                    $records[] = new Record((string)$recordData['id'], $recordData['record'], 100.0, $position++);
                 }
             }
         }
 
-        return FF::getInstance('Data\Result', $records, null, count($records));
+        return new Result($records, null, count($records));
     }
 }

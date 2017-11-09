@@ -2,7 +2,7 @@
 
 namespace FACTFinder\Core\Server;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Util\Curl;
 
 /**
  * This implementation backs the Request with a MultiCurlDataProvider.
@@ -36,11 +36,11 @@ class MultiCurlRequestFactory implements RequestFactoryInterface
     ) {
         $this->configuration = $configuration;
 
-        $urlBuilder = FF::getInstance('Core\Server\UrlBuilder', $configuration);
-        $this->dataProvider = FF::getInstance(
-            'Core\Server\MultiCurlDataProvider',
+        $urlBuilder = new UrlBuilder($configuration);
+
+        $this->dataProvider = new MultiCurlDataProvider(
             $configuration,
-            null === $curl ? FF::getInstance('Util\Curl') : $curl,
+            null === $curl ? new Curl() : $curl,
             $urlBuilder
         );
 
@@ -54,7 +54,7 @@ class MultiCurlRequestFactory implements RequestFactoryInterface
      */
     public function getRequest()
     {
-        $connectionData = FF::getInstance('Core\Server\ConnectionData', clone $this->requestParameters);
-        return FF::getInstance('Core\Server\Request', $connectionData, $this->dataProvider);
+        $connectionData = new ConnectionData(clone $this->requestParameters);
+        return new Request($connectionData, $this->dataProvider);
     }
 }

@@ -45,8 +45,7 @@ class SliderFilter extends Filter
         $selectedMinimum = 0,
         $selectedMaximum = 0
     ) {
-        $selected = $selectedMinimum != $absoluteMinimum
-            || $selectedMaximum != $absoluteMaximum;
+        $selected = $selectedMinimum != $absoluteMinimum || $selectedMaximum != $absoluteMaximum;
         parent::__construct('', $baseUrl, $selected, $fieldName);
 
         $this->absoluteMinimum = $absoluteMinimum;
@@ -63,8 +62,7 @@ class SliderFilter extends Filter
      */
     public function getBaseUrl()
     {
-        return parent::getUrl() . '&'
-            . 'filter' . $this->getFieldName() . '=';
+        return parent::getUrl() . '&' . 'filter' . $this->getFieldName() . '=';
     }
 
     /**
@@ -75,8 +73,7 @@ class SliderFilter extends Filter
      */
     public function getUrl()
     {
-        return $this->getBaseUrl() . $this->selectedMinimum
-            . '-' . $this->selectedMaximum;
+        return $this->getBaseUrl() . $this->selectedMinimum . '-' . $this->selectedMaximum;
     }
 
     /**

@@ -21,10 +21,8 @@ class Result extends \ArrayIterator
      *                                    single page, while $foundRecordsCount refers to all records found
      *                                    by the search.
      */
-    public function __construct(
-        array $records,
-        $foundRecordsCount = 0
-    ) {
+    public function __construct(array $records, $foundRecordsCount = 0)
+    {
         parent::__construct($records);
         $this->foundRecordsCount = (int)$foundRecordsCount;
     }

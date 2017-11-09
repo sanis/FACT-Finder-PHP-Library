@@ -12,18 +12,16 @@ class SingleWordSearchItem extends SuggestQuery
      */
     private $previewRecords = [];
 
-    public function addPreviewRecord(
-        Record $record
-    ) {
+    public function addPreviewRecord(Record $record)
+    {
         $this->previewRecords[] = $record;
     }
 
     /**
      * @param Record[]
      */
-    public function addPreviewRecords(
-        array $records
-    ) {
+    public function addPreviewRecords(array $records)
+    {
         foreach ($records as $record) {
             $this->addPreviewRecord($record);
         }

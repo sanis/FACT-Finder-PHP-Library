@@ -2,19 +2,20 @@
 
 namespace FACTFinder\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Data\TagQuery;
+use FACTFinder\Util\Parameters;
 
 class TagCloud extends AbstractAdapter
 {
     /**
-     * @var FACTFinder\Data\TagQuery[]
+     * @var TagQuery[]
      */
     private $tagCloud;
 
     /**
      * @var string
      */
-    private $lastRequestQuery = null;
+    private $lastRequestQuery;
 
     public function __construct(
         \FACTFinder\Core\ConfigurationInterface $configuration,
@@ -80,11 +81,11 @@ class TagCloud extends AbstractAdapter
                 // TODO: Once JIRA issue FF-5328 is fixed, retrieve the
                 //       parameters from searchParams, like all other adapters
                 //       do.
-                $parameters = FF::getInstance('Util\Parameters');
+
+                $parameters = new Parameters();
                 $parameters['query'] = $query;
 
-                $tagCloud[] = FF::getInstance(
-                    'Data\TagQuery',
+                $tagCloud[] = new TagQuery(
                     $query,
                     $this->urlBuilder->generateUrl($parameters),
                     $requestQuery == $query,

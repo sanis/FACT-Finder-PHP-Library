@@ -2,8 +2,6 @@
 
 namespace FACTFinder\Util;
 
-use FACTFinder\Loader as FF;
-
 /**
  * Stubs the cURL interface without issuing any network requests.
  */
@@ -151,7 +149,7 @@ class CurlStub implements CurlInterface
     {
         $ch = ++$this->lastHandle;
 
-        $handle = FF::getInstance('Util\CurlHandle');
+        $handle = new CurlHandle();
 
         $handle->options[CURLOPT_RETURNTRANSFER] = false;
 
@@ -279,7 +277,7 @@ class CurlStub implements CurlInterface
     {
         $mh = ++$this->lastHandle;
 
-        $handle = FF::getInstance('Util\CurlMultiHandle');
+        $handle = new CurlMultiHandle();
 
         $this->multiHandles[$mh] = $handle;
 

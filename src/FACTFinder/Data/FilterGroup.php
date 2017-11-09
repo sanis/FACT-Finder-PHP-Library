@@ -2,8 +2,6 @@
 
 namespace FACTFinder\Data;
 
-use FACTFinder\Loader as FF;
-
 /**
  * A group of filters within the After Search Navigation (ASN).
  */
@@ -69,14 +67,11 @@ class FilterGroup extends \ArrayIterator
         parent::__construct($filters);
 
         $this->name = (string)$name;
-        $filterStyleEnum = FF::getClassName('Data\FilterStyle');
-        $this->style = $style ?: $filterStyleEnum::Regular();
+        $this->style = $style ?: FilterStyle::Regular();
         $this->detailedLinkCount = (int)$detailedLinkCount;
         $this->unit = (string)$unit;
-        $filterSelectionTypeEnum = FF::getClassName('Data\FilterSelectionType');
-        $this->selectionType = $selectionType ?: $filterSelectionTypeEnum::SingleHideUnselected();
-        $filterTypeEnum = FF::getClassName('Data\FilterType');
-        $this->type = $type ?: $filterTypeEnum::Text();
+        $this->selectionType = $selectionType ?: FilterSelectionType::SingleHideUnselected();
+        $this->type = $type ?: FilterType::Text();
         $this->showPreviewImages = (bool)$showPreviewImages;
     }
 
@@ -93,8 +88,7 @@ class FilterGroup extends \ArrayIterator
      */
     public function isRegularStyle()
     {
-        $filterStyleEnum = FF::getClassName('Data\FilterStyle');
-        return $this->style == $filterStyleEnum::Regular();
+        return $this->style == FilterStyle::Regular();
     }
 
     /**
@@ -102,8 +96,7 @@ class FilterGroup extends \ArrayIterator
      */
     public function isSliderStyle()
     {
-        $filterStyleEnum = FF::getClassName('Data\FilterStyle');
-        return $this->style == $filterStyleEnum::Slider();
+        return $this->style == FilterStyle::Slider();
     }
 
     /**
@@ -111,8 +104,7 @@ class FilterGroup extends \ArrayIterator
      */
     public function isTreeStyle()
     {
-        $filterStyleEnum = FF::getClassName('Data\FilterStyle');
-        return $this->style == $filterStyleEnum::Tree();
+        return $this->style == FilterStyle::Tree();
     }
 
     /**
@@ -120,8 +112,7 @@ class FilterGroup extends \ArrayIterator
      */
     public function isMultiSelectStyle()
     {
-        $filterStyleEnum = FF::getClassName('Data\FilterStyle');
-        return $this->style == $filterStyleEnum::MultiSelect();
+        return $this->style == FilterStyle::MultiSelect();
     }
 
     /**
@@ -167,8 +158,7 @@ class FilterGroup extends \ArrayIterator
      */
     public function isSingleHideUnselectedType()
     {
-        $filterSelectionTypeEnum = FF::getClassName('Data\FilterSelectionType');
-        return $this->selectionType == $filterSelectionTypeEnum::SingleHideUnselected();
+        return $this->selectionType == FilterSelectionType::SingleHideUnselected();
     }
 
     /**
@@ -176,8 +166,7 @@ class FilterGroup extends \ArrayIterator
      */
     public function isSingleShowUnselectedType()
     {
-        $filterSelectionTypeEnum = FF::getClassName('Data\FilterSelectionType');
-        return $this->selectionType == $filterSelectionTypeEnum::SingleShowUnselected();
+        return $this->selectionType == FilterSelectionType::SingleShowUnselected();
     }
 
     /**
@@ -185,8 +174,7 @@ class FilterGroup extends \ArrayIterator
      */
     public function isMultiSelectOrType()
     {
-        $filterSelectionTypeEnum = FF::getClassName('Data\FilterSelectionType');
-        return $this->selectionType == $filterSelectionTypeEnum::MultiSelectOr();
+        return $this->selectionType == FilterSelectionType::MultiSelectOr();
     }
 
     /**
@@ -194,8 +182,7 @@ class FilterGroup extends \ArrayIterator
      */
     public function isMultiSelectAndType()
     {
-        $filterSelectionTypeEnum = FF::getClassName('Data\FilterSelectionType');
-        return $this->selectionType == $filterSelectionTypeEnum::MultiSelectAnd();
+        return $this->selectionType == FilterSelectionType::MultiSelectAnd();
     }
 
     /**
@@ -203,8 +190,7 @@ class FilterGroup extends \ArrayIterator
      */
     public function isTextType()
     {
-        $filterTypeEnum = FF::getClassName('Data\FilterType');
-        return $this->type == $filterTypeEnum::Text();
+        return $this->type == FilterType::Text();
     }
 
     /**
@@ -212,8 +198,7 @@ class FilterGroup extends \ArrayIterator
      */
     public function isNumberType()
     {
-        $filterTypeEnum = FF::getClassName('Data\FilterType');
-        return $this->type == $filterTypeEnum::Number();
+        return $this->type == FilterType::Number();
     }
 
 }

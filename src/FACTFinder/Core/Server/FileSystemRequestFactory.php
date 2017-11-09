@@ -2,8 +2,6 @@
 
 namespace FACTFinder\Core\Server;
 
-use FACTFinder\Loader as FF;
-
 /**
  * This implementation backs the Request with a FileSystemDataProvider.
  */
@@ -29,7 +27,7 @@ class FileSystemRequestFactory implements RequestFactoryInterface
     ) {
         $this->configuration = $configuration;
 
-        $this->dataProvider = FF::getInstance('Core\Server\FileSystemDataProvider', $configuration);
+        $this->dataProvider = new FileSystemDataProvider($configuration);
 
         $this->requestParameters = $requestParameters;
     }
@@ -46,8 +44,8 @@ class FileSystemRequestFactory implements RequestFactoryInterface
      */
     public function getRequest()
     {
-        $connectionData = FF::getInstance('Core\Server\ConnectionData', clone $this->requestParameters);
+        $connectionData = new ConnectionData(clone $this->requestParameters);
 
-        return FF::getInstance('Core\Server\Request', $connectionData, $this->dataProvider);
+        return new Request($connectionData, $this->dataProvider);
     }
 }

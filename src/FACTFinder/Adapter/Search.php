@@ -2,52 +2,80 @@
 
 namespace FACTFinder\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Data\AdvisorAnswer;
+use FACTFinder\Data\AdvisorQuestion;
+use FACTFinder\Data\AfterSearchNavigation;
+use FACTFinder\Data\ArticleNumberSearchStatus;
+use FACTFinder\Data\BreadCrumb;
+use FACTFinder\Data\BreadCrumbTrail;
+use FACTFinder\Data\BreadCrumbType;
+use FACTFinder\Data\Campaign;
+use FACTFinder\Data\CampaignIterator;
+use FACTFinder\Data\Filter;
+use FACTFinder\Data\FilterGroup;
+use FACTFinder\Data\FilterSelectionType;
+use FACTFinder\Data\FilterStyle;
+use FACTFinder\Data\FilterType;
+use FACTFinder\Data\Item;
+use FACTFinder\Data\Page;
+use FACTFinder\Data\Paging;
+use FACTFinder\Data\Record;
+use FACTFinder\Data\Result;
+use FACTFinder\Data\ResultsPerPageOptions;
+use FACTFinder\Data\SearchParameters;
+use FACTFinder\Data\SearchStatus;
+use FACTFinder\Data\SingleWordSearchItem;
+use FACTFinder\Data\SliderFilter;
+use FACTFinder\Data\Sorting;
+use FACTFinder\Data\SortingDirection;
+use FACTFinder\Data\SortingItem;
+use FACTFinder\Data\SortingItems;
+use FACTFinder\Util\Parameters;
 
 class Search extends PersonalisedResponse
 {
     /**
-     * @var FACTFinder\Data\Result
+     * @var Result
      */
     private $result;
 
     /**
-     * @var FACTFinder\Data\SingleWordSearchItem[]
+     * @var SingleWordSearchItem[]
      */
     private $singleWordSearch;
 
     /**
-     * @var FACTFinder\Data\AfterSearchNavigation
+     * @var AfterSearchNavigation
      */
     private $afterSearchNavigation;
 
     /**
-     * @var FACTFinder\Data\ResultsPerPageOptions
+     * @var ResultsPerPageOptions
      */
     private $resultsPerPageOptions;
 
     /**
-     * @var FACTFinder\Data\Paging
+     * @var Paging
      */
     private $paging;
 
     /**
-     * @var FACTFinder\Data\Sorting
+     * @var Sorting
      */
     private $sorting;
 
     /**
-     * @var FACTFinder\Data\SortingItems
+     * @var SortingItems
      */
     private $sortingItems;
 
     /**
-     * @var FACTFinder\Data\BreadCrumbTrail
+     * @var BreadCrumbTrail
      */
     private $breadCrumbTrail;
 
     /**
-     * @var FACTFinder\Data\CampaignIterator
+     * @var CampaignIterator
      */
     private $campaigns;
 
@@ -106,17 +134,16 @@ class Search extends PersonalisedResponse
      */
     public function getStatus()
     {
-        $searchStatusEnum = FF::getClassName('Data\SearchStatus');
-        $status = $searchStatusEnum::NoResult();
+        $status = SearchStatus::NoResult();
 
         $jsonData = $this->getResponseContent();
         if ($this->isValidResponse($jsonData)) {
             switch ($jsonData['searchResult']['resultStatus']) {
                 case 'nothingFound':
-                    $status = $searchStatusEnum::EmptyResult();
+                    $status = SearchStatus::EmptyResult();
                     break;
                 case 'resultsFound':
-                    $status = $searchStatusEnum::RecordsFound();
+                    $status = SearchStatus::RecordsFound();
                     break;
             }
         }
@@ -128,17 +155,16 @@ class Search extends PersonalisedResponse
      */
     public function getArticleNumberStatus()
     {
-        $articleNumberSearchStatusEnum = FF::getClassName('Data\ArticleNumberSearchStatus');
-        $status = $articleNumberSearchStatusEnum::IsNoArticleNumberSearch();
+        $status = ArticleNumberSearchStatus::IsNoArticleNumberSearch();
 
         $jsonData = $this->getResponseContent();
         if ($this->isValidResponse($jsonData)) {
             switch ($jsonData['searchResult']['resultArticleNumberStatus']) {
                 case 'resultsFound':
-                    $status = $articleNumberSearchStatusEnum::IsArticleNumberResultFound();
+                    $status = ArticleNumberSearchStatus::IsArticleNumberResultFound();
                     break;
                 case 'nothingFound':
-                    $status = $articleNumberSearchStatusEnum::IsNoArticleNumberResultFound();
+                    $status = ArticleNumberSearchStatus::IsNoArticleNumberResultFound();
                     break;
             }
         }
@@ -199,7 +225,7 @@ class Search extends PersonalisedResponse
                 foreach ($rppData as $optionData) {
                     $optionLink = $this->convertServerQueryToClientUrl($optionData['searchParams']);
 
-                    $option = FF::getInstance('Data\Item', $optionData['value'], $optionLink, $optionData['selected']);
+                    $option = new Item($optionData['value'], $optionLink, $optionData['selected']);
 
                     if ($optionData['default']) {
                         $defaultOption = $option;
@@ -211,7 +237,8 @@ class Search extends PersonalisedResponse
                     $options[] = $option;
                 }
             }
-            return FF::getInstance('Data\ResultsPerPageOptions', $options, $defaultOption, $selectedOption);
+
+            return new ResultsPerPageOptions($options, $defaultOption, $selectedOption);
         }
         return null;
     }
@@ -288,13 +315,14 @@ class Search extends PersonalisedResponse
         $jsonData = $this->getResponseContent();
         //use searchParams of result if available
         if ($this->isValidResponse($jsonData) && isset($jsonData['searchResult']['searchParams'])) {
-            $parameters = FF::getInstance('Util\Parameters', $jsonData['searchResult']['searchParams']);
+            $parameters = new Parameters($jsonData['searchResult']['searchParams']);
             //fallback to current request
         } else {
             $parameters = $this->parameters;
         }
-        $searchParameters = FF::getInstance('Data\SearchParameters', $parameters);
+        $searchParameters = new SearchParameters($parameters);
         $sorting = $searchParameters->getSortings();
+        $followSearch = 0;
         // check if followSearch was set in request data or sent by FF in result searchParams
         if ($searchParameters->getFollowSearch() !== 0) {
             $followSearch = $searchParameters->getFollowSearch();
@@ -305,9 +333,8 @@ class Search extends PersonalisedResponse
                 $followSearch = $jsonData['searchResult']['simiFirstRecord'];
             }
             //mark as not valid
-        } else {
-            $followSearch = 0;
         }
+
         return $followSearch;
     }
 
@@ -377,8 +404,7 @@ class Search extends PersonalisedResponse
                 foreach ($searchResultData['records'] as $recordData) {
                     $position = $recordData['position'];
 
-                    $record = FF::getInstance(
-                        'Data\Record',
+                    $record = new Record(
                         (string)$recordData['id'],
                         $recordData['record'],
                         $recordData['searchSimilarity'],
@@ -392,7 +418,7 @@ class Search extends PersonalisedResponse
             }
         }
 
-        return FF::getInstance('Data\Result', $records, $resultCount);
+        return new Result($records, $resultCount);
     }
 
     /**
@@ -405,8 +431,7 @@ class Search extends PersonalisedResponse
         $jsonData = $this->getResponseContent();
         if ($this->isValidResponse($jsonData) && !empty($jsonData['searchResult']['singleWordResults'])) {
             foreach ($jsonData['searchResult']['singleWordResults'] as $swsData) {
-                $item = FF::getInstance(
-                    'Data\SingleWordSearchItem',
+                $item = new SingleWordSearchItem(
                     $swsData['word'],
                     $this->convertServerQueryToClientUrl($swsData['searchParams']),
                     $swsData['recordCount']
@@ -414,8 +439,7 @@ class Search extends PersonalisedResponse
 
                 foreach ($swsData['previewRecords'] as $recordData) {
                     $item->addPreviewRecord(
-                        FF::getInstance(
-                            'Data\Record',
+                        new Record(
                             (string)$recordData['id'],
                             $recordData['record'],
                             $recordData['searchSimilarity'],
@@ -448,7 +472,7 @@ class Search extends PersonalisedResponse
             }
         }
 
-        return FF::getInstance('Data\AfterSearchNavigation', $filterGroups);
+        return new AfterSearchNavigation($filterGroups);
     }
 
     /**
@@ -461,25 +485,24 @@ class Search extends PersonalisedResponse
     {
         $elements = array_merge($groupData['selectedElements'], $groupData['elements']);
 
-        $filterStyleEnum = FF::getClassName('Data\FilterStyle');
         switch ($groupData['filterStyle']) {
             case 'SLIDER':
-                $filterStyle = $filterStyleEnum::Slider();
+                $filterStyle = FilterStyle::Slider();
                 break;
             case 'TREE':
-                $filterStyle = $filterStyleEnum::Tree();
+                $filterStyle = FilterStyle::Tree();
                 break;
             case 'MULTISELECT':
-                $filterStyle = $filterStyleEnum::MultiSelect();
+                $filterStyle = FilterStyle::MultiSelect();
                 break;
             default:
-                $filterStyle = $filterStyleEnum::Regular();
+                $filterStyle = FilterStyle::Regular();
                 break;
         }
 
         $filters = [];
         foreach ($elements as $filterData) {
-            if ($filterStyle == $filterStyleEnum::Slider()) {
+            if ($filterStyle == FilterStyle::Slider()) {
                 $filters[] = $this->createSliderFilter($filterData);
             } else {
                 $filters[] = $this->createFilter($filterData);
@@ -487,39 +510,36 @@ class Search extends PersonalisedResponse
         }
 
         $filterSelectionType = null;
-        $filterSelectionTypeEnum = FF::getClassName('Data\FilterSelectionType');
         if (isset($groupData['selectionType'])) {
             switch ($groupData['selectionType']) {
                 case 'multiSelectOr':
-                    $filterSelectionType = $filterSelectionTypeEnum::MultiSelectOr();
+                    $filterSelectionType = FilterSelectionType::MultiSelectOr();
                     break;
                 case 'multiSelectAnd':
-                    $filterSelectionType = $filterSelectionTypeEnum::MultiSelectAnd();
+                    $filterSelectionType = FilterSelectionType::MultiSelectAnd();
                     break;
                 case 'singleShowUnselected':
-                    $filterSelectionType = $filterSelectionTypeEnum::SingleShowUnselected();
+                    $filterSelectionType = FilterSelectionType::SingleShowUnselected();
                     break;
                 default:
-                    $filterSelectionType = $filterSelectionTypeEnum::SingleHideUnselected();
+                    $filterSelectionType = FilterSelectionType::SingleHideUnselected();
                     break;
             }
         }
 
         $filterType = null;
-        $filterTypeEnum = FF::getClassName('Data\FilterType');
         if (isset($groupData['type'])) {
             switch ($groupData['type']) {
                 case 'number':
-                    $filterType = $filterTypeEnum::Number();
+                    $filterType = FilterType::Number();
                     break;
                 default:
-                    $filterType = $filterTypeEnum::Text();
+                    $filterType = FilterType::Text();
                     break;
             }
         }
 
-        return FF::getInstance(
-            'Data\FilterGroup',
+        return new FilterGroup(
             $filters,
             $groupData['name'],
             $filterStyle,
@@ -541,8 +561,7 @@ class Search extends PersonalisedResponse
     {
         $filterLink = $this->convertServerQueryToClientUrl($filterData['searchParams']);
 
-        return FF::getInstance(
-            'Data\Filter',
+        return new Filter(
             $filterData['name'],
             $filterLink,
             $filterData['selected'],
@@ -600,8 +619,7 @@ class Search extends PersonalisedResponse
 
         $filterLink = $this->convertServerQueryToClientUrl($query);
 
-        return FF::getInstance(
-            'Data\SliderFilter',
+        return new SliderFilter(
             $filterLink,
             $fieldName,
             $filterData['absoluteMinValue'],
@@ -638,16 +656,10 @@ class Search extends PersonalisedResponse
             }
 
             if (!$currentPage) {
-                $currentPage = FF::getInstance(
-                    'Data\Page',
-                    $pagingData['currentPage'],
-                    $pagingData['currentPage'],
-                    '#',
-                    true
-                );
+                $currentPage = new Page($pagingData['currentPage'], $pagingData['currentPage'], '#', true);
             }
-            return FF::getInstance(
-                'Data\Paging',
+
+            return new Paging(
                 $pages,
                 $pageCount,
                 $currentPage,
@@ -672,17 +684,9 @@ class Search extends PersonalisedResponse
             return null;
         }
 
-        $pageLink = $this->convertServerQueryToClientUrl(
-            $pageData['searchParams']
-        );
+        $pageLink = $this->convertServerQueryToClientUrl($pageData['searchParams']);
 
-        return FF::getInstance(
-            'Data\Page',
-            $pageData['number'],
-            $pageData['caption'],
-            $pageLink,
-            $pageData['currentPage']
-        );
+        return new Page($pageData['number'], $pageData['caption'], $pageLink, $pageData['currentPage']);
     }
 
     /**
@@ -702,16 +706,11 @@ class Search extends PersonalisedResponse
                         $optionData['searchParams']
                     );
 
-                    $sortOptions[] = FF::getInstance(
-                        'Data\Item',
-                        $optionData['description'],
-                        $optionLink,
-                        $optionData['selected']
-                    );
+                    $sortOptions[] = new Item($optionData['description'], $optionLink, $optionData['selected']);
                 }
             }
 
-            return FF::getInstance('Data\Sorting', $sortOptions);
+            return new Sorting($sortOptions);
         }
         return null;
     }
@@ -728,25 +727,14 @@ class Search extends PersonalisedResponse
         if ($this->isValidResponse($jsonData)) {
             $sortingData = $jsonData['searchResult']['sortsList'];
             if (!empty($sortingData)) {
-                $orderEnum = FF::getClassName('Data\SortingDirection');
                 foreach ($sortingData as $optionData) {
-                    $optionLink = $this->convertServerQueryToClientUrl(
-                        $optionData['searchParams']
-                    );
-                    if (isset($optionData['order'])) {
-                        switch ($optionData['order']) {
-                            case 'asc':
-                                $order = $orderEnum::Ascending();
-                                break;
-                            case 'desc':
-                            default:
-                                $order = $orderEnum::Descending();
-                                break;
-                        }
+                    $optionLink = $this->convertServerQueryToClientUrl($optionData['searchParams']);
+                    $order = SortingDirection::Descending();
+                    if (isset($optionData['order']) && $optionData['order'] === 'asc') {
+                        $order = SortingDirection::Ascending();
                     }
 
-                    $sortOptions[] = FF::getInstance(
-                        'Data\SortingItem',
+                    $sortOptions[] = new SortingItem(
                         $optionData['name'],
                         $order,
                         $optionData['description'],
@@ -756,8 +744,9 @@ class Search extends PersonalisedResponse
                 }
             }
 
-            return FF::getInstance('Data\SortingItems', $sortOptions);
+            return new SortingItems($sortOptions);
         }
+
         return null;
     }
 
@@ -775,25 +764,21 @@ class Search extends PersonalisedResponse
             if (!empty($breadCrumbTrailData)) {
                 $i = 1;
                 foreach ($breadCrumbTrailData as $breadCrumbData) {
-                    $breadCrumbLink = $this->convertServerQueryToClientUrl(
-                        $breadCrumbData['searchParams']
-                    );
+                    $breadCrumbLink = $this->convertServerQueryToClientUrl($breadCrumbData['searchParams']);
 
-                    $breadCrumbTypeEnum = FF::getClassName('Data\BreadCrumbType');
                     switch ($breadCrumbData['type']) {
                         case 'filter':
-                            $type = $breadCrumbTypeEnum::Filter();
+                            $type = BreadCrumbType::Filter();
                             break;
                         case 'advisor':
-                            $type = $breadCrumbTypeEnum::Advisor();
+                            $type = BreadCrumbType::Advisor();
                             break;
                         default:
-                            $type = $breadCrumbTypeEnum::Search();
+                            $type = BreadCrumbType::Search();
                             break;
                     }
 
-                    $breadCrumbs[] = FF::getInstance(
-                        'Data\BreadCrumb',
+                    $breadCrumbs[] = new BreadCrumb(
                         $breadCrumbData['text'],
                         $breadCrumbLink,
                         $i == count($breadCrumbTrailData),
@@ -806,7 +791,7 @@ class Search extends PersonalisedResponse
             }
         }
 
-        return FF::getInstance('Data\BreadCrumbTrail', $breadCrumbs);
+        return new BreadCrumbTrail($breadCrumbs);
     }
 
     /**
@@ -827,9 +812,7 @@ class Search extends PersonalisedResponse
             }
         }
 
-        $campaignIterator = FF::getInstance('Data\CampaignIterator', $campaigns);
-
-        return $campaignIterator;
+        return new CampaignIterator($campaigns);
     }
 
     /**
@@ -840,12 +823,7 @@ class Search extends PersonalisedResponse
      */
     private function createEmptyCampaignObject(array $campaignData)
     {
-        return FF::getInstance(
-            'Data\Campaign',
-            $campaignData['name'],
-            $campaignData['category'],
-            $campaignData['target']['destination']
-        );
+        return new Campaign($campaignData['name'], $campaignData['category'], $campaignData['target']['destination']);
     }
 
     /**
@@ -854,10 +832,8 @@ class Search extends PersonalisedResponse
      * @param mixed[]                   $campaignData An associative array corresponding to the
      *                                                JSON for that campaign.
      */
-    private function fillCampaignObject(
-        \FACTFinder\Data\Campaign $campaign,
-        array $campaignData
-    ) {
+    private function fillCampaignObject(\FACTFinder\Data\Campaign $campaign, array $campaignData)
+    {
         switch ($campaignData['flavour']) {
             case 'FEEDBACK':
                 $this->fillCampaignWithFeedback($campaign, $campaignData);
@@ -875,19 +851,13 @@ class Search extends PersonalisedResponse
      * @param mixed[]                   $campaignData An associative array corresponding to the
      *                                                JSON for that campaign.
      */
-    private function fillCampaignWithPushedProducts(
-        \FACTFinder\Data\Campaign $campaign,
-        array $campaignData
-    ) {
+    private function fillCampaignWithPushedProducts(\FACTFinder\Data\Campaign $campaign, array $campaignData)
+    {
         if (!empty($campaignData['pushedProductsRecords'])) {
             $pushedProducts = [];
 
             foreach ($campaignData['pushedProductsRecords'] as $recordData) {
-                $pushedProducts[] = FF::getInstance(
-                    'Data\Record',
-                    (string)$recordData['id'],
-                    $recordData['record']
-                );
+                $pushedProducts[] = new Record((string)$recordData['id'], $recordData['record']);
             }
 
             $campaign->addPushedProducts($pushedProducts);
@@ -900,10 +870,8 @@ class Search extends PersonalisedResponse
      * @param mixed[]                   $campaignData An associative array corresponding to the
      *                                                JSON for that campaign.
      */
-    private function fillCampaignWithAdvisorData(
-        \FACTFinder\Data\Campaign $campaign,
-        array $campaignData
-    ) {
+    private function fillCampaignWithAdvisorData(\FACTFinder\Data\Campaign $campaign, array $campaignData)
+    {
         $activeQuestions = [];
 
         foreach ($campaignData['activeQuestions'] as $questionData) {
@@ -916,10 +884,7 @@ class Search extends PersonalisedResponse
         $advisorTree = [];
 
         foreach ($campaignData['activeQuestions'] as $questionData) {
-            $activeQuestions[] = $this->createAdvisorQuestion(
-                $questionData,
-                true
-            );
+            $activeQuestions[] = $this->createAdvisorQuestion($questionData, true);
         }
 
         $campaign->addToAdvisorTree($advisorTree);
@@ -940,7 +905,7 @@ class Search extends PersonalisedResponse
             $answers[] = $this->createAdvisorAnswer($answerData, $recursive);
         }
 
-        return FF::getInstance('Data\AdvisorQuestion', $questionData['text'], $answers);
+        return new AdvisorQuestion($questionData['text'], $answers);
     }
 
     /**
@@ -960,6 +925,6 @@ class Search extends PersonalisedResponse
             }
         }
 
-        return FF::getInstance('Data\AdvisorAnswer', $answerData['text'], $params, $followUpQuestions);
+        return new AdvisorAnswer($answerData['text'], $params, $followUpQuestions);
     }
 }

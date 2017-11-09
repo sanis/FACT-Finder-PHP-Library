@@ -2,7 +2,9 @@
 
 namespace FACTFinder\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Data\Campaign;
+use FACTFinder\Data\CampaignIterator;
+use FACTFinder\Data\Record;
 
 class ProductCampaign extends PersonalisedResponse
 {
@@ -223,8 +225,7 @@ class ProductCampaign extends PersonalisedResponse
             }
         }
 
-        $campaignIterator = FF::getInstance('Data\CampaignIterator', $campaigns);
-        return $campaignIterator;
+        return new CampaignIterator($campaigns);
     }
 
     /**
@@ -235,8 +236,7 @@ class ProductCampaign extends PersonalisedResponse
      */
     private function createEmptyCampaignObject(array $campaignData)
     {
-        return FF::getInstance(
-            'Data\Campaign',
+        return new Campaign(
             $campaignData['name'],
             $campaignData['category'],
             $campaignData['target']['destination']
@@ -255,7 +255,7 @@ class ProductCampaign extends PersonalisedResponse
             $pushedProducts = [];
 
             foreach ($campaignData['pushedProductsRecords'] as $recordData) {
-                $pushedProducts[] = FF::getInstance('Data\Record', (string)$recordData['id'], $recordData['record']);
+                $pushedProducts[] = new Record((string)$recordData['id'], $recordData['record']);
             }
 
             $campaign->addPushedProducts($pushedProducts);

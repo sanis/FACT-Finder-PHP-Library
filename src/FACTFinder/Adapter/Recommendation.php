@@ -2,7 +2,8 @@
 
 namespace FACTFinder\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Data\Record;
+use FACTFinder\Data\Result;
 
 class Recommendation extends PersonalisedResponse
 {
@@ -37,10 +38,7 @@ class Recommendation extends PersonalisedResponse
     public function setRecordCount($recordCount)
     {
         $parameters = $this->request->getParameters();
-        if (is_numeric($recordCount)
-            && (int)$recordCount == (float)$recordCount // Is integer?
-            && $recordCount > 0
-        ) {
+        if (is_numeric($recordCount) && $recordCount > 0 && (int)$recordCount == (float)$recordCount) {
             $parameters['maxResults'] = $recordCount;
         } else {
             unset($parameters['maxResults']);
@@ -142,11 +140,11 @@ class Recommendation extends PersonalisedResponse
             }
         }
 
-        return FF::getInstance('Data\Result', $records, null, count($records));
+        return new Result($records, count($records));
     }
 
     private function createRecord($recordData, $position)
     {
-        return FF::getInstance('Data\Record', (string)$recordData['id'], $recordData['record'], 100.0, $position);
+        return new Record((string)$recordData['id'], $recordData['record'], 100.0, $position);
     }
 }

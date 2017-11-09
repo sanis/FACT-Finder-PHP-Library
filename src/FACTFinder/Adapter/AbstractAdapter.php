@@ -2,7 +2,7 @@
 
 namespace FACTFinder\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Util\Parameters;
 use Psr\Log\LoggerAwareTrait;
 
 /**
@@ -217,7 +217,7 @@ abstract class AbstractAdapter
 
     protected function convertServerQueryToClientUrl($query)
     {
-        $parameters = FF::getInstance('Util\Parameters', $query, true);
+        $parameters = new Parameters($query, true);
 
         return $this->urlBuilder->generateUrl($parameters);
     }

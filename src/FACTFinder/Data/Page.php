@@ -15,12 +15,8 @@ class Page extends Item
      * @param string $url
      * @param bool   $isSelected
      */
-    public function __construct(
-        $pageNumber,
-        $label,
-        $url,
-        $isSelected = false
-    ) {
+    public function __construct($pageNumber, $label, $url, $isSelected = false)
+    {
         parent::__construct($label, $url, $isSelected);
 
         $this->pageNumber = (int)$pageNumber;

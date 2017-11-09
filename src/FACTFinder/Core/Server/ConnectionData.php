@@ -2,7 +2,7 @@
 
 namespace FACTFinder\Core\Server;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Util\Parameters;
 
 /**
  * Represents all data belonging to a single connection. It holds all data
@@ -48,13 +48,13 @@ class ConnectionData
      */
     public function __construct($parameters = null)
     {
-        if (FF::isInstanceOf($parameters, 'Util\Parameters')) {
+        if ($parameters instanceof Parameters) {
             $this->parameters = $parameters;
         } else {
-            $this->parameters = FF::getInstance('Util\Parameters');
+            $this->parameters = new Parameters();
         }
 
-        $this->httpHeaderFields = FF::getInstance('Util\Parameters');
+        $this->httpHeaderFields = new Parameters();
         $this->action = '';
         $this->setNullResponse();
     }
@@ -171,7 +171,7 @@ class ConnectionData
      */
     public function setNullResponse()
     {
-        $this->response = FF::getInstance('Core\Server\NullResponse');
+        $this->response = new NullResponse();
         $this->previousUrl = null;
     }
 

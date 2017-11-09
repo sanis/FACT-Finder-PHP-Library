@@ -2,8 +2,6 @@
 
 namespace FACTFinder\Data;
 
-use FACTFinder\Loader as FF;
-
 class BreadCrumb extends Item
 {
     /**
@@ -37,8 +35,7 @@ class BreadCrumb extends Item
      */
     public function isSearchBreadCrumb()
     {
-        $breadCrumbTypeEnum = FF::getClassName('Data\BreadCrumbType');
-        return $this->type == $breadCrumbTypeEnum::Search();
+        return $this->type == BreadCrumbType::Search();
     }
 
     /**
@@ -46,8 +43,7 @@ class BreadCrumb extends Item
      */
     public function isFilterBreadCrumb()
     {
-        $breadCrumbTypeEnum = FF::getClassName('Data\BreadCrumbType');
-        return $this->type == $breadCrumbTypeEnum::Filter();
+        return $this->type == BreadCrumbType::Filter();
     }
 
     /**

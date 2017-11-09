@@ -4,7 +4,6 @@ namespace FACTFinder\Core\Client;
 
 use FACTFinder\Core\AbstractEncodingConverter;
 use FACTFinder\Core\ParametersConverter;
-use FACTFinder\Loader as FF;
 use FACTFinder\Util\Parameters;
 use Psr\Log\LoggerAwareTrait;
 
@@ -35,7 +34,7 @@ class UrlBuilder
         \FACTFinder\Core\Client\RequestParser $requestParser,
         \FACTFinder\Core\AbstractEncodingConverter $encodingConverter = null
     ) {
-        $this->parametersConverter = FF::getInstance('Core\ParametersConverter', $configuration);
+        $this->parametersConverter = new ParametersConverter($configuration);
         $this->requestParser = $requestParser;
         $this->encodingConverter = $encodingConverter;
     }
@@ -48,9 +47,9 @@ class UrlBuilder
      *
      * TODO: Should the signature be more similar to that of \Server\UrlBuilder?
      *
-     * @param Parameters $parameters The server parameters that
+     * @param Parameters $parameters                 The server parameters that
      *                                               should be retrieved when the link is followed.
-     * @param string     $target An optional request target. If omitted, the target
+     * @param string     $target                     An optional request target. If omitted, the target
      *                                               of the current request will be used. For instance, this parameter
      *                                               can be used if a product detail page needs a different target.
      *

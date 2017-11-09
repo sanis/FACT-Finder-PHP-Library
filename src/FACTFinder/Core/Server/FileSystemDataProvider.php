@@ -2,8 +2,6 @@
 
 namespace FACTFinder\Core\Server;
 
-use FACTFinder\Loader as FF;
-
 /**
  * This implementation retrieves the FACT-Finder data from the file system. File
  * names are generated from request parameters. For the naming convention see
@@ -69,7 +67,7 @@ class FileSystemDataProvider extends AbstractDataProvider
             );
         }
 
-        $response = FF::getInstance('Core\Server\Response', $fileContent, 200, 0, '');
+        $response = new Response($fileContent, 200, 0, '');
 
         $connectionData->setResponse($response, $fileName);
     }
@@ -121,7 +119,7 @@ class FileSystemDataProvider extends AbstractDataProvider
     {
         $connectionData = $this->connectionData[$id];
 
-        if (FF::isInstanceOf($connectionData->getResponse(), 'Core\Server\NullResponse')) {
+        if ($connectionData->getResponse() instanceof NullResponse) {
             return true;
         }
 

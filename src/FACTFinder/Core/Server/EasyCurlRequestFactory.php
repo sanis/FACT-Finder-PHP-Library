@@ -2,7 +2,7 @@
 
 namespace FACTFinder\Core\Server;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Util\Curl;
 
 /**
  * This implementation backs the Request with an EasyCurlDataProvider.
@@ -37,11 +37,11 @@ class EasyCurlRequestFactory implements RequestFactoryInterface
     ) {
         $this->configuration = $configuration;
 
-        $urlBuilder = FF::getInstance('Core\Server\UrlBuilder', $configuration);
-        $this->dataProvider = FF::getInstance(
-            'Core\Server\EasyCurlDataProvider',
+        $urlBuilder = new UrlBuilder($configuration);
+
+        $this->dataProvider = new EasyCurlDataProvider(
             $configuration,
-            null === $curl ? FF::getInstance('Util\Curl') : $curl,
+            null === $curl ? new Curl() : $curl,
             $urlBuilder
         );
 
@@ -55,8 +55,8 @@ class EasyCurlRequestFactory implements RequestFactoryInterface
      */
     public function getRequest()
     {
-        $connectionData = FF::getInstance('Core\Server\ConnectionData', clone $this->requestParameters);
+        $connectionData = new ConnectionData(clone $this->requestParameters);
 
-        return FF::getInstance('Core\Server\Request', $connectionData, $this->dataProvider);
+        return new Request($connectionData, $this->dataProvider);
     }
 }

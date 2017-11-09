@@ -2,7 +2,7 @@
 
 namespace FACTFinder\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Data\SuggestQuery;
 
 /**
  * TODO: Are there any other FF 6.8 features left which we are not making use of
@@ -94,8 +94,7 @@ class Suggest extends AbstractAdapter
                     $suggestAttributes = $suggestQueryData['attributes'];
                 }
 
-                $suggestions[] = FF::getInstance(
-                    'Data\SuggestQuery',
+                $suggestions[] = new SuggestQuery(
                     $suggestQueryData['name'],
                     $suggestLink,
                     $suggestQueryData['hitCount'],
