@@ -1,7 +1,8 @@
 <?php
+
 namespace FACTFinder\Test\Data;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Data\FilterType;
 
 class FilterTypeTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -14,7 +15,7 @@ class FilterTypeTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->typeClass = FF::getClassName('Data\FilterType');
+        $this->typeClass = get_class(new FilterType());
     }
 
     public function testTypeSafety()

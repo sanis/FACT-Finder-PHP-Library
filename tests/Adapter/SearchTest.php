@@ -1,7 +1,10 @@
 <?php
+
 namespace FACTFinder\Test\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Adapter\Search;
+use FACTFinder\Data\ArticleNumberSearchStatus;
+use FACTFinder\Data\SearchStatus;
 
 class SearchTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -18,12 +21,14 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
         $_SERVER['REQUEST_URI'] = '/index.php';
         $_SERVER['QUERY_STRING'] = 'query=bmx';
 
-        $this->adapter = FF::getInstance(
-            'Adapter\Search',
-            self::$dic['configuration'],
-            self::$dic['request'],
-            self::$dic['clientUrlBuilder']
-        );
+        $configuration = $this->getConfiguration(static::class);
+        $encodingConverter = $this->getConverter($configuration);
+        $requestParser = $this->getRequestParser($configuration, $encodingConverter);
+        $clientUrlBuilder = $this->getClientUrlBuilder($configuration, $requestParser, $encodingConverter);
+        $requestFactory = $this->getRequestFactory($configuration, $requestParser);
+        $request = $this->getRequest($requestFactory);
+
+        $this->adapter = new Search($configuration, $request, $clientUrlBuilder);
     }
 
     public function testGetResult()
@@ -42,7 +47,7 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
         $this->assertEquals(0, count($record->getKeywords()));
         $this->assertEquals(97.98, $record->getSimilarity(), 1e-10);
     }
-    
+
     public function testReloadAfterSetIdsOnly()
     {
         $this->adapter->setIdsOnly(true);
@@ -55,7 +60,7 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
         $record = $result[0];
         $this->assertEquals('278003', $record->getId());
         $this->assertNull($record->getField('Brand'));
-        
+
         //idsOnly=false should be reloaded with full detailed records
         $this->adapter->setIdsOnly(false);
         $result = $this->adapter->getResult();
@@ -66,8 +71,7 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
 
     public function testGetStatus()
     {
-        $searchStatusEnum = FF::getClassName('Data\SearchStatus');
-        $this->assertEquals($searchStatusEnum::RecordsFound(), $this->adapter->getStatus());
+        $this->assertEquals(SearchStatus::RecordsFound(), $this->adapter->getStatus());
     }
 
     public function testGetSearchTimeInfo()
@@ -126,8 +130,14 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
         $this->assertEquals(4, $slider->getSelectedMinimum());
         $this->assertEquals('RatingAverage', $slider->getFieldName());
         $this->assertFalse($slider->isSelected());
-        $this->assertEquals('/index.php/s/bmx/q?filterCategory2=BMX&filterCategory1=Fahrr%E4der&followSearch=9798&filterRatingAverage=', $slider->getBaseUrl());
-        $this->assertEquals('/index.php/s/bmx/q?filterCategory2=BMX&filterCategory1=Fahrr%E4der&followSearch=9798&filterRatingAverage=4-5', $slider->getUrl());
+        $this->assertEquals(
+            '/index.php/s/bmx/q?filterCategory2=BMX&filterCategory1=Fahrr%E4der&followSearch=9798&filterRatingAverage=',
+            $slider->getBaseUrl()
+        );
+        $this->assertEquals(
+            '/index.php/s/bmx/q?filterCategory2=BMX&filterCategory1=Fahrr%E4der&followSearch=9798&filterRatingAverage=4-5',
+            $slider->getUrl()
+        );
 
         unset($asn[0][1]);
         $this->assertTrue($asn->hasPreviewImages());
@@ -234,7 +244,7 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
         $this->assertEquals('http://www.fact-finder.de', $campaigns->getRedirectUrl());
 
         $this->assertTrue($campaigns->hasFeedback());
-        $expectedFeedback = implode(PHP_EOL, array("test feedback 1", "test feedback 2"));
+        $expectedFeedback = implode(PHP_EOL, ["test feedback 1", "test feedback 2"]);
         $this->assertEquals($expectedFeedback, $campaigns->getFeedback('html header'));
         $this->assertEquals($expectedFeedback, $campaigns->getFeedback('9'));
         $expectedFeedback = "test feedback 3";
@@ -277,17 +287,21 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
     public function testArticleNumberSearchStatus()
     {
         $this->adapter->setQuery('278003');
-        $articleNumberSearchStatusEnum = FF::getClassName('Data\ArticleNumberSearchStatus');
-        $this->assertEquals($articleNumberSearchStatusEnum::IsArticleNumberResultFound(), $this->adapter->getArticleNumberStatus());
+        $this->assertEquals(
+            ArticleNumberSearchStatus::IsArticleNumberResultFound(),
+            $this->adapter->getArticleNumberStatus()
+        );
     }
 
     public function testNoArticleNumberSearchStatus()
     {
-        $articleNumberSearchStatusEnum = FF::getClassName('Data\ArticleNumberSearchStatus');
-        $this->assertEquals($articleNumberSearchStatusEnum::IsNoArticleNumberSearch(), $this->adapter->getArticleNumberStatus());
+        $this->assertEquals(
+            ArticleNumberSearchStatus::IsNoArticleNumberSearch(),
+            $this->adapter->getArticleNumberStatus()
+        );
     }
-    
-     public function testSingleWordSearchLoading()
+
+    public function testSingleWordSearchLoading()
     {
         $this->adapter->setQuery('helm && fahrrad && bekleidung && schuhe');
 
@@ -296,7 +310,10 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
         $this->assertInstanceOf("FACTFinder\Data\SingleWordSearchItem", $singleWordSearchItems[0]);
         $this->assertEquals('helm', $singleWordSearchItems[0]->getLabel());
         $this->assertEquals('1350', $singleWordSearchItems[0]->getHitCount());
-        $this->assertEquals('/index.php?searchField=%2A&productsPerPage=10&keywords=helm', $singleWordSearchItems[0]->getUrl());
+        $this->assertEquals(
+            '/index.php?searchField=%2A&productsPerPage=10&keywords=helm',
+            $singleWordSearchItems[0]->getUrl()
+        );
         $previewRecords = $singleWordSearchItems[0]->getPreviewRecords();
         $this->assertEquals(2, count($previewRecords));
         $this->assertInstanceOf("FACTFinder\Data\Record", $previewRecords[0]);

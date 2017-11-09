@@ -1,7 +1,7 @@
 <?php
+
 namespace FACTFinder\Test\Core;
 
-use FACTFinder\Loader as FF;
 use FACTFinder\Core\ManualConfiguration;
 
 class ManualConfigurationTest extends \FACTFinder\Test\BaseTestCase
@@ -13,17 +13,16 @@ class ManualConfigurationTest extends \FACTFinder\Test\BaseTestCase
 
     public function testValuesSetInConstructor()
     {
-        $configuration = FF::getInstance(
-            'Core\ManualConfiguration',
-            array(
-                'port' => 80,
-                'channel' => 'de',
-                'authenticationType' => ManualConfiguration::HTTP_AUTHENTICATION,
-                'ignoredClientParameters' => array(
-                    'channel' => true
-                ),
-                'test' => 'value'
-            )
+        $configuration = new ManualConfiguration(
+            [
+                'port'                    => 80,
+                'channel'                 => 'de',
+                'authenticationType'      => ManualConfiguration::HTTP_AUTHENTICATION,
+                'ignoredClientParameters' => [
+                    'channel' => true,
+                ],
+                'test'                    => 'value',
+            ]
         );
 
         $this->assertEquals(80, $configuration->getServerPort());
@@ -31,9 +30,9 @@ class ManualConfigurationTest extends \FACTFinder\Test\BaseTestCase
 
         $this->assertTrue($configuration->isHttpAuthenticationType());
 
-        $expectedIgnoredClientParameters = array(
-            'channel' => true
-        );
+        $expectedIgnoredClientParameters = [
+            'channel' => true,
+        ];
 
         $this->assertEquals($expectedIgnoredClientParameters, $configuration->getIgnoredClientParameters());
 
@@ -42,10 +41,7 @@ class ManualConfigurationTest extends \FACTFinder\Test\BaseTestCase
 
     public function testValuesSetManually()
     {
-        $configuration = FF::getInstance(
-            'Core\ManualConfiguration',
-            array()
-        );
+        $configuration = new ManualConfiguration([]);
 
         $configuration->debug = true;
         $configuration->requestProtocol = 'http';
@@ -70,40 +66,40 @@ class ManualConfigurationTest extends \FACTFinder\Test\BaseTestCase
         $configuration->importConnectTimeout = 10;
         $configuration->importTimeout = 360;
 
-        $expectedIgnoredServerParameters = array(
-            'sid' => true,
-            'password' => true,
-            'username' => true,
-            'timestamp' => true
-        );
+        $expectedIgnoredServerParameters = [
+            'sid'       => true,
+            'password'  => true,
+            'username'  => true,
+            'timestamp' => true,
+        ];
         $configuration->ignoredServerParameters = $expectedIgnoredServerParameters;
 
-        $expectedIgnoredClientParameters = array(
-            'xml' => true,
-            'format' => true,
-            'channel' => true,
-            'password' => true,
-            'username' => true,
-            'timestamp' => true
-        );
+        $expectedIgnoredClientParameters = [
+            'xml'       => true,
+            'format'    => true,
+            'channel'   => true,
+            'password'  => true,
+            'username'  => true,
+            'timestamp' => true,
+        ];
         $configuration->ignoredClientParameters = $expectedIgnoredClientParameters;
 
-        $expectedRequiredServerParameters = array();
+        $expectedRequiredServerParameters = [];
         $configuration->requiredServerParameters = $expectedRequiredServerParameters;
 
-        $expectedRequiredClientParameters = array(
-            'test' => 'value'
-        );
+        $expectedRequiredClientParameters = [
+            'test' => 'value',
+        ];
         $configuration->requiredClientParameters = $expectedRequiredClientParameters;
 
-        $expectedServerMappings = array(
-            'keywords' => 'query'
-        );
+        $expectedServerMappings = [
+            'keywords' => 'query',
+        ];
         $configuration->serverMappings = $expectedServerMappings;
 
-        $expectedClientMappings = array(
-            'query' => 'keywords'
-        );
+        $expectedClientMappings = [
+            'query' => 'keywords',
+        ];
         $configuration->clientMappings = $expectedClientMappings;
 
         $configuration->pageContentEncoding = 'UTF-8';
@@ -129,13 +125,13 @@ class ManualConfigurationTest extends \FACTFinder\Test\BaseTestCase
         $this->assertEquals('FACT-FINDER', $configuration->getAuthenticationPrefix());
         $this->assertEquals('FACT-FINDER', $configuration->getAuthenticationPostfix());
 
-        $this->assertEquals(2,   $configuration->getDefaultConnectTimeout());
-        $this->assertEquals(4,   $configuration->getDefaultTimeout());
-        $this->assertEquals(1,   $configuration->getSuggestConnectTimeout());
-        $this->assertEquals(2,   $configuration->getSuggestTimeout());
-        $this->assertEquals(1,   $configuration->getTrackingConnectTimeout());
-        $this->assertEquals(2,   $configuration->getTrackingTimeout());
-        $this->assertEquals(10,  $configuration->getImportConnectTimeout());
+        $this->assertEquals(2, $configuration->getDefaultConnectTimeout());
+        $this->assertEquals(4, $configuration->getDefaultTimeout());
+        $this->assertEquals(1, $configuration->getSuggestConnectTimeout());
+        $this->assertEquals(2, $configuration->getSuggestTimeout());
+        $this->assertEquals(1, $configuration->getTrackingConnectTimeout());
+        $this->assertEquals(2, $configuration->getTrackingTimeout());
+        $this->assertEquals(10, $configuration->getImportConnectTimeout());
         $this->assertEquals(360, $configuration->getImportTimeout());
 
         $this->assertEquals($expectedIgnoredServerParameters, $configuration->getIgnoredServerParameters());
@@ -148,14 +144,12 @@ class ManualConfigurationTest extends \FACTFinder\Test\BaseTestCase
 
     /**
      * Accessing an unset value should internally raise a PHP error.
+     *
      * @expectedException PHPUnit_Framework_Error
      */
     public function testUnavailableValue()
     {
-        $configuration = FF::getInstance(
-            'Core\ManualConfiguration',
-            array('port' => 80)
-        );
+        $configuration = new ManualConfiguration(['port' => 80]);
 
         $configuration->channel = 'de';
 

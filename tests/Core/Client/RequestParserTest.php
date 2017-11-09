@@ -2,8 +2,6 @@
 
 namespace FACTFinder\Test\Core\Client;
 
-use FACTFinder\Loader as FF;
-
 class RequestParserTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
@@ -15,11 +13,11 @@ class RequestParserTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->requestParser = FF::getInstance(
-            'Core\Client\RequestParser',
-            self::$dic['configuration'],
-            self::$dic['encodingConverter']
-        );
+        $configuration = $this->getConfiguration(static::class);
+        $encodingConverter = $this->getConverter($configuration);
+        $requestParser = $this->getRequestParser($configuration, $encodingConverter);
+
+        $this->requestParser = $requestParser;
 
     }
 

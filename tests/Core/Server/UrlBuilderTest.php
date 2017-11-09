@@ -2,7 +2,7 @@
 
 namespace FACTFinder\Test\Core\Server;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Util\Parameters;
 
 class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -25,14 +25,12 @@ class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->urlBuilder = FF::getInstance(
-            'Core\Server\UrlBuilder',
-            self::$dic['configuration']
-        );
+        $configuration = $this->getConfiguration(static::class);
+        $serverUrlBuilder = $this->getServerUrlBuilder($configuration);
 
-        $this->configuration = self::$dic['configuration'];
-
-        $this->parameters = FF::getInstance('Util\Parameters');
+        $this->urlBuilder = $serverUrlBuilder;
+        $this->configuration = $configuration;
+        $this->parameters = new Parameters();
     }
 
     public function testNonAuthenticationUrl()

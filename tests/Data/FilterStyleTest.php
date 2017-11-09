@@ -2,7 +2,7 @@
 
 namespace FACTFinder\Test\Data;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Data\FilterStyle;
 
 class FilterStyleTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -15,7 +15,7 @@ class FilterStyleTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->styleClass = FF::getClassName('Data\FilterStyle');
+        $this->styleClass = get_class(new FilterStyle());
     }
 
     public function testTypeSafety()

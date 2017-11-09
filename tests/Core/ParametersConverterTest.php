@@ -1,7 +1,9 @@
 <?php
+
 namespace FACTFinder\Test\Core;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Core\ParametersConverter;
+use FACTFinder\Util\Parameters;
 
 class ParametersConverterTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -14,36 +16,34 @@ class ParametersConverterTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->parametersConverter = FF::getInstance(
-            'Core\ParametersConverter',
-            self::$dic['configuration']
-        );
+        $configuration = $this->getConfiguration(static::class);
+
+        $this->parametersConverter = new ParametersConverter($configuration);
     }
 
     public function testClientToServerConversion()
     {
-        $clientParameters = FF::getInstance(
-            'Util\Parameters',
-            array(
-                'keywords' => 'test',
-                'username' => 'admin',
+        $clientParameters = new Parameters(
+            [
+                'keywords'        => 'test',
+                'username'        => 'admin',
                 'productsPerPage' => '12',
-                'shop' => 'main',
-                'filterSize' => '10',
-            )
+                'shop'            => 'main',
+                'filterSize'      => '10',
+            ]
         );
 
-        $expectedServerParameters = array(
-            'query' => 'test',
+        $expectedServerParameters = [
+            'query'           => 'test',
             'productsPerPage' => '12',
-            'channel' => 'de',
-            'filterSize' => '10',
-        );
+            'channel'         => 'de',
+            'filterSize'      => '10',
+        ];
 
         $actualServerParameters = $this->parametersConverter
-                                       ->convertClientToServerParameters(
-                                            $clientParameters
-                                        );
+            ->convertClientToServerParameters(
+                $clientParameters
+            );
 
         $this->assertEquals(
             $expectedServerParameters,
@@ -53,21 +53,20 @@ class ParametersConverterTest extends \FACTFinder\Test\BaseTestCase
 
     public function testOverwriteChannel()
     {
-        $clientParameters = FF::getInstance(
-            'Util\Parameters',
-            array(
+        $clientParameters = new Parameters(
+            [
                 'channel' => 'en',
-            )
+            ]
         );
 
-        $expectedServerParameters = array(
+        $expectedServerParameters = [
             'channel' => 'en',
-        );
+        ];
 
         $actualServerParameters = $this->parametersConverter
-                                       ->convertClientToServerParameters(
-                                            $clientParameters
-                                        );
+            ->convertClientToServerParameters(
+                $clientParameters
+            );
 
         $this->assertEquals(
             $expectedServerParameters,
@@ -77,30 +76,29 @@ class ParametersConverterTest extends \FACTFinder\Test\BaseTestCase
 
     public function testServerToClientConversion()
     {
-        $serverParameters = FF::getInstance(
-            'Util\Parameters',
-            array(
-                'query' => 'test',
-                'username' => 'admin',
-                'format' => 'xml',
-                'xml' => 'true',
-                'timestamp' => '123456789',
-                'password' => 'test',
-                'channel' => 'de',
+        $serverParameters = new Parameters(
+            [
+                'query'           => 'test',
+                'username'        => 'admin',
+                'format'          => 'xml',
+                'xml'             => 'true',
+                'timestamp'       => '123456789',
+                'password'        => 'test',
+                'channel'         => 'de',
                 'productsPerPage' => '12',
-                'any' => 'something',
-            )
+                'any'             => 'something',
+            ]
         );
 
-        $expectedClientParameters = array(
-            'keywords' => 'test',
+        $expectedClientParameters = [
+            'keywords'        => 'test',
             'productsPerPage' => '12',
-        );
+        ];
 
         $actualClientParameters = $this->parametersConverter
-                                       ->convertServerToClientParameters(
-                                            $serverParameters
-                                        );
+            ->convertServerToClientParameters(
+                $serverParameters
+            );
 
         $this->assertEquals(
             $expectedClientParameters,

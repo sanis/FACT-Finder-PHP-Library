@@ -1,7 +1,9 @@
 <?php
+
 namespace FACTFinder\Test\Core\Server;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Core\Server\EasyCurlRequestFactory;
+use FACTFinder\Util\Parameters;
 
 class EasyCurlRequestFactoryTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -24,28 +26,30 @@ class EasyCurlRequestFactoryTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->curlStub = self::$dic['curlStub'];
-        $this->factory = FF::getInstance(
-            'Core\Server\EasyCurlRequestFactory',
-            self::$dic['configuration'],
-            FF::getInstance('Util\Parameters', array('query' => 'bmx')),
-            self::$dic['curlStub']
+        $curlStub = $this->getCurlStub();
+        $configuration = $this->getConfiguration(static::class);
+
+        $this->factory = new EasyCurlRequestFactory(
+            $configuration,
+            new Parameters(['query' => 'bmx']),
+            $curlStub
         );
 
-        $this->configuration = self::$dic['configuration'];
+        $this->configuration = $configuration;
+        $this->curlStub = $curlStub;
     }
 
     public function testGetWorkingRequest()
     {
         $this->configuration->makeHttpAuthenticationType();
 
-        $requiredOptions = array(
-            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?query=bmx&format=json&do=getTagCloud&verbose=true&channel=de'
-        );
+        $requiredOptions = [
+            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?query=bmx&format=json&do=getTagCloud&verbose=true&channel=de',
+        ];
         $responseContent = 'test response';
-        $info = array(
-            CURLINFO_HTTP_CODE => '200'
-        );
+        $info = [
+            CURLINFO_HTTP_CODE => '200',
+        ];
 
         $this->curlStub->setResponse($responseContent, $requiredOptions);
         $this->curlStub->setInformation($info, $requiredOptions);

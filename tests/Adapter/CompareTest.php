@@ -1,7 +1,8 @@
 <?php
+
 namespace FACTFinder\Test\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Adapter\Compare;
 
 class CompareTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -14,17 +15,19 @@ class CompareTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->adapter = FF::getInstance(
-            'Adapter\Compare',
-            self::$dic['configuration'],
-            self::$dic['request'],
-            self::$dic['clientUrlBuilder']
-        );
+        $configuration = $this->getConfiguration(static::class);
+        $encodingConverter = $this->getConverter($configuration);
+        $requestParser = $this->getRequestParser($configuration, $encodingConverter);
+        $clientUrlBuilder = $this->getClientUrlBuilder($configuration, $requestParser, $encodingConverter);
+        $requestFactory = $this->getRequestFactory($configuration, $requestParser);
+        $request = $this->getRequest($requestFactory);
+
+        $this->adapter = new Compare($configuration, $request, $clientUrlBuilder);
     }
 
     public function testComparisonLoading()
     {
-        $productIds = array();
+        $productIds = [];
         $productIds[] = 123;
         $productIds[] = 456;
         $productIds[] = 789;
@@ -41,7 +44,7 @@ class CompareTest extends \FACTFinder\Test\BaseTestCase
 
     public function tesComparableAttributesOnly()
     {
-        $productIds = array();
+        $productIds = [];
         $productIds[] = 123;
         $productIds[] = 456;
         $productIds[] = 789;
@@ -58,7 +61,7 @@ class CompareTest extends \FACTFinder\Test\BaseTestCase
 
     public function testAttributesLoading()
     {
-        $productIds = array();
+        $productIds = [];
         $productIds[] = 123;
         $productIds[] = 456;
         $productIds[] = 789;

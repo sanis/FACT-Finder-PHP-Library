@@ -1,7 +1,9 @@
 <?php
+
 namespace FACTFinder\Test\Core\Server;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Core\Server\ConnectionData;
+use FACTFinder\Core\Server\MultiCurlDataProvider;
 
 class MultiCurlDataProviderTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -24,33 +26,36 @@ class MultiCurlDataProviderTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->curlStub = FF::getInstance('Util\CurlStub');
-        $this->dataProvider = FF::getInstance(
-            'Core\Server\MultiCurlDataProvider',
-            self::$dic['configuration'],
-            $this->curlStub,
-            self::$dic['serverUrlBuilder']
+        $curlStub = $this->getCurlStub();
+        $configuration = $this->getConfiguration(static::class);
+        $serverUrlBuilder = $this->getServerUrlBuilder($configuration);
+
+        $this->dataProvider = new MultiCurlDataProvider(
+            $configuration,
+            $curlStub,
+            $serverUrlBuilder
         );
 
-        $this->configuration = self::$dic['configuration'];
+        $this->configuration = $configuration;
+        $this->curlStub = $curlStub;
     }
 
     public function testLoadResponse()
     {
         $this->configuration->makeHttpAuthenticationType();
 
-        $requiredOptions = array(
-            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?format=json&do=getTagCloud&verbose=true&channel=de'
-        );
+        $requiredOptions = [
+            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?format=json&do=getTagCloud&verbose=true&channel=de',
+        ];
         $responseContent = 'test response';
-        $info = array(
-            CURLINFO_HTTP_CODE => '200'
-        );
+        $info = [
+            CURLINFO_HTTP_CODE => '200',
+        ];
 
         $this->curlStub->setResponse($responseContent, $requiredOptions);
         $this->curlStub->setInformation($info, $requiredOptions);
 
-        $connectionData = FF::getInstance('Core\Server\ConnectionData');
+        $connectionData = new ConnectionData();
         $id = $this->dataProvider->register($connectionData);
 
         $parameters = $connectionData->getParameters();
@@ -73,29 +78,29 @@ class MultiCurlDataProviderTest extends \FACTFinder\Test\BaseTestCase
     {
         $this->configuration->makeHttpAuthenticationType();
 
-        $requiredOptions1 = array(
-            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?format=json&do=getTagCloud&verbose=true&channel=de'
-        );
+        $requiredOptions1 = [
+            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?format=json&do=getTagCloud&verbose=true&channel=de',
+        ];
         $responseContent1 = 'test response 1';
-        $info = array(
-            CURLINFO_HTTP_CODE => '200'
-        );
+        $info = [
+            CURLINFO_HTTP_CODE => '200',
+        ];
 
         $this->curlStub->setResponse($responseContent1, $requiredOptions1);
         $this->curlStub->setInformation($info, $requiredOptions1);
 
-        $requiredOptions2 = array(
-            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?format=xml&do=getTagCloud&verbose=true&channel=de'
-        );
+        $requiredOptions2 = [
+            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?format=xml&do=getTagCloud&verbose=true&channel=de',
+        ];
         $responseContent2 = 'test response 2';
-        $info = array(
-            CURLINFO_HTTP_CODE => '200'
-        );
+        $info = [
+            CURLINFO_HTTP_CODE => '200',
+        ];
 
         $this->curlStub->setResponse($responseContent2, $requiredOptions2);
         $this->curlStub->setInformation($info, $requiredOptions2);
 
-        $connectionData1 = FF::getInstance('Core\Server\ConnectionData');
+        $connectionData1 = new ConnectionData();
         $id1 = $this->dataProvider->register($connectionData1);
 
         $parameters = $connectionData1->getParameters();
@@ -105,7 +110,7 @@ class MultiCurlDataProviderTest extends \FACTFinder\Test\BaseTestCase
 
         $connectionData1->setAction('TagCloud.ff');
 
-        $connectionData2 = FF::getInstance('Core\Server\ConnectionData');
+        $connectionData2 = new ConnectionData();
         $id2 = $this->dataProvider->register($connectionData2);
 
         $parameters = $connectionData2->getParameters();
@@ -139,29 +144,29 @@ class MultiCurlDataProviderTest extends \FACTFinder\Test\BaseTestCase
     {
         $this->configuration->makeHttpAuthenticationType();
 
-        $requiredOptions1 = array(
-            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?format=json&do=getTagCloud&verbose=true&channel=de'
-        );
+        $requiredOptions1 = [
+            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?format=json&do=getTagCloud&verbose=true&channel=de',
+        ];
         $responseContent1 = 'test response 1';
-        $info = array(
-            CURLINFO_HTTP_CODE => '200'
-        );
+        $info = [
+            CURLINFO_HTTP_CODE => '200',
+        ];
 
         $this->curlStub->setResponse($responseContent1, $requiredOptions1);
         $this->curlStub->setInformation($info, $requiredOptions1);
 
-        $requiredOptions2 = array(
-            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?format=xml&do=getTagCloud&verbose=true&channel=de'
-        );
+        $requiredOptions2 = [
+            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?format=xml&do=getTagCloud&verbose=true&channel=de',
+        ];
         $responseContent2 = 'test response 2';
-        $info = array(
-            CURLINFO_HTTP_CODE => '200'
-        );
+        $info = [
+            CURLINFO_HTTP_CODE => '200',
+        ];
 
         $this->curlStub->setResponse($responseContent2, $requiredOptions2);
         $this->curlStub->setInformation($info, $requiredOptions2);
 
-        $connectionData1 = FF::getInstance('Core\Server\ConnectionData');
+        $connectionData1 = new ConnectionData();
         $id1 = $this->dataProvider->register($connectionData1);
 
         $parameters = $connectionData1->getParameters();
@@ -171,7 +176,7 @@ class MultiCurlDataProviderTest extends \FACTFinder\Test\BaseTestCase
 
         $connectionData1->setAction('TagCloud.ff');
 
-        $connectionData2 = FF::getInstance('Core\Server\ConnectionData');
+        $connectionData2 = new ConnectionData();
         $id2 = $this->dataProvider->register($connectionData2);
 
         // This should not load the content for $id2, because it has not yet
@@ -184,8 +189,10 @@ class MultiCurlDataProviderTest extends \FACTFinder\Test\BaseTestCase
         $this->assertEquals(200, $response1->getHttpCode());
         $this->assertEquals($responseContent1, $response1->getContent());
 
-        $this->assertInstanceOf('FACTFinder\Core\Server\NullResponse',
-                                $connectionData2->getResponse());
+        $this->assertInstanceOf(
+            'FACTFinder\Core\Server\NullResponse',
+            $connectionData2->getResponse()
+        );
 
         // Now configure second connection
         $parameters = $connectionData2->getParameters();
@@ -200,8 +207,10 @@ class MultiCurlDataProviderTest extends \FACTFinder\Test\BaseTestCase
         $this->dataProvider->loadResponse($id1);
 
         $this->assertSame($response1, $connectionData1->getResponse());
-        $this->assertInstanceOf('FACTFinder\Core\Server\NullResponse',
-                                $connectionData2->getResponse());
+        $this->assertInstanceOf(
+            'FACTFinder\Core\Server\NullResponse',
+            $connectionData2->getResponse()
+        );
 
         // This should now load the second response but should NOT reload the
         // first one.

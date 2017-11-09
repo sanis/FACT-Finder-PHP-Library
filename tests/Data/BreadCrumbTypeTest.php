@@ -1,7 +1,8 @@
 <?php
+
 namespace FACTFinder\Test\Data;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Data\BreadCrumbType;
 
 class BreadCrumbTypeTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -14,7 +15,7 @@ class BreadCrumbTypeTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->typeClass = FF::getClassName('Data\BreadCrumbType');
+        $this->typeClass = get_class(new BreadCrumbType());
     }
 
     public function testTypeSafety()

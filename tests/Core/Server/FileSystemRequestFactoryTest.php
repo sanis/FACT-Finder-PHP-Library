@@ -1,7 +1,9 @@
 <?php
+
 namespace FACTFinder\Test\Core\Server;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Core\Server\FileSystemRequestFactory;
+use FACTFinder\Util\Parameters;
 
 class FileSystemRequestFactoryTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -19,13 +21,10 @@ class FileSystemRequestFactoryTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->factory = FF::getInstance(
-            'Core\Server\FileSystemRequestFactory',
-            self::$dic['configuration'],
-            FF::getInstance('Util\Parameters')
-        );
+        $configuration = $this->getConfiguration(static::class);
 
-        $this->configuration = self::$dic['configuration'];
+        $this->factory = new FileSystemRequestFactory($configuration, new Parameters());
+        $this->configuration = $configuration;
     }
 
     public function testGetWorkingRequest()
@@ -43,9 +42,11 @@ class FileSystemRequestFactoryTest extends \FACTFinder\Test\BaseTestCase
         $request->setAction('TagCloud.ff');
 
         $response = $request->getResponse();
-        $expectedContent = file_get_contents(RESOURCES_DIR . DS
-                                             . 'responses' . DS
-                                             . 'TagCloud.86b6b33590e092674009abfe3d7fc170.json');
+        $expectedContent = file_get_contents(
+            RESOURCES_DIR . DS
+            . 'responses' . DS
+            . 'TagCloud.86b6b33590e092674009abfe3d7fc170.json'
+        );
         $this->assertEquals(0, $response->getConnectionErrorCode());
         $this->assertEquals('', $response->getConnectionError());
         $this->assertEquals(200, $response->getHttpCode());

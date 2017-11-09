@@ -2,7 +2,7 @@
 
 namespace FACTFinder\Test\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Adapter\Tracking;
 
 class TrackingTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -18,12 +18,14 @@ class TrackingTest extends \FACTFinder\Test\BaseTestCase
         // For the request parser to retrieve
         $_SERVER['QUERY_STRING'] = 'event=cart&id=1&masterId=2&title=product&sid=mysid&cookieId=mycid&count=5&price=6&userId=7&query=query';
 
-        $this->adapter = FF::getInstance(
-            'Adapter\Tracking',
-            self::$dic['configuration'],
-            self::$dic['request'],
-            self::$dic['clientUrlBuilder']
-        );
+        $configuration = $this->getConfiguration(static::class);
+        $encodingConverter = $this->getConverter($configuration);
+        $requestParser = $this->getRequestParser($configuration, $encodingConverter);
+        $clientUrlBuilder = $this->getClientUrlBuilder($configuration, $requestParser, $encodingConverter);
+        $requestFactory = $this->getRequestFactory($configuration, $requestParser);
+        $request = $this->getRequest($requestFactory);
+
+        $this->adapter = new Tracking($configuration, $request, $clientUrlBuilder);
     }
 
     public function testTrackingFromRequest()

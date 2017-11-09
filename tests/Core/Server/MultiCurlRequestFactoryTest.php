@@ -1,7 +1,9 @@
 <?php
+
 namespace FACTFinder\Test\Core\Server;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Core\Server\MultiCurlRequestFactory;
+use FACTFinder\Util\Parameters;
 
 class MultiCurlRequestFactoryTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -24,28 +26,30 @@ class MultiCurlRequestFactoryTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->curlStub = self::$dic['curlStub'];
-        $this->factory = FF::getInstance(
-            'Core\Server\MultiCurlRequestFactory',
-            self::$dic['configuration'],
-            FF::getInstance('Util\Parameters', array('query' => 'bmx')),
-            self::$dic['curlStub']
+        $curlStub = $this->getCurlStub();
+        $configuration = $this->getConfiguration(static::class);
+
+        $this->factory = new MultiCurlRequestFactory(
+            $configuration,
+            new Parameters(['query' => 'bmx']),
+            $curlStub
         );
 
-        $this->configuration = self::$dic['configuration'];
+        $this->configuration = $configuration;
+        $this->curlStub = $curlStub;
     }
 
     public function testGetWorkingRequest()
     {
         $this->configuration->makeHttpAuthenticationType();
 
-        $requiredOptions = array(
-            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?query=bmx&format=json&do=getTagCloud&verbose=true&channel=de'
-        );
+        $requiredOptions = [
+            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?query=bmx&format=json&do=getTagCloud&verbose=true&channel=de',
+        ];
         $responseContent = 'test response';
-        $info = array(
-            CURLINFO_HTTP_CODE => '200'
-        );
+        $info = [
+            CURLINFO_HTTP_CODE => '200',
+        ];
 
         $this->curlStub->setResponse($responseContent, $requiredOptions);
         $this->curlStub->setInformation($info, $requiredOptions);
@@ -72,24 +76,24 @@ class MultiCurlRequestFactoryTest extends \FACTFinder\Test\BaseTestCase
     {
         $this->configuration->makeHttpAuthenticationType();
 
-        $requiredOptions1 = array(
-            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?query=bmx&format=json&do=getTagCloud&verbose=true&channel=de'
-        );
+        $requiredOptions1 = [
+            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?query=bmx&format=json&do=getTagCloud&verbose=true&channel=de',
+        ];
         $responseContent1 = 'test response 1';
-        $info = array(
-            CURLINFO_HTTP_CODE => '200'
-        );
+        $info = [
+            CURLINFO_HTTP_CODE => '200',
+        ];
 
         $this->curlStub->setResponse($responseContent1, $requiredOptions1);
         $this->curlStub->setInformation($info, $requiredOptions1);
 
-        $requiredOptions2 = array(
-            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?query=bmx&format=xml&do=getTagCloud&verbose=true&channel=de'
-        );
+        $requiredOptions2 = [
+            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?query=bmx&format=xml&do=getTagCloud&verbose=true&channel=de',
+        ];
         $responseContent2 = 'test response 2';
-        $info = array(
-            CURLINFO_HTTP_CODE => '200'
-        );
+        $info = [
+            CURLINFO_HTTP_CODE => '200',
+        ];
 
         $this->curlStub->setResponse($responseContent2, $requiredOptions2);
         $this->curlStub->setInformation($info, $requiredOptions2);
@@ -133,24 +137,24 @@ class MultiCurlRequestFactoryTest extends \FACTFinder\Test\BaseTestCase
     {
         $this->configuration->makeHttpAuthenticationType();
 
-        $requiredOptions1 = array(
-            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?query=bmx&format=json&do=getTagCloud&verbose=true&channel=de'
-        );
+        $requiredOptions1 = [
+            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?query=bmx&format=json&do=getTagCloud&verbose=true&channel=de',
+        ];
         $responseContent1 = 'test response 1';
-        $info = array(
-            CURLINFO_HTTP_CODE => '200'
-        );
+        $info = [
+            CURLINFO_HTTP_CODE => '200',
+        ];
 
         $this->curlStub->setResponse($responseContent1, $requiredOptions1);
         $this->curlStub->setInformation($info, $requiredOptions1);
 
-        $requiredOptions2 = array(
-            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?query=bmx&format=xml&do=getTagCloud&verbose=true&channel=de'
-        );
+        $requiredOptions2 = [
+            CURLOPT_URL => 'http://user:userpw@demoshop.fact-finder.de:80/FACT-Finder/TagCloud.ff?query=bmx&format=xml&do=getTagCloud&verbose=true&channel=de',
+        ];
         $responseContent2 = 'test response 2';
-        $info = array(
-            CURLINFO_HTTP_CODE => '200'
-        );
+        $info = [
+            CURLINFO_HTTP_CODE => '200',
+        ];
 
         $this->curlStub->setResponse($responseContent2, $requiredOptions2);
         $this->curlStub->setInformation($info, $requiredOptions2);
@@ -174,8 +178,10 @@ class MultiCurlRequestFactoryTest extends \FACTFinder\Test\BaseTestCase
         $this->assertEquals(200, $response1->getHttpCode());
         $this->assertEquals($responseContent1, $response1->getContent());
 
-        $this->assertInstanceOf('FACTFinder\Core\Server\NullResponse',
-                                $request2->getResponse());
+        $this->assertInstanceOf(
+            'FACTFinder\Core\Server\NullResponse',
+            $request2->getResponse()
+        );
 
         // Now configure second connection
         $parameters = $request2->getParameters();
@@ -187,7 +193,7 @@ class MultiCurlRequestFactoryTest extends \FACTFinder\Test\BaseTestCase
 
         // Calling getResponse() for $request should not do anything, because
         // there is nothing to be done for $id1 itself.
-        $this->assertSame($response1,  $request1->getResponse());
+        $this->assertSame($response1, $request1->getResponse());
 
         // This should not load the second response and should NOT reload the
         // first one.

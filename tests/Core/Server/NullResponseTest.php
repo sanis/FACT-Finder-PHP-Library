@@ -1,7 +1,8 @@
 <?php
+
 namespace FACTFinder\Test\Core\Server;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Core\Server\NullResponse;
 
 class NullResponseTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -12,7 +13,7 @@ class NullResponseTest extends \FACTFinder\Test\BaseTestCase
 
     public function testResponse()
     {
-        $response = FF::getInstance('Core\Server\NullResponse');
+        $response = new NullResponse();
 
         $this->assertEquals('', $response->getContent());
         $this->assertEquals(0, $response->getHttpCode());

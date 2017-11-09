@@ -1,152 +1,152 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
     <test>
-		<debug>true</debug>
-		<custom>value</custom>
+        <debug>true</debug>
+        <custom>value</custom>
 
-		<connection>
-			<protocol>http</protocol> <!-- possible values: http, https -->
-			<address>demoshop.fact-finder.de</address>
-			<port>80</port>
-			<context>FACT-Finder</context>
-			<channel>de</channel>
-			<language>de</language>
-			<authentication>
-				<type>advanced</type> <!-- possible values: http, simple, advanced -->
-				<username>user</username>
-				<password>userpw</password>
-				<prefix>FACT-FINDER</prefix>
-				<postfix>FACT-FINDER</postfix>
-			</authentication>
-			<!-- all timeouts given in seconds -->
-			<timeouts>
-				<defaultConnectTimeout>2</defaultConnectTimeout>
-				<defaultTimeout>4</defaultTimeout>
-				<suggestConnectTimeout>1</suggestConnectTimeout>
-				<suggestTimeout>2</suggestTimeout>
-				<trackingConnectTimeout>1</trackingConnectTimeout>
-				<trackingTimeout>2</trackingTimeout>
-				<importConnectTimeout>10</importConnectTimeout>
-				<importTimeout>360</importTimeout>
-			</timeouts>
-		</connection>
+        <connection>
+            <protocol>http</protocol> <!-- possible values: http, https -->
+            <address>demoshop.fact-finder.de</address>
+            <port>80</port>
+            <context>FACT-Finder</context>
+            <channel>de</channel>
+            <language>de</language>
+            <authentication>
+                <type>advanced</type> <!-- possible values: http, simple, advanced -->
+                <username>user</username>
+                <password>userpw</password>
+                <prefix>FACT-FINDER</prefix>
+                <postfix>FACT-FINDER</postfix>
+            </authentication>
+            <!-- all timeouts given in seconds -->
+            <timeouts>
+                <defaultConnectTimeout>2</defaultConnectTimeout>
+                <defaultTimeout>4</defaultTimeout>
+                <suggestConnectTimeout>1</suggestConnectTimeout>
+                <suggestTimeout>2</suggestTimeout>
+                <trackingConnectTimeout>1</trackingConnectTimeout>
+                <trackingTimeout>2</trackingTimeout>
+                <importConnectTimeout>10</importConnectTimeout>
+                <importTimeout>360</importTimeout>
+            </timeouts>
+        </connection>
 
-		<parameters>
-			<!-- parameter settings for the server -->
-			<server>
-				<ignore name="password" />
-				<ignore name="username" />
-				<ignore name="timestamp" />
+        <parameters>
+            <!-- parameter settings for the server -->
+            <server>
+                <ignore name="password"/>
+                <ignore name="username"/>
+                <ignore name="timestamp"/>
 
-				<!-- no whitelist elements means allow everything -->
-				<!-- allow search parameters -->
-				<whitelist name="query" />
-				<whitelist name="followSearch" />
-				<whitelist name="advisorStatus" />
-				<whitelist name="/^filter.*/" />
-				<whitelist name="/^sort.*/" />
-				<whitelist name="productsPerPage" />
-				<whitelist name="navigation" />
-				<whitelist name="catalog" />
-				<whitelist name="page" />
-				<whitelist name="useKeywords" />
-				<whitelist name="useFoundWords" />
-				<whitelist name="searchField" />
-				<whitelist name="omitContextName" />
-				<whitelist name="productNumber" />
-				<whitelist name="useSemanticEnhancer" />
-				<whitelist name="usePersonalization" />
-				<!-- allow general settings parameters -->
-				<whitelist name="channel" />
-				<whitelist name="format" />
-				<whitelist name="idsOnly" />
-				<whitelist name="useAsn" />
-				<whitelist name="useCampaigns" />
-				<whitelist name="verbose" />
-				<whitelist name="log" />
-				<whitelist name="do" />
-				<whitelist name="callback" />
-				<!-- allow suggestions parameters -->
-				<whitelist name="ignoreForCache" />
-				<whitelist name="userInput" />
-				<whitelist name="queryFromSuggest" />
-				<!-- allow tracking parameters -->
-				<whitelist name="id" />
-				<whitelist name="pos" />
-				<whitelist name="sid" />
-				<whitelist name="origPos" />
-				<whitelist name="page" />
-				<whitelist name="simi" />
-				<whitelist name="title" />
-				<whitelist name="event" />
-				<whitelist name="pageSize" />
-				<whitelist name="origPageSize" />
-				<whitelist name="userId" />
-				<whitelist name="cookieId" />
-				<whitelist name="masterId" />
-				<whitelist name="count" />
-				<whitelist name="price" />
-				<!-- allow similar/recommandation parameters -->
-				<whitelist name="maxRecordCount" />
-				<whitelist name="maxResults" />
-				<whitelist name="mainId" />
-				<!-- allow special test cases -->
-				<whitelist name="a" />
-				<whitelist name="c" />
-				<whitelist name="ä" />
-				<whitelist name="ü" />
-				<whitelist name="+ ~" />
+                <!-- no whitelist elements means allow everything -->
+                <!-- allow search parameters -->
+                <whitelist name="query"/>
+                <whitelist name="followSearch"/>
+                <whitelist name="advisorStatus"/>
+                <whitelist name="/^filter.*/"/>
+                <whitelist name="/^sort.*/"/>
+                <whitelist name="productsPerPage"/>
+                <whitelist name="navigation"/>
+                <whitelist name="catalog"/>
+                <whitelist name="page"/>
+                <whitelist name="useKeywords"/>
+                <whitelist name="useFoundWords"/>
+                <whitelist name="searchField"/>
+                <whitelist name="omitContextName"/>
+                <whitelist name="productNumber"/>
+                <whitelist name="useSemanticEnhancer"/>
+                <whitelist name="usePersonalization"/>
+                <!-- allow general settings parameters -->
+                <whitelist name="channel"/>
+                <whitelist name="format"/>
+                <whitelist name="idsOnly"/>
+                <whitelist name="useAsn"/>
+                <whitelist name="useCampaigns"/>
+                <whitelist name="verbose"/>
+                <whitelist name="log"/>
+                <whitelist name="do"/>
+                <whitelist name="callback"/>
+                <!-- allow suggestions parameters -->
+                <whitelist name="ignoreForCache"/>
+                <whitelist name="userInput"/>
+                <whitelist name="queryFromSuggest"/>
+                <!-- allow tracking parameters -->
+                <whitelist name="id"/>
+                <whitelist name="pos"/>
+                <whitelist name="sid"/>
+                <whitelist name="origPos"/>
+                <whitelist name="page"/>
+                <whitelist name="simi"/>
+                <whitelist name="title"/>
+                <whitelist name="event"/>
+                <whitelist name="pageSize"/>
+                <whitelist name="origPageSize"/>
+                <whitelist name="userId"/>
+                <whitelist name="cookieId"/>
+                <whitelist name="masterId"/>
+                <whitelist name="count"/>
+                <whitelist name="price"/>
+                <!-- allow similar/recommandation parameters -->
+                <whitelist name="maxRecordCount"/>
+                <whitelist name="maxResults"/>
+                <whitelist name="mainId"/>
+                <!-- allow special test cases -->
+                <whitelist name="a"/>
+                <whitelist name="c"/>
+                <whitelist name="ä"/>
+                <whitelist name="ü"/>
+                <whitelist name="+ ~"/>
 
-				<mapping from="keywords" to="query" />
-			</server>
+                <mapping from="keywords" to="query"/>
+            </server>
 
-			<!-- parameter settings for the client -->
-			<client>
-				<ignore name="xml" />
-				<ignore name="format" />
-				<ignore name="channel" />
-				<ignore name="password" />
-				<ignore name="username" />
-				<ignore name="timestamp" />
+            <!-- parameter settings for the client -->
+            <client>
+                <ignore name="xml"/>
+                <ignore name="format"/>
+                <ignore name="channel"/>
+                <ignore name="password"/>
+                <ignore name="username"/>
+                <ignore name="timestamp"/>
 
-				<!-- no whitelist elements means allow everything -->
-				<!-- allow search parameters -->
-				<whitelist name="keywords" />
-				<whitelist name="followSearch" />
-				<whitelist name="advisorStatus" />
-				<whitelist name="/^filter.*/" />
-				<whitelist name="seoPath" />
-				<whitelist name="productsPerPage" />
-				<whitelist name="navigation" />
-				<whitelist name="catalog" />
-				<whitelist name="page" />
-				<whitelist name="useKeywords" />
-				<whitelist name="useFoundWords" />
-				<whitelist name="searchField" />
-				<whitelist name="omitContextName" />
-				<whitelist name="productNumber" />
-				<whitelist name="useSemanticEnhancer" />
-				<whitelist name="usePersonalization" />
-				<!-- allow general settings parameters -->
-				<whitelist name="idsOnly" />
-				<whitelist name="useAsn" />
-				<whitelist name="useCampaigns" />
-				<whitelist name="verbose" />
-				<whitelist name="log" />
-				<!-- allow suggestions parameters -->
-				<whitelist name="ignoreForCache" />
-				<whitelist name="userInput" />
-				<whitelist name="queryFromSuggest" />
-				<!-- allow special test cases -->
-				<whitelist name="foo" />
+                <!-- no whitelist elements means allow everything -->
+                <!-- allow search parameters -->
+                <whitelist name="keywords"/>
+                <whitelist name="followSearch"/>
+                <whitelist name="advisorStatus"/>
+                <whitelist name="/^filter.*/"/>
+                <whitelist name="seoPath"/>
+                <whitelist name="productsPerPage"/>
+                <whitelist name="navigation"/>
+                <whitelist name="catalog"/>
+                <whitelist name="page"/>
+                <whitelist name="useKeywords"/>
+                <whitelist name="useFoundWords"/>
+                <whitelist name="searchField"/>
+                <whitelist name="omitContextName"/>
+                <whitelist name="productNumber"/>
+                <whitelist name="useSemanticEnhancer"/>
+                <whitelist name="usePersonalization"/>
+                <!-- allow general settings parameters -->
+                <whitelist name="idsOnly"/>
+                <whitelist name="useAsn"/>
+                <whitelist name="useCampaigns"/>
+                <whitelist name="verbose"/>
+                <whitelist name="log"/>
+                <!-- allow suggestions parameters -->
+                <whitelist name="ignoreForCache"/>
+                <whitelist name="userInput"/>
+                <whitelist name="queryFromSuggest"/>
+                <!-- allow special test cases -->
+                <whitelist name="foo"/>
 
-				<mapping from="query" to="keywords" />
-			</client>
-		</parameters>
+                <mapping from="query" to="keywords"/>
+            </client>
+        </parameters>
 
-		<encoding>
-			<pageContent>UTF-8</pageContent>
-			<clientUrl>ISO-8859-1</clientUrl>
-		</encoding>
-	</test>
+        <encoding>
+            <pageContent>UTF-8</pageContent>
+            <clientUrl>ISO-8859-1</clientUrl>
+        </encoding>
+    </test>
 </configuration>

@@ -1,7 +1,8 @@
 <?php
+
 namespace FACTFinder\Test\Data;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Data\ArticleNumberSearchStatus;
 
 class ArticleNumberSearchStatusTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -14,7 +15,7 @@ class ArticleNumberSearchStatusTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->statusClass = FF::getClassName('Data\ArticleNumberSearchStatus');
+        $this->statusClass = get_class(new ArticleNumberSearchStatus());
     }
 
     public function testTypeSafety()

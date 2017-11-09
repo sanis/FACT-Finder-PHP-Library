@@ -2,7 +2,8 @@
 
 namespace FACTFinder\Test\Core\Server;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Core\Server\ConnectionData;
+use FACTFinder\Core\Server\Response;
 
 class ConnectionDataTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -15,7 +16,7 @@ class ConnectionDataTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->connectionData = FF::getInstance('Core\Server\ConnectionData');
+        $this->connectionData = new ConnectionData();
     }
 
     public function testInitializedEmpty()
@@ -91,8 +92,7 @@ class ConnectionDataTest extends \FACTFinder\Test\BaseTestCase
 
     public function testSetResponse()
     {
-        $response = FF::getInstance(
-            'Core\Server\Response',
+        $response = new Response(
             'response content',
             200,
             0,

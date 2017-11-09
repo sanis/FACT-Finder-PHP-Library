@@ -1,31 +1,27 @@
 <?php
-namespace FACTFinder\Test\Util;
 
-use FACTFinder\Loader as FF;
+namespace FACTFinder\Test\Util;
 
 /**
  * Tests the parts of CurlStub that correspond to cURL's multi interface.
  */
 class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
 {
+    const DEFAULT_RESPONSE = 'default response';
+    const DEFAULT_ERRORCODE = CURLE_COULDNT_RESOLVE_HOST;
+    const DEFAULT_ERRORMESSAGE = 'CURLE_COULDNT_RESOLVE_HOST';
+    const RETURN_RESPONSE = 1;
+    const RETURN_ERRORCODE = 2;
+    const RETURN_ERRORMESSAGE = 3;
+    const RETURN_INFO = 4;
     /**
      * @var FACTFinder\Util\CurlStub
      */
     protected $curlStub;
 
-    const DEFAULT_RESPONSE = 'default response';
-    const DEFAULT_ERRORCODE = CURLE_COULDNT_RESOLVE_HOST;
-    const DEFAULT_ERRORMESSAGE = 'CURLE_COULDNT_RESOLVE_HOST';
-
-    const RETURN_RESPONSE = 1;
-    const RETURN_ERRORCODE = 2;
-    const RETURN_ERRORMESSAGE = 3;
-    const RETURN_INFO = 4;
-
-
     public function setUp()
     {
-        $this->curlStub = FF::getInstance('Util\CurlStub');
+        $this->curlStub = $this->getCurlStub();
         $this->curlStub->setResponse(self::DEFAULT_RESPONSE);
         $this->curlStub->setErrorCode(self::DEFAULT_ERRORCODE);
     }
@@ -38,19 +34,19 @@ class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
         $mh = $curl->multi_init();
 
         // Try invalid multi handle
-        $this->assertEquals(CURLM_BAD_HANDLE, $curl->multi_add_handle($mh+1, $ch));
+        $this->assertEquals(CURLM_BAD_HANDLE, $curl->multi_add_handle($mh + 1, $ch));
         // Try invalid easy handle
-        $this->assertEquals(CURLM_BAD_EASY_HANDLE, $curl->multi_add_handle($mh, $ch+1));
+        $this->assertEquals(CURLM_BAD_EASY_HANDLE, $curl->multi_add_handle($mh, $ch + 1));
 
         $this->assertEquals(CURLM_OK, $curl->multi_add_handle($mh, $ch));
 
         // Try adding again, the exact error code depends on the cURL version
         $this->assertContains(
             $curl->multi_add_handle($mh, $ch),
-            array(
+            [
                 CURLM_BAD_EASY_HANDLE,
-                $curl::M_ADDED_ALREADY
-            )
+                $curl::M_ADDED_ALREADY,
+            ]
         );
 
         // This shouldn't do anything
@@ -76,24 +72,23 @@ class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
 
         ob_start();
 
-        do
-        {
+        do {
             $status = $curl->multi_exec($mh, $still_running);
         } while ($status == CURLM_CALL_MULTI_PERFORM);
 
-        while ($still_running && $status == CURLM_OK)
-        {
-            if ($curl->multi_select($mh) == -1)
+        while ($still_running && $status == CURLM_OK) {
+            if ($curl->multi_select($mh) == -1) {
                 usleep(100);
+            }
 
-            do
-            {
+            do {
                 $status = $curl->multi_exec($mh, $still_running);
             } while ($status == CURLM_CALL_MULTI_PERFORM);
         }
 
-        if ($status != CURLM_OK)
+        if ($status != CURLM_OK) {
             $this->assertFalse(true, 'There was a cURL error: ' . $status);
+        }
 
         $msg = $curl->multi_info_read($mh);
         $this->assertTrue(is_array($msg));
@@ -121,24 +116,23 @@ class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
 
         $curl->multi_add_handle($mh, $ch);
 
-        do
-        {
+        do {
             $status = $curl->multi_exec($mh, $still_running);
         } while ($status == CURLM_CALL_MULTI_PERFORM);
 
-        while ($still_running && $status == CURLM_OK)
-        {
-            if ($curl->multi_select($mh) == -1)
+        while ($still_running && $status == CURLM_OK) {
+            if ($curl->multi_select($mh) == -1) {
                 usleep(100);
+            }
 
-            do
-            {
+            do {
                 $status = $curl->multi_exec($mh, $still_running);
             } while ($status == CURLM_CALL_MULTI_PERFORM);
         }
 
-        if ($status != CURLM_OK)
+        if ($status != CURLM_OK) {
             $this->assertFalse(true, 'There was a cURL error: ' . $status);
+        }
 
         $msg = $curl->multi_info_read($mh);
         $this->assertTrue(is_array($msg));
@@ -165,16 +159,16 @@ class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
         $expectedResponse2 = 'bing page found';
         $url2 = 'http://www.bing.com';
 
-        $requiredOptions1 = array(
-            CURLOPT_URL => $url1
-        );
+        $requiredOptions1 = [
+            CURLOPT_URL => $url1,
+        ];
         $curl->setResponse($expectedResponse1, $requiredOptions1);
-        $requiredOptions2 = array(
-            CURLOPT_URL => $url2
-        );
+        $requiredOptions2 = [
+            CURLOPT_URL => $url2,
+        ];
         $curl->setResponse($expectedResponse2, $requiredOptions2);
 
-        $ch = array();
+        $ch = [];
 
         // Setting wrong URL should give default response
         $ch[0] = $curl->init('http://www.yahoo.com');
@@ -191,27 +185,25 @@ class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
         $curl->multi_add_handle($mh, $ch[1]);
         $curl->multi_add_handle($mh, $ch[2]);
 
-        do
-        {
+        do {
             $status = $curl->multi_exec($mh, $still_running);
         } while ($status == CURLM_CALL_MULTI_PERFORM);
 
-        while ($still_running && $status == CURLM_OK)
-        {
-            if ($curl->multi_select($mh) == -1)
+        while ($still_running && $status == CURLM_OK) {
+            if ($curl->multi_select($mh) == -1) {
                 usleep(100);
+            }
 
-            do
-            {
+            do {
                 $status = $curl->multi_exec($mh, $still_running);
             } while ($status == CURLM_CALL_MULTI_PERFORM);
         }
 
-        if ($status != CURLM_OK)
+        if ($status != CURLM_OK) {
             $this->assertFalse(true, 'There was a cURL error: ' . $status);
+        }
 
-        for ($i = 0; $i < 3; ++$i)
-        {
+        for ($i = 0; $i < 3; ++$i) {
             $msg = $curl->multi_info_read($mh);
             $this->assertTrue(is_array($msg));
             $this->assertEquals(CURLMSG_DONE, $msg['msg']);
@@ -221,12 +213,18 @@ class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
             $this->assertTrue(in_array($handle, $ch));
         }
 
-        $this->assertEquals(self::DEFAULT_RESPONSE,
-                            $curl->multi_getcontent($ch[0]));
-        $this->assertEquals($expectedResponse1,
-                            $curl->multi_getcontent($ch[1]));
-        $this->assertEquals($expectedResponse2,
-                            $curl->multi_getcontent($ch[2]));
+        $this->assertEquals(
+            self::DEFAULT_RESPONSE,
+            $curl->multi_getcontent($ch[0])
+        );
+        $this->assertEquals(
+            $expectedResponse1,
+            $curl->multi_getcontent($ch[1])
+        );
+        $this->assertEquals(
+            $expectedResponse2,
+            $curl->multi_getcontent($ch[2])
+        );
 
         $curl->multi_remove_handle($mh, $ch[0]);
         $curl->multi_remove_handle($mh, $ch[1]);
@@ -248,16 +246,16 @@ class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
         $expectedResponse2 = 'bing page found';
         $url2 = 'http://www.bing.com';
 
-        $requiredOptions1 = array(
-            CURLOPT_URL => $url1
-        );
+        $requiredOptions1 = [
+            CURLOPT_URL => $url1,
+        ];
         $curl->setResponse($expectedResponse1, $requiredOptions1);
-        $requiredOptions2 = array(
-            CURLOPT_URL => $url2
-        );
+        $requiredOptions2 = [
+            CURLOPT_URL => $url2,
+        ];
         $curl->setResponse($expectedResponse2, $requiredOptions2);
 
-        $ch = array();
+        $ch = [];
 
         // Setting wrong URL should give default response
         $ch[0] = $curl->init('http://www.yahoo.com');
@@ -274,25 +272,22 @@ class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
         $curl->multi_add_handle($mh, $ch[1]);
         $curl->multi_add_handle($mh, $ch[2]);
 
-        do
-        {
+        do {
             $status = $curl->multi_exec($mh, $still_running);
         } while ($status == CURLM_CALL_MULTI_PERFORM);
 
-        $responseObtained = array(false, false, false);
+        $responseObtained = [false, false, false];
 
-        while ($still_running && $status == CURLM_OK)
-        {
-            if ($curl->multi_select($mh) == -1)
+        while ($still_running && $status == CURLM_OK) {
+            if ($curl->multi_select($mh) == -1) {
                 usleep(100);
+            }
 
-            do
-            {
+            do {
                 $status = $curl->multi_exec($mh, $still_running);
             } while ($status == CURLM_CALL_MULTI_PERFORM);
 
-            while ($msg = $curl->multi_info_read($mh))
-            {
+            while ($msg = $curl->multi_info_read($mh)) {
                 $this->assertTrue(is_array($msg));
                 $this->assertEquals(self::DEFAULT_ERRORCODE, $msg['result']);
 
@@ -305,32 +300,38 @@ class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
                 $this->assertTrue(in_array($handle, $ch));
 
                 $actualResponse = $curl->multi_getcontent($handle);
-                switch ($handle)
-                {
-                case $ch[0]:
-                    $this->assertFalse($responseObtained[0], "Response already fetched.");
-                    $this->assertEquals(self::DEFAULT_RESPONSE,
-                                        $actualResponse);
-                    $responseObtained[0] = true;
-                    break;
-                case $ch[1]:
-                    $this->assertFalse($responseObtained[1], "Response already fetched.");
-                    $this->assertEquals($expectedResponse1,
-                                        $actualResponse);
-                    $responseObtained[1] = true;
-                    break;
-                case $ch[2]:
-                    $this->assertFalse($responseObtained[2], "Response already fetched.");
-                    $this->assertEquals($expectedResponse2,
-                                        $actualResponse);
-                    $responseObtained[2] = true;
-                    break;
+                switch ($handle) {
+                    case $ch[0]:
+                        $this->assertFalse($responseObtained[0], "Response already fetched.");
+                        $this->assertEquals(
+                            self::DEFAULT_RESPONSE,
+                            $actualResponse
+                        );
+                        $responseObtained[0] = true;
+                        break;
+                    case $ch[1]:
+                        $this->assertFalse($responseObtained[1], "Response already fetched.");
+                        $this->assertEquals(
+                            $expectedResponse1,
+                            $actualResponse
+                        );
+                        $responseObtained[1] = true;
+                        break;
+                    case $ch[2]:
+                        $this->assertFalse($responseObtained[2], "Response already fetched.");
+                        $this->assertEquals(
+                            $expectedResponse2,
+                            $actualResponse
+                        );
+                        $responseObtained[2] = true;
+                        break;
                 }
             }
         }
 
-        if ($status != CURLM_OK)
+        if ($status != CURLM_OK) {
             $this->assertFalse(true, 'There was a cURL error: ' . $status);
+        }
 
         $this->assertFalse(in_array(false, $responseObtained));
 
@@ -362,37 +363,37 @@ class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
         $userAgent4 = $userAgent2;
         $referer4 = 'http://mail.google.com';
 
-        $requiredOptions1 = array(
-            CURLOPT_URL => $url1
-        );
+        $requiredOptions1 = [
+            CURLOPT_URL => $url1,
+        ];
         $curl->setResponse($expectedResponse1, $requiredOptions1);
-        $requiredOptions2 = array(
-            CURLOPT_URL => $url2,
-            CURLOPT_USERAGENT => $userAgent2
-        );
+        $requiredOptions2 = [
+            CURLOPT_URL       => $url2,
+            CURLOPT_USERAGENT => $userAgent2,
+        ];
         $curl->setResponse($expectedResponse2, $requiredOptions2);
-        $requiredOptions3 = array(
-            CURLOPT_URL => $url3,
-            CURLOPT_USERAGENT => $userAgent3
-        );
+        $requiredOptions3 = [
+            CURLOPT_URL       => $url3,
+            CURLOPT_USERAGENT => $userAgent3,
+        ];
         $curl->setResponse($expectedResponse3, $requiredOptions3);
-        $requiredOptions4 = array(
-            CURLOPT_URL => $url4,
+        $requiredOptions4 = [
+            CURLOPT_URL       => $url4,
             CURLOPT_USERAGENT => $userAgent4,
-            CURLOPT_REFERER => $referer4
-        );
+            CURLOPT_REFERER   => $referer4,
+        ];
         $curl->setResponse($expectedResponse4, $requiredOptions4);
 
-        $tooSpecificOptions = array(
-            CURLOPT_URL => $url1,
-            CURLOPT_USERAGENT => "Mozilla/5.0 (Windows NT 6.1; WOW64)"
-        );
+        $tooSpecificOptions = [
+            CURLOPT_URL       => $url1,
+            CURLOPT_USERAGENT => "Mozilla/5.0 (Windows NT 6.1; WOW64)",
+        ];
 
-        $unmatchedOptions = array(
-            CURLOPT_REFERER => $referer4
-        );
+        $unmatchedOptions = [
+            CURLOPT_REFERER => $referer4,
+        ];
 
-        $ch = array();
+        $ch = [];
 
         // Setting wrong URL should give default response
         $ch[0] = $curl->init('http://www.yahoo.com');
@@ -429,27 +430,25 @@ class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
         $curl->multi_add_handle($mh, $ch[6]);
         $curl->multi_add_handle($mh, $ch[7]);
 
-        do
-        {
+        do {
             $status = $curl->multi_exec($mh, $still_running);
         } while ($status == CURLM_CALL_MULTI_PERFORM);
 
-        while ($still_running && $status == CURLM_OK)
-        {
-            if ($curl->multi_select($mh) == -1)
+        while ($still_running && $status == CURLM_OK) {
+            if ($curl->multi_select($mh) == -1) {
                 usleep(100);
+            }
 
-            do
-            {
+            do {
                 $status = $curl->multi_exec($mh, $still_running);
             } while ($status == CURLM_CALL_MULTI_PERFORM);
         }
 
-        if ($status != CURLM_OK)
+        if ($status != CURLM_OK) {
             $this->assertFalse(true, 'There was a cURL error: ' . $status);
+        }
 
-        for ($i = 0; $i < 8; ++$i)
-        {
+        for ($i = 0; $i < 8; ++$i) {
             $msg = $curl->multi_info_read($mh);
             $this->assertTrue(is_array($msg));
             $this->assertEquals(CURLMSG_DONE, $msg['msg']);
@@ -459,22 +458,38 @@ class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
             $this->assertTrue(in_array($handle, $ch));
         }
 
-        $this->assertEquals(self::DEFAULT_RESPONSE,
-                            $curl->multi_getcontent($ch[0]));
-        $this->assertEquals($expectedResponse1,
-                            $curl->multi_getcontent($ch[1]));
-        $this->assertEquals($expectedResponse2,
-                            $curl->multi_getcontent($ch[2]));
-        $this->assertEquals($expectedResponse3,
-                            $curl->multi_getcontent($ch[3]));
-        $this->assertEquals($expectedResponse4,
-                            $curl->multi_getcontent($ch[4]));
-        $this->assertEquals($expectedResponse1,
-                            $curl->multi_getcontent($ch[5]));
-        $this->assertEquals(self::DEFAULT_RESPONSE,
-                            $curl->multi_getcontent($ch[6]));
-        $this->assertEquals(self::DEFAULT_RESPONSE,
-                            $curl->multi_getcontent($ch[7]));
+        $this->assertEquals(
+            self::DEFAULT_RESPONSE,
+            $curl->multi_getcontent($ch[0])
+        );
+        $this->assertEquals(
+            $expectedResponse1,
+            $curl->multi_getcontent($ch[1])
+        );
+        $this->assertEquals(
+            $expectedResponse2,
+            $curl->multi_getcontent($ch[2])
+        );
+        $this->assertEquals(
+            $expectedResponse3,
+            $curl->multi_getcontent($ch[3])
+        );
+        $this->assertEquals(
+            $expectedResponse4,
+            $curl->multi_getcontent($ch[4])
+        );
+        $this->assertEquals(
+            $expectedResponse1,
+            $curl->multi_getcontent($ch[5])
+        );
+        $this->assertEquals(
+            self::DEFAULT_RESPONSE,
+            $curl->multi_getcontent($ch[6])
+        );
+        $this->assertEquals(
+            self::DEFAULT_RESPONSE,
+            $curl->multi_getcontent($ch[7])
+        );
 
         $curl->multi_remove_handle($mh, $ch[0]);
         $curl->multi_remove_handle($mh, $ch[1]);
@@ -532,20 +547,19 @@ class CurlStubMultiTest extends \FACTFinder\Test\BaseTestCase
 
         $result = null;
 
-        switch($returnFlag)
-        {
-        case self::RETURN_RESPONSE:
-            $result = $actualResponse;
-            break;
-        case self::RETURN_ERRORCODE:
-            $result = $curl->errno($ch);
-            break;
-        case self::RETURN_ERRORMESSAGE:
-            $result = $curl->error($ch);
-            break;
-        case self::RETURN_INFO:
-            $result = $curl->getinfo($ch, $opt);
-            break;
+        switch ($returnFlag) {
+            case self::RETURN_RESPONSE:
+                $result = $actualResponse;
+                break;
+            case self::RETURN_ERRORCODE:
+                $result = $curl->errno($ch);
+                break;
+            case self::RETURN_ERRORMESSAGE:
+                $result = $curl->error($ch);
+                break;
+            case self::RETURN_INFO:
+                $result = $curl->getinfo($ch, $opt);
+                break;
         }
 
         $curl->close($ch);

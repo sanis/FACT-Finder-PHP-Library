@@ -1,7 +1,8 @@
 <?php
+
 namespace FACTFinder\Test\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Adapter\SimilarRecords;
 
 class SimilarRecordsTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -14,12 +15,14 @@ class SimilarRecordsTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->adapter = FF::getInstance(
-            'Adapter\SimilarRecords',
-            self::$dic['configuration'],
-            self::$dic['request'],
-            self::$dic['clientUrlBuilder']
-        );
+        $configuration = $this->getConfiguration(static::class);
+        $encodingConverter = $this->getConverter($configuration);
+        $requestParser = $this->getRequestParser($configuration, $encodingConverter);
+        $clientUrlBuilder = $this->getClientUrlBuilder($configuration, $requestParser, $encodingConverter);
+        $requestFactory = $this->getRequestFactory($configuration, $requestParser);
+        $request = $this->getRequest($requestFactory);
+
+        $this->adapter = new SimilarRecords($configuration, $request, $clientUrlBuilder);
     }
 
     public function testSimilarRecordLoading()
@@ -62,7 +65,11 @@ class SimilarRecordsTest extends \FACTFinder\Test\BaseTestCase
         $this->assertInstanceOf('FACTFinder\Data\Record', $similarRecords[0], 'similar product is no record');
         $this->assertNotEmpty($similarRecords[0], 'first similar record is empty');
         $this->assertEquals('221911', $similarRecords[0]->getId(), 'no new request was made');
-        $this->assertEquals('..BMX Bikes..', $similarRecords[0]->getField('Category3'), 'not full similar record details loaded after switching to idsOnly=false');
+        $this->assertEquals(
+            '..BMX Bikes..',
+            $similarRecords[0]->getField('Category3'),
+            'not full similar record details loaded after switching to idsOnly=false'
+        );
     }
 
     public function testMaxRecordCount()

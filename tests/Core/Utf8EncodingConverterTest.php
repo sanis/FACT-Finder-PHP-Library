@@ -2,7 +2,8 @@
 
 namespace FACTFinder\Test\Core;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Core\ManualConfiguration;
+use FACTFinder\Core\Utf8EncodingConverter;
 
 class Utf8EncodingConverterTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -22,19 +23,14 @@ class Utf8EncodingConverterTest extends \FACTFinder\Test\BaseTestCase
 
         parent::setUp();
 
-        $configuration = FF::getInstance(
-            'Core\ManualConfiguration',
+        $configuration = new ManualConfiguration(
             [
                 'pageContentEncoding' => 'ISO-8859-1',
                 'clientUrlEncoding'   => 'ISO-8859-1',
             ]
         );
 
-        $this->encodingConverter = FF::getInstance(
-            'Core\Utf8EncodingConverter',
-            $configuration
-        );
-
+        $this->encodingConverter = new Utf8EncodingConverter($configuration);
     }
 
     public function testEncodeContentForPage()

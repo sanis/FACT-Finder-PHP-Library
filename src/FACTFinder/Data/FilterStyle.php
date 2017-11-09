@@ -34,7 +34,7 @@ class FilterStyle
     // By the way, alternatively we could generate these instances lazily in all
     // the getters at the bottom.
 
-    private function __construct()
+    public function __construct()
     {
         $this->id = self::$nextID++;
     }

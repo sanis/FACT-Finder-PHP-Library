@@ -1,7 +1,8 @@
 <?php
+
 namespace FACTFinder\Test\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Adapter\ProductCampaign;
 
 class ProductCampaignTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -14,18 +15,19 @@ class ProductCampaignTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->adapter = FF::getInstance(
-            'Adapter\ProductCampaign',
-            self::$dic['configuration'],
-            self::$dic['request'],
-            self::$dic['clientUrlBuilder']
-        );
+        $configuration = $this->getConfiguration(static::class);
+        $encodingConverter = $this->getConverter($configuration);
+        $requestParser = $this->getRequestParser($configuration, $encodingConverter);
+        $clientUrlBuilder = $this->getClientUrlBuilder($configuration, $requestParser, $encodingConverter);
+        $requestFactory = $this->getRequestFactory($configuration, $requestParser);
+        $request = $this->getRequest($requestFactory);
 
+        $this->adapter = new ProductCampaign($configuration, $request, $clientUrlBuilder);
     }
 
     public function testProductCampaignLoading()
     {
-        $productNumbers = array();
+        $productNumbers = [];
         $productNumbers[] = 123;
         $productNumbers[] = 456; // should be ignored
         $this->adapter->setProductNumbers($productNumbers);
@@ -50,35 +52,39 @@ class ProductCampaignTest extends \FACTFinder\Test\BaseTestCase
 
         $this->assertFalse($campaigns->hasActiveQuestions());
     }
-    
+
     public function testIdsOnlyProductCampaignLoading()
     {
-        $productNumbers = array();
+        $productNumbers = [];
         $productNumbers[] = 123;
         $productNumbers[] = 456; // should be ignored
         $this->adapter->setProductNumbers($productNumbers);
         $this->adapter->setIdsOnly(true);
         $campaigns = $this->adapter->getCampaigns();
-        
+
         $this->assertTrue($campaigns->hasPushedProducts());
         $products = $campaigns->getPushedProducts();
         $this->assertEquals(1, count($products));
         $this->assertEquals('221910', $products[0]->getId());
         $this->assertNull($products[0]->getField('Brand'));
-        
+
         $this->adapter->setIdsOnly(false);
         $campaigns = $this->adapter->getCampaigns();
-        
+
         $this->assertTrue($campaigns->hasPushedProducts());
         $products = $campaigns->getPushedProducts();
         $this->assertEquals(1, count($products));
         $this->assertEquals('221910', $products[0]->getId());
-        $this->assertEquals('KHE', $products[0]->getField('Brand'), 'not full record details loaded after switching to idsOnly=false');
+        $this->assertEquals(
+            'KHE',
+            $products[0]->getField('Brand'),
+            'not full record details loaded after switching to idsOnly=false'
+        );
     }
 
     public function testShoppingCartCampaignLoading()
     {
-        $productNumbers = array();
+        $productNumbers = [];
         $productNumbers[] = 456;
         $productNumbers[] = 789;
         $this->adapter->makeShoppingCartCampaign();

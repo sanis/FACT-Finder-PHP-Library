@@ -19,7 +19,7 @@ class FilterSelectionType
     static private $initialized = false;
     private $id;
 
-    private function __construct()
+    public function __construct()
     {
         $this->id = self::$nextID++;
     }

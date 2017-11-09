@@ -2,7 +2,7 @@
 
 namespace FACTFinder\Test\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Adapter\TagCloud;
 
 class TagCloudTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -18,12 +18,14 @@ class TagCloudTest extends \FACTFinder\Test\BaseTestCase
         // For the request parser to retrieve
         $_SERVER['REQUEST_URI'] = '/index.php';
 
-        $this->adapter = FF::getInstance(
-            'Adapter\TagCloud',
-            self::$dic['configuration'],
-            self::$dic['request'],
-            self::$dic['clientUrlBuilder']
-        );
+        $configuration = $this->getConfiguration(static::class);
+        $encodingConverter = $this->getConverter($configuration);
+        $requestParser = $this->getRequestParser($configuration, $encodingConverter);
+        $clientUrlBuilder = $this->getClientUrlBuilder($configuration, $requestParser, $encodingConverter);
+        $requestFactory = $this->getRequestFactory($configuration, $requestParser);
+        $request = $this->getRequest($requestFactory);
+
+        $this->adapter = new TagCloud($configuration, $request, $clientUrlBuilder);
     }
 
     public function testGetTagCloud()

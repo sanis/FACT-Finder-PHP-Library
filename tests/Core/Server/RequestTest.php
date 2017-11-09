@@ -2,7 +2,9 @@
 
 namespace FACTFinder\Test\Core\Server;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Core\Server\ConnectionData;
+use FACTFinder\Core\Server\FileSystemDataProvider;
+use FACTFinder\Core\Server\Request;
 
 class RequestTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -19,20 +21,15 @@ class RequestTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $dataProvider = FF::getInstance(
-            'Core\Server\FileSystemDataProvider',
-            self::$dic['configuration']
-        );
+        $configuration = $this->getConfiguration(static::class);
 
+        $dataProvider = new FileSystemDataProvider(
+            $configuration
+        );
         $dataProvider->setFileLocation(RESOURCES_DIR . DS . 'responses');
 
-        $this->request = FF::getInstance(
-            'Core\Server\Request',
-            FF::getInstance('Core\Server\ConnectionData'),
-            $dataProvider
-        );
-
-        $this->configuration = self::$dic['configuration'];
+        $this->request = new Request(new ConnectionData(), $dataProvider);
+        $this->configuration = $configuration;
     }
 
     public function testGetResponse()

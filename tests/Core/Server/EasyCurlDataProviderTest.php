@@ -2,7 +2,8 @@
 
 namespace FACTFinder\Test\Core\Server;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Core\Server\ConnectionData;
+use FACTFinder\Core\Server\EasyCurlDataProvider;
 
 class EasyCurlDataProviderTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -23,15 +24,18 @@ class EasyCurlDataProviderTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->curlStub = FF::getInstance('Util\CurlStub');
-        $this->dataProvider = FF::getInstance(
-            'Core\Server\EasyCurlDataProvider',
-            self::$dic['configuration'],
-            $this->curlStub,
-            self::$dic['serverUrlBuilder']
+        $curlStub = $this->getCurlStub();
+        $configuration = $this->getConfiguration(static::class);
+        $serverUrlBuilder = $this->getServerUrlBuilder($configuration);
+
+        $this->dataProvider = new EasyCurlDataProvider(
+            $configuration,
+            $curlStub,
+            $serverUrlBuilder
         );
 
-        $this->configuration = self::$dic['configuration'];
+        $this->configuration = $configuration;
+        $this->curlStub = $curlStub;
     }
 
     public function testLoadResponse()
@@ -49,7 +53,7 @@ class EasyCurlDataProviderTest extends \FACTFinder\Test\BaseTestCase
         $this->curlStub->setResponse($responseContent, $requiredOptions);
         $this->curlStub->setInformation($info, $requiredOptions);
 
-        $connectionData = FF::getInstance('Core\Server\ConnectionData');
+        $connectionData = new ConnectionData();
         $id = $this->dataProvider->register($connectionData);
 
         $parameters = $connectionData->getParameters();

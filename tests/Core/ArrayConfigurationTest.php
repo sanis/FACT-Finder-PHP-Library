@@ -13,7 +13,7 @@ class ArrayConfigurationTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->configuration = self::$dic['configuration'];
+        $this->configuration = $this->getConfiguration(static::class);
     }
 
     public function testTopLevelSettings()

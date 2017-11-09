@@ -1,7 +1,8 @@
 <?php
+
 namespace FACTFinder\Test\Data;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Data\SortingDirection;
 
 class SortingDirectionTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -14,7 +15,7 @@ class SortingDirectionTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->directionClass = FF::getClassName('Data\SortingDirection');
+        $this->directionClass = get_class(new SortingDirection());
     }
 
     public function testTypeSafety()

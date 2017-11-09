@@ -2,7 +2,8 @@
 
 namespace FACTFinder\Test\Core;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Core\IConvEncodingConverter;
+use FACTFinder\Core\ManualConfiguration;
 
 class IConvEncodingConverterTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -21,18 +22,14 @@ class IConvEncodingConverterTest extends \FACTFinder\Test\BaseTestCase
 
         parent::setUp();
 
-        $configuration = FF::getInstance(
-            'Core\ManualConfiguration',
+        $configuration = new ManualConfiguration(
             [
                 'pageContentEncoding' => 'ISO-8859-1',
                 'clientUrlEncoding'   => 'ISO-8859-1',
             ]
         );
 
-        $this->encodingConverter = FF::getInstance(
-            'Core\IConvEncodingConverter',
-            $configuration
-        );
+        $this->encodingConverter = new IConvEncodingConverter($configuration);
     }
 
     public function testEncodeContentForPage()

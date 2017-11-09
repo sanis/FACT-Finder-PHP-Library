@@ -1,7 +1,8 @@
 <?php
+
 namespace FACTFinder\Test\Adapter;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Adapter\Recommendation;
 
 class RecommendationTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -14,12 +15,14 @@ class RecommendationTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->adapter = FF::getInstance(
-            'Adapter\Recommendation',
-            self::$dic['configuration'],
-            self::$dic['request'],
-            self::$dic['clientUrlBuilder']
-        );
+        $configuration = $this->getConfiguration(static::class);
+        $encodingConverter = $this->getConverter($configuration);
+        $requestParser = $this->getRequestParser($configuration, $encodingConverter);
+        $clientUrlBuilder = $this->getClientUrlBuilder($configuration, $requestParser, $encodingConverter);
+        $requestFactory = $this->getRequestFactory($configuration, $requestParser);
+        $request = $this->getRequest($requestFactory);
+
+        $this->adapter = new Recommendation($configuration, $request, $clientUrlBuilder);
     }
 
     public function testRecommendationLoading()
@@ -62,12 +65,16 @@ class RecommendationTest extends \FACTFinder\Test\BaseTestCase
         $recommendations = $this->adapter->getRecommendations();
         $this->adapter->setIdsOnly(false);
         $recommendations = $this->adapter->getRecommendations();
-        $this->assertEquals('..Fahrräder..', $recommendations[0]->getField('Category1'), 'not full recommendation record details loaded after switching to idsOnly=false');
+        $this->assertEquals(
+            '..Fahrräder..',
+            $recommendations[0]->getField('Category1'),
+            'not full recommendation record details loaded after switching to idsOnly=false'
+        );
     }
 
     public function testMultiProductRecommendationLoading()
     {
-        $this->adapter->setProductIds(array('274036', '233431'));
+        $this->adapter->setProductIds(['274036', '233431']);
         $recommendations = $this->adapter->getRecommendations();
 
         $this->assertEquals(1, count($recommendations), 'wrong number of recommendations delivered');

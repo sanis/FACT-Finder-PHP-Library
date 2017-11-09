@@ -2,7 +2,19 @@
 
 namespace FACTFinder\Test;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Core\AbstractEncodingConverter;
+use FACTFinder\Core\ArrayConfiguration;
+use FACTFinder\Core\Client\RequestParser;
+use FACTFinder\Core\ConfigurationInterface;
+use FACTFinder\Core\IConvEncodingConverter;
+use FACTFinder\Core\Server\AbstractDataProvider;
+use FACTFinder\Core\Server\FileSystemDataProvider;
+use FACTFinder\Core\Server\FileSystemRequestFactory;
+use FACTFinder\Core\Server\Request;
+use FACTFinder\Core\Server\UrlBuilder;
+use FACTFinder\Core\Utf8EncodingConverter;
+use FACTFinder\Core\XmlConfiguration;
+use FACTFinder\Util\CurlStub;
 use Psr\Log\NullLogger;
 
 /**
@@ -14,116 +26,121 @@ use Psr\Log\NullLogger;
 class BaseTestCase extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var FACTFinder\Util\Pimple Dependency injection container
+     * @return NullLogger
      */
-    protected static $dic;
-
-    public static function getLogger()
+    public function getLogger()
     {
         return new NullLogger();
     }
 
-    public static function setUpBeforeClass()
+    /**
+     * @param $class
+     *
+     * @return ArrayConfiguration|XmlConfiguration
+     */
+    public function getConfiguration($class)
     {
-
-        // Set up dependency injection container (Pimple)
-
-        self::$dic = FF::getInstance('Util\Pimple');
-
-        if (strpos(static::class, 'ArrayConfiguration')) {
-            self::$dic['configuration'] = function ($c) {
-                $config = include RESOURCES_DIR . DS . 'config.php';
-                return FF::getInstance(
-                    'Core\ArrayConfiguration',
-                    $config,
-                    'test'
-                );
-            };
+        if (strpos($class, 'ArrayConfiguration')) {
+            $config = include RESOURCES_DIR . DS . 'config.php';
+            return new ArrayConfiguration($config, 'test');
         } else {
-            self::$dic['configuration'] = function ($c) {
-                return FF::getInstance(
-                    'Core\XmlConfiguration',
-                    RESOURCES_DIR . DS . 'config.xml',
-                    'test'
-                );
-            };
+            return new XmlConfiguration(RESOURCES_DIR . DS . 'config.xml', 'test');
         }
+    }
 
-        // $this cannot be passed into closures before PHP 5.4
-        //$that = $this;
-        self::$dic['encodingConverter'] = function ($c) {
-            if (extension_loaded('iconv')) {
-                $type = 'Core\IConvEncodingConverter';
-            } elseif (function_exists('utf8_encode')
-                && function_exists('utf8_decode')) {
-                $type = 'Core\Utf8EncodingConverter';
-            } else {
-                return;
-            }
-            //TODO: Skip test if no conversion method is available.
-            //    $that->markTestSkipped('No encoding conversion available.');
+    /**
+     * @param ConfigurationInterface $configuration
+     *
+     * @return AbstractEncodingConverter
+     */
+    public function getConverter($configuration)
+    {
+        if (extension_loaded('iconv')) {
+            $type = IConvEncodingConverter::class;
+        } elseif (function_exists('utf8_encode') && function_exists('utf8_decode')) {
+            $type = Utf8EncodingConverter::class;
+        } else {
+            return;
+        }
+        //TODO: Skip test if no conversion method is available.
+        //    $that->markTestSkipped('No encoding conversion available.');
 
-            return FF::getInstance(
-                $type,
-                $c['configuration']
-            );
-        };
+        return new $type($configuration);
+    }
 
-        self::$dic['serverUrlBuilder'] = function ($c) {
-            return FF::getInstance(
-                'Core\Server\UrlBuilder',
-                $c['configuration']
-            );
-        };
+    /**
+     * @param ConfigurationInterface $configuration
+     *
+     * @return UrlBuilder
+     */
+    public function getServerUrlBuilder($configuration)
+    {
+        return new UrlBuilder($configuration);
+    }
 
-        self::$dic['clientUrlBuilder'] = function ($c) {
-            return FF::getInstance(
-                'Core\Client\UrlBuilder',
-                $c['configuration'],
-                $c['requestParser'],
-                $c['encodingConverter']
-            );
-        };
+    /**
+     * @param ConfigurationInterface    $configuration
+     * @param RequestParser             $requestParser
+     * @param AbstractEncodingConverter $encodingConverter
+     *
+     * @return \FACTFinder\Core\Client\UrlBuilder
+     */
+    public function getClientUrlBuilder($configuration, $requestParser, $encodingConverter)
+    {
+        return new \FACTFinder\Core\Client\UrlBuilder($configuration, $requestParser, $encodingConverter);
+    }
 
-        self::$dic['curlStub'] = function ($c) {
-            return FF::getInstance('Util\CurlStub');
-        };
+    /**
+     * @return CurlStub
+     */
+    public function getCurlStub()
+    {
+        return new CurlStub();
+    }
 
-        self::$dic['dataProvider'] = function ($c) {
-            $dataProvider = FF::getInstance(
-                'Core\Server\FileSystemDataProvider',
-                $c['configuration']
-            );
+    /**
+     * @param ConfigurationInterface $configuration
+     *
+     * @return AbstractDataProvider
+     */
+    public function getDataProvider($configuration)
+    {
+        $dataProvider = new FileSystemDataProvider($configuration);
+        $dataProvider->setFileLocation(RESOURCES_DIR . DS . 'responses');
+        return $dataProvider;
+    }
 
-            $dataProvider->setFileLocation(RESOURCES_DIR . DS . 'responses');
+    /**
+     * @param ConfigurationInterface $configuration
+     * @param RequestParser          $requestParser
+     *
+     * @return FileSystemRequestFactory
+     */
+    public function getRequestFactory($configuration, $requestParser)
+    {
+        $requestFactory = new FileSystemRequestFactory($configuration, $requestParser->getRequestParameters());
+        $requestFactory->setFileLocation(RESOURCES_DIR . DS . 'responses');
+        return $requestFactory;
+    }
 
-            return $dataProvider;
-        };
+    /**
+     * @param FileSystemRequestFactory $requestFactory
+     *
+     * @return Request
+     */
+    public function getRequest($requestFactory)
+    {
+        return $requestFactory->getRequest();
+    }
 
-        self::$dic['requestFactory'] = function ($c) {
-            $requestFactory = FF::getInstance(
-                'Core\Server\FileSystemRequestFactory',
-                $c['configuration'],
-                $c['requestParser']->getRequestParameters()
-            );
-
-            $requestFactory->setFileLocation(RESOURCES_DIR . DS . 'responses');
-
-            return $requestFactory;
-        };
-
-        self::$dic['request'] = self::$dic->factory(
-            function ($c) {
-                return $c['requestFactory']->getRequest();
-            }
-        );
-
-        self::$dic['requestParser'] = function ($c) {
-            return FF::getInstance(
-                'Core\Client\RequestParser',
-                $c['configuration'],
-                $c['encodingConverter']
-            );
-        };
+    /**
+     * @param ConfigurationInterface    $configuration
+     * @param AbstractEncodingConverter $encodingConverter
+     *
+     * @return RequestParser
+     */
+    public function getRequestParser($configuration, $encodingConverter)
+    {
+        return new RequestParser($configuration, $encodingConverter);
     }
 }

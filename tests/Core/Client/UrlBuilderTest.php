@@ -1,7 +1,8 @@
 <?php
+
 namespace FACTFinder\Test\Core\Client;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Util\Parameters;
 
 class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -19,14 +20,14 @@ class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->urlBuilder = FF::getInstance(
-            'Core\Client\UrlBuilder',
-            self::$dic['configuration'],
-            self::$dic['requestParser'],
-            self::$dic['encodingConverter']
-        );
+        $configuration = $this->getConfiguration(static::class);
+        $encodingConverter = $this->getConverter($configuration);
+        $requestParser = $this->getRequestParser($configuration, $encodingConverter);
+        $clientUrlBuilder = $this->getClientUrlBuilder($configuration, $requestParser, $encodingConverter);
 
-        $this->parameters = FF::getInstance('Util\Parameters');
+        $this->urlBuilder = $clientUrlBuilder;
+
+        $this->parameters = new Parameters();
     }
 
     public function testGenerateUrlFromRequestTarget()

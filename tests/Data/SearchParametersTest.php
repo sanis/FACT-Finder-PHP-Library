@@ -2,7 +2,8 @@
 
 namespace FACTFinder\Test\Data;
 
-use FACTFinder\Loader as FF;
+use FACTFinder\Data\SearchParameters;
+use FACTFinder\Util\Parameters;
 
 class SearchParametersTest extends \FACTFinder\Test\BaseTestCase
 {
@@ -14,7 +15,7 @@ class SearchParametersTest extends \FACTFinder\Test\BaseTestCase
 
     public function testConstructionFromParameters()
     {
-        $parameters = FF::getInstance('Util\Parameters');
+        $parameters = new Parameters();
         $parameters['query'] = 'bmx';
         $parameters['seoPath'] = '/bmx-bike/q';
         $parameters['channel'] = 'de';
@@ -26,10 +27,7 @@ class SearchParametersTest extends \FACTFinder\Test\BaseTestCase
         $parameters['catalog'] = 'true';
         $parameters['followSearch'] = '9832';
 
-        $searchParameters = FF::getInstance(
-            'Data\SearchParameters',
-            $parameters
-        );
+        $searchParameters = new SearchParameters($parameters);
 
         $this->assertEquals('bmx', $searchParameters->getQuery());
         $this->assertEquals('/bmx-bike/q', $searchParameters->getSeoPath());

@@ -1,36 +1,36 @@
 {
-    "attributes": [
-        {
-            "name": "Category3",
-            "value": "..BMX Bikes.."
-        },
-        {
-            "name": "Category2",
-            "value": "..BMX..|..Fahrräder.."
-        },
-        {
-            "name": "Category1",
-            "value": "..Fahrräder..|..SALE.."
-        }
-    ],
-    "records": [
-        {
-            "fieldNames": [],
-            "id": "278006",
-            "record": {},
-            "simiMalusMul": 1
-        },
-        {
-            "fieldNames": [],
-            "id": "278024",
-            "record": {},
-            "simiMalusMul": 1
-        },
-        {
-            "fieldNames": [],
-            "id": "355436",
-            "record": {},
-            "simiMalusMul": 1
-        }
-    ]
+  "attributes": [
+    {
+      "name": "Category3",
+      "value": "..BMX Bikes.."
+    },
+    {
+      "name": "Category2",
+      "value": "..BMX..|..Fahrräder.."
+    },
+    {
+      "name": "Category1",
+      "value": "..Fahrräder..|..SALE.."
+    }
+  ],
+  "records": [
+    {
+      "fieldNames": [],
+      "id": "278006",
+      "record": {},
+      "simiMalusMul": 1
+    },
+    {
+      "fieldNames": [],
+      "id": "278024",
+      "record": {},
+      "simiMalusMul": 1
+    },
+    {
+      "fieldNames": [],
+      "id": "355436",
+      "record": {},
+      "simiMalusMul": 1
+    }
+  ]
 }

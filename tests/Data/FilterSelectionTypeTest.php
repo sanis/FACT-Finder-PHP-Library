@@ -2,8 +2,6 @@
 
 namespace FACTFinder\Test\Data;
 
-use FACTFinder\Loader as FF;
-
 class FilterSelectionType extends \FACTFinder\Test\BaseTestCase
 {
     /**
@@ -15,7 +13,7 @@ class FilterSelectionType extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $this->selectionTypeClass = FF::getClassName('Data\FilterSelectionType');
+        $this->selectionTypeClass = get_class(new \FACTFinder\Data\FilterSelectionType());
     }
 
     public function testTypeSafety()
