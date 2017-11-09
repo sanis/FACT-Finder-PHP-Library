@@ -6,11 +6,6 @@ use FACTFinder\Loader as FF;
 class ProductCampaignTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var FACTFinder\Adapter\ProductCampaign
      */
     protected $adapter;
@@ -19,12 +14,8 @@ class ProductCampaignTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
-
         $this->adapter = FF::getInstance(
             'Adapter\ProductCampaign',
-            self::$dic['loggerClass'],
             self::$dic['configuration'],
             self::$dic['request'],
             self::$dic['clientUrlBuilder']

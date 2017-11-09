@@ -6,11 +6,6 @@ use FACTFinder\Loader as FF;
 class ParametersConverterTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var FACTFinder\Core\ParametersConverter the converter under test
      */
     private $parametersConverter;
@@ -21,12 +16,8 @@ class ParametersConverterTest extends \FACTFinder\Test\BaseTestCase
 
         $this->parametersConverter = FF::getInstance(
             'Core\ParametersConverter',
-            self::$dic['loggerClass'],
             self::$dic['configuration']
         );
-
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
     }
 
     public function testClientToServerConversion()

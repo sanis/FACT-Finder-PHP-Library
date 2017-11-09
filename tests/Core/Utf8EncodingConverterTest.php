@@ -1,15 +1,11 @@
 <?php
+
 namespace FACTFinder\Test\Core;
 
 use FACTFinder\Loader as FF;
 
 class Utf8EncodingConverterTest extends \FACTFinder\Test\BaseTestCase
 {
-    /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
     /**
      * @var FACTFinder\Core\Utf8EncodingConverter the converter under test
      */
@@ -18,10 +14,9 @@ class Utf8EncodingConverterTest extends \FACTFinder\Test\BaseTestCase
     public function setUp()
     {
         if (!function_exists('utf8_encode')
-            || !function_exists('utf8_decode'))
-        {
+            || !function_exists('utf8_decode')) {
             $this->markTestSkipped(
-              'The built-in utf8 conversion functions are not available.'
+                'The built-in utf8 conversion functions are not available.'
             );
         }
 
@@ -29,20 +24,17 @@ class Utf8EncodingConverterTest extends \FACTFinder\Test\BaseTestCase
 
         $configuration = FF::getInstance(
             'Core\ManualConfiguration',
-            array(
+            [
                 'pageContentEncoding' => 'ISO-8859-1',
-                'clientUrlEncoding' => 'ISO-8859-1'
-            )
+                'clientUrlEncoding'   => 'ISO-8859-1',
+            ]
         );
 
         $this->encodingConverter = FF::getInstance(
             'Core\Utf8EncodingConverter',
-            self::$dic['loggerClass'],
             $configuration
         );
 
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
     }
 
     public function testEncodeContentForPage()

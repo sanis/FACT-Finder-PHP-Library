@@ -6,11 +6,6 @@ use FACTFinder\Loader as FF;
 class EasyCurlRequestFactoryTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var FACTFinder\Core\ConfigurationInterface
      */
     protected $configuration;
@@ -32,14 +27,10 @@ class EasyCurlRequestFactoryTest extends \FACTFinder\Test\BaseTestCase
         $this->curlStub = self::$dic['curlStub'];
         $this->factory = FF::getInstance(
             'Core\Server\EasyCurlRequestFactory',
-            self::$dic['loggerClass'],
             self::$dic['configuration'],
             FF::getInstance('Util\Parameters', array('query' => 'bmx')),
             self::$dic['curlStub']
         );
-
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
 
         $this->configuration = self::$dic['configuration'];
     }

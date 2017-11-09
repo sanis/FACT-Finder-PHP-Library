@@ -6,11 +6,6 @@ use FACTFinder\Loader as FF;
 class MultiCurlDataProviderTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var FACTFinder\Core\ConfigurationInterface
      */
     protected $configuration;
@@ -32,14 +27,10 @@ class MultiCurlDataProviderTest extends \FACTFinder\Test\BaseTestCase
         $this->curlStub = FF::getInstance('Util\CurlStub');
         $this->dataProvider = FF::getInstance(
             'Core\Server\MultiCurlDataProvider',
-            self::$dic['loggerClass'],
             self::$dic['configuration'],
             $this->curlStub,
             self::$dic['serverUrlBuilder']
         );
-
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
 
         $this->configuration = self::$dic['configuration'];
     }

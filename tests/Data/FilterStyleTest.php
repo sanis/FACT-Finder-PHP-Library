@@ -1,15 +1,11 @@
 <?php
+
 namespace FACTFinder\Test\Data;
 
 use FACTFinder\Loader as FF;
 
 class FilterStyleTest extends \FACTFinder\Test\BaseTestCase
 {
-    /**
-     * @var \FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
     /**
      * @var string
      */
@@ -20,8 +16,6 @@ class FilterStyleTest extends \FACTFinder\Test\BaseTestCase
         parent::setUp();
 
         $this->styleClass = FF::getClassName('Data\FilterStyle');
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
     }
 
     public function testTypeSafety()

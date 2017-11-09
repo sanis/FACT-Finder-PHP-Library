@@ -1,15 +1,11 @@
 <?php
+
 namespace FACTFinder\Test\Data;
 
 use FACTFinder\Loader as FF;
 
 class FilterSelectionType extends \FACTFinder\Test\BaseTestCase
 {
-    /**
-     * @var \FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
     /**
      * @var string
      */
@@ -20,8 +16,6 @@ class FilterSelectionType extends \FACTFinder\Test\BaseTestCase
         parent::setUp();
 
         $this->selectionTypeClass = FF::getClassName('Data\FilterSelectionType');
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
     }
 
     public function testTypeSafety()

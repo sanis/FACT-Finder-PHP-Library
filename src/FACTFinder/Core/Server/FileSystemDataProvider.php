@@ -58,7 +58,7 @@ class FileSystemDataProvider extends AbstractDataProvider
             return;
         }
 
-        $this->logger->info("Trying to load file: $fileName");
+        $this->logger && $this->logger->info("Trying to load file: $fileName");
 
         $fileContent = null;
         if (!$fileContent = @file_get_contents($fileName)) {

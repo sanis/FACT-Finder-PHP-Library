@@ -6,11 +6,6 @@ use FACTFinder\Loader as FF;
 class FileSystemDataProviderTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var FACTFinder\Core\ConfigurationInterface
      */
     protected $configuration;
@@ -26,12 +21,8 @@ class FileSystemDataProviderTest extends \FACTFinder\Test\BaseTestCase
 
         $this->dataProvider = FF::getInstance(
             'Core\Server\FileSystemDataProvider',
-            self::$dic['loggerClass'],
             self::$dic['configuration']
         );
-
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
 
         $this->configuration = self::$dic['configuration'];
     }

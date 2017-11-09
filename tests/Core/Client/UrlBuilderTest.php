@@ -6,11 +6,6 @@ use FACTFinder\Loader as FF;
 class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var FACTFinder\Core\Client\UrlBuilder
      */
     protected $urlBuilder;
@@ -26,14 +21,10 @@ class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
 
         $this->urlBuilder = FF::getInstance(
             'Core\Client\UrlBuilder',
-            self::$dic['loggerClass'],
             self::$dic['configuration'],
             self::$dic['requestParser'],
             self::$dic['encodingConverter']
         );
-
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
 
         $this->parameters = FF::getInstance('Util\Parameters');
     }

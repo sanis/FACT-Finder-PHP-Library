@@ -1,20 +1,15 @@
 <?php
+
 namespace FACTFinder\Test\Data;
 
 use FACTFinder\Loader as FF;
 
 class SearchParametersTest extends \FACTFinder\Test\BaseTestCase
 {
-    /**
-     * @var \FACTFinder\Util\LoggerInterface
-     */
-    private $log;
 
     public function setUp()
     {
         parent::setUp();
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
     }
 
     public function testConstructionFromParameters()
@@ -44,10 +39,14 @@ class SearchParametersTest extends \FACTFinder\Test\BaseTestCase
         $this->assertEquals(1, $searchParameters->getCurrentPage());
         $this->assertEquals(9832, $searchParameters->getFollowSearch());
 
-        $this->assertEquals(array('Brand' => 'KHE', 'Color' => 'green'),
-                            $searchParameters->getFilters());
-        $this->assertEquals(array('Price' => 'asc'),
-                            $searchParameters->getSortings());
+        $this->assertEquals(
+            ['Brand' => 'KHE', 'Color' => 'green'],
+            $searchParameters->getFilters()
+        );
+        $this->assertEquals(
+            ['Price' => 'asc'],
+            $searchParameters->getSortings()
+        );
 
         $this->assertTrue($searchParameters->isNavigationEnabled());
     }

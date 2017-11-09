@@ -5,17 +5,9 @@ use FACTFinder\Loader as FF;
 
 class NullResponseTest extends \FACTFinder\Test\BaseTestCase
 {
-    /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
     public function setUp()
     {
         parent::setUp();
-
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
     }
 
     public function testResponse()

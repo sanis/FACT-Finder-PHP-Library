@@ -1,15 +1,11 @@
 <?php
+
 namespace FACTFinder\Test\Core\Server;
 
 use FACTFinder\Loader as FF;
 
 class ConnectionDataTest extends \FACTFinder\Test\BaseTestCase
 {
-    /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
     /**
      * @var FACTFinder\Core\Server\ConnectionData
      */
@@ -18,9 +14,6 @@ class ConnectionDataTest extends \FACTFinder\Test\BaseTestCase
     public function setUp()
     {
         parent::setUp();
-
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
 
         $this->connectionData = FF::getInstance('Core\Server\ConnectionData');
     }
@@ -63,40 +56,43 @@ class ConnectionDataTest extends \FACTFinder\Test\BaseTestCase
         $this->assertFalse($cd->issetConnectionOption(CURLOPT_TIMEOUT));
 
         $cd->setConnectionOption('test', 'value');
-        $cd->setConnectionOption(16, array(1,2,3));
+        $cd->setConnectionOption(16, [1, 2, 3]);
 
         $this->assertTrue($cd->issetConnectionOption('test'));
         $this->assertTrue($cd->issetConnectionOption(16));
         $this->assertFalse($cd->issetConnectionOption(CURLOPT_TIMEOUT));
 
         $this->assertEquals('value', $cd->getConnectionOption('test'));
-        $this->assertEquals(array(1,2,3), $cd->getConnectionOption(16));
+        $this->assertEquals([1, 2, 3], $cd->getConnectionOption(16));
 
-        $cd->setConnectionOptions(array(
-            16 => array(4,5,6),
-            CURLOPT_TIMEOUT => $this,
-        ));
+        $cd->setConnectionOptions(
+            [
+                16              => [4, 5, 6],
+                CURLOPT_TIMEOUT => $this,
+            ]
+        );
 
         $this->assertTrue($cd->issetConnectionOption('test'));
         $this->assertTrue($cd->issetConnectionOption(16));
         $this->assertTrue($cd->issetConnectionOption(CURLOPT_TIMEOUT));
 
         $this->assertEquals('value', $cd->getConnectionOption('test'));
-        $this->assertEquals(array(4,5,6), $cd->getConnectionOption(16));
+        $this->assertEquals([4, 5, 6], $cd->getConnectionOption(16));
         $this->assertSame($this, $cd->getConnectionOption(CURLOPT_TIMEOUT));
 
-        $expectedOptions = array(
-            'test' => 'value',
-            16 => array(4,5,6),
+        $expectedOptions = [
+            'test'          => 'value',
+            16              => [4, 5, 6],
             CURLOPT_TIMEOUT => $this,
-        );
+        ];
 
         $this->assertEquals($expectedOptions, $cd->getConnectionOptions());
     }
 
     public function testSetResponse()
     {
-        $response = FF::getInstance('Core\Server\Response',
+        $response = FF::getInstance(
+            'Core\Server\Response',
             'response content',
             200,
             0,

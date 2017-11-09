@@ -1,44 +1,44 @@
 <?php
 
-return array(
-    'test' => array(
-        'debug' => true,
-        'custom' => 'php-value',
-        'connection' => array(
-            'protocol' => 'http', // possible values: http, https
-            'address' => 'demoshop.fact-finder.de',
-            'port' => 80,
-            'context' => 'FACT-Finder',
-            'channel' => 'de',
-            'language' => 'de',
-            'authentication' => array(
-                'type' => 'advanced', // possible values: http, simple, advanced
+return [
+    'test' => [
+        'debug'      => true,
+        'custom'     => 'php-value',
+        'connection' => [
+            'protocol'       => 'http', // possible values: http, https
+            'address'        => 'demoshop.fact-finder.de',
+            'port'           => 80,
+            'context'        => 'FACT-Finder',
+            'channel'        => 'de',
+            'language'       => 'de',
+            'authentication' => [
+                'type'     => 'advanced', // possible values: http, simple, advanced
                 'username' => 'user',
                 'password' => 'userpw',
-                'prefix' => 'FACT-FINDER',
-                'postfix' => 'FACT-FINDER',
-            ),
+                'prefix'   => 'FACT-FINDER',
+                'postfix'  => 'FACT-FINDER',
+            ],
             // all timeouts given in seconds
-            'timeouts' => array(
-                'defaultConnectTimeout' => 2,
-                'defaultTimeout' => 4,
-                'suggestConnectTimeout' => 1,
-                'suggestTimeout' => 2,
+            'timeouts'       => [
+                'defaultConnectTimeout'  => 2,
+                'defaultTimeout'         => 4,
+                'suggestConnectTimeout'  => 1,
+                'suggestTimeout'         => 2,
                 'trackingConnectTimeout' => 1,
-                'trackingTimeout' => 2,
-                'importConnectTimeout' => 10,
-                'importTimeout' => 360,
-            ),
-        ),
-        'parameters' => array(
+                'trackingTimeout'        => 2,
+                'importConnectTimeout'   => 10,
+                'importTimeout'          => 360,
+            ],
+        ],
+        'parameters' => [
             // parameter settings for the server
-            'server' => array(
-                'ignore' => array(
+            'server' => [
+                'ignore'    => [
                     'password',
                     'username',
                     'timestamp',
-                ),
-                'whitelist' => array(
+                ],
+                'whitelist' => [
                     // no whitelist elements means allow everything
                     // allow search parameters
                     'query',
@@ -97,22 +97,22 @@ return array(
                     'ä',
                     'ü',
                     '+ ~',
-                ),
-                'mapping' => array(
-                    array('from' => 'keywords', 'to' => 'query'),
-                ),
-            ),
+                ],
+                'mapping'   => [
+                    ['from' => 'keywords', 'to' => 'query'],
+                ],
+            ],
             // parameter settings for the client
-            'client' => array(
-                'ignore' => array(
+            'client' => [
+                'ignore'    => [
                     'xml',
                     'format',
                     'channel',
                     'password',
                     'username',
-                    'timestamp'
-                ),
-                'whitelist' => array(
+                    'timestamp',
+                ],
+                'whitelist' => [
                     // no whitelist elements means allow everything
                     // allow search parameters
                     'keywords',
@@ -143,15 +143,15 @@ return array(
                     'queryFromSuggest',
                     // allow special test cases
                     'foo',
-                ),
-                'mapping' => array(
-                    array('from' => 'query', 'to' => 'keywords'),
-                ),
-            ),
-        ),
-        'encoding' => array(
+                ],
+                'mapping'   => [
+                    ['from' => 'query', 'to' => 'keywords'],
+                ],
+            ],
+        ],
+        'encoding'   => [
             'pageContent' => 'UTF-8',
-            'clientUrl' => 'ISO-8859-1',
-        ),
-    ),
-);
+            'clientUrl'   => 'ISO-8859-1',
+        ],
+    ],
+];

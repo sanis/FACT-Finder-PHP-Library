@@ -6,11 +6,6 @@ use FACTFinder\Loader as FF;
 class SearchTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
-     * @var \FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var \FACTFinder\Adapter\Search
      */
     protected $adapter;
@@ -23,12 +18,8 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
         $_SERVER['REQUEST_URI'] = '/index.php';
         $_SERVER['QUERY_STRING'] = 'query=bmx';
 
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
-
         $this->adapter = FF::getInstance(
             'Adapter\Search',
-            self::$dic['loggerClass'],
             self::$dic['configuration'],
             self::$dic['request'],
             self::$dic['clientUrlBuilder']

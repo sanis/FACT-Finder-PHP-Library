@@ -6,16 +6,9 @@ use FACTFinder\Core\ManualConfiguration;
 
 class ManualConfigurationTest extends \FACTFinder\Test\BaseTestCase
 {
-    /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
     public function setUp()
     {
         parent::setUp();
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
     }
 
     public function testValuesSetInConstructor()

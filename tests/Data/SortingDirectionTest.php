@@ -6,11 +6,6 @@ use FACTFinder\Loader as FF;
 class SortingDirectionTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
-     * @var \FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var string
      */
     protected $directionClass;
@@ -20,8 +15,6 @@ class SortingDirectionTest extends \FACTFinder\Test\BaseTestCase
         parent::setUp();
 
         $this->directionClass = FF::getClassName('Data\SortingDirection');
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
     }
 
     public function testTypeSafety()

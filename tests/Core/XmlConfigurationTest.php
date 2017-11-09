@@ -1,15 +1,9 @@
 <?php
-namespace FACTFinder\Test\Core;
 
-use FACTFinder\Loader as FF;
+namespace FACTFinder\Test\Core;
 
 class XmlConfigurationTest extends \FACTFinder\Test\BaseTestCase
 {
-    /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
     /**
      * @var FACTFinder\Core\XmlConfiguration the configuration under test
      */
@@ -18,8 +12,6 @@ class XmlConfigurationTest extends \FACTFinder\Test\BaseTestCase
     public function setUp()
     {
         parent::setUp();
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
 
         $this->configuration = self::$dic['configuration'];
     }
@@ -47,71 +39,71 @@ class XmlConfigurationTest extends \FACTFinder\Test\BaseTestCase
         $this->assertEquals('FACT-FINDER', $this->configuration->getAuthenticationPrefix());
         $this->assertEquals('FACT-FINDER', $this->configuration->getAuthenticationPostfix());
 
-        $this->assertEquals(2,   $this->configuration->getDefaultConnectTimeout());
-        $this->assertEquals(4,   $this->configuration->getDefaultTimeout());
-        $this->assertEquals(1,   $this->configuration->getSuggestConnectTimeout());
-        $this->assertEquals(2,   $this->configuration->getSuggestTimeout());
-        $this->assertEquals(1,   $this->configuration->getTrackingConnectTimeout());
-        $this->assertEquals(2,   $this->configuration->getTrackingTimeout());
-        $this->assertEquals(10,  $this->configuration->getImportConnectTimeout());
+        $this->assertEquals(2, $this->configuration->getDefaultConnectTimeout());
+        $this->assertEquals(4, $this->configuration->getDefaultTimeout());
+        $this->assertEquals(1, $this->configuration->getSuggestConnectTimeout());
+        $this->assertEquals(2, $this->configuration->getSuggestTimeout());
+        $this->assertEquals(1, $this->configuration->getTrackingConnectTimeout());
+        $this->assertEquals(2, $this->configuration->getTrackingTimeout());
+        $this->assertEquals(10, $this->configuration->getImportConnectTimeout());
         $this->assertEquals(360, $this->configuration->getImportTimeout());
     }
 
     public function testParameterSettings()
     {
-        $expectedIgnoredServerParameters = array(
-            'password' => true,
-            'username' => true,
-            'timestamp' => true
-        );
+        $expectedIgnoredServerParameters = [
+            'password'  => true,
+            'username'  => true,
+            'timestamp' => true,
+        ];
 
         $this->assertEquals($expectedIgnoredServerParameters, $this->configuration->getIgnoredServerParameters());
 
-        $expectedIgnoredClientParameters = array(
-            'xml' => true,
-            'format' => true,
-            'channel' => true,
-            'password' => true,
-            'username' => true,
-            'timestamp' => true
-        );
+        $expectedIgnoredClientParameters = [
+            'xml'       => true,
+            'format'    => true,
+            'channel'   => true,
+            'password'  => true,
+            'username'  => true,
+            'timestamp' => true,
+        ];
 
         $this->assertEquals($expectedIgnoredClientParameters, $this->configuration->getIgnoredClientParameters());
 
-        $expectedRequiredServerParameters = array();
+        $expectedRequiredServerParameters = [];
 
         $this->assertEquals($expectedRequiredServerParameters, $this->configuration->getRequiredServerParameters());
 
-        $expectedRequiredClientParameters = array();
+        $expectedRequiredClientParameters = [];
 
         $this->assertEquals($expectedRequiredClientParameters, $this->configuration->getRequiredClientParameters());
 
-        $expectedServerMappings = array(
-            'keywords' => 'query'
-        );
+        $expectedServerMappings = [
+            'keywords' => 'query',
+        ];
 
         $this->assertEquals($expectedServerMappings, $this->configuration->getServerMappings());
 
-        $expectedClientMappings = array(
-            'query' => 'keywords'
-        );
+        $expectedClientMappings = [
+            'query' => 'keywords',
+        ];
 
         $this->assertEquals($expectedClientMappings, $this->configuration->getClientMappings());
 
-        $expectedServerWhitelist = array(
-            'query' => true,
-            '/^filter.*/' => true,
-            'followSearch' => true
-        );
-        
+        $expectedServerWhitelist = [
+            'query'        => true,
+            '/^filter.*/'  => true,
+            'followSearch' => true,
+        ];
+
         $this->assertArraySubset($expectedServerWhitelist, $this->configuration->getWhitelistServerParameters());
-        
-        $expectedClientWhitelist = array(
-            'keywords' => true,
-            '/^filter.*/' => true,
-            'followSearch' => true
-        );
-        
+
+        $expectedClientWhitelist = [
+            'keywords'     => true,
+            '/^filter.*/'  => true,
+            'followSearch' => true,
+        ];
+
         $this->assertArraySubset($expectedClientWhitelist, $this->configuration->getWhitelistClientParameters());
     }
 

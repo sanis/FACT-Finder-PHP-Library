@@ -1,15 +1,11 @@
 <?php
+
 namespace FACTFinder\Test\Core\Server;
 
 use FACTFinder\Loader as FF;
 
 class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
 {
-    /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
     /**
      * @var FACTFinder\Core\ConfigurationInterface
      */
@@ -31,12 +27,8 @@ class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
 
         $this->urlBuilder = FF::getInstance(
             'Core\Server\UrlBuilder',
-            self::$dic['loggerClass'],
             self::$dic['configuration']
         );
-
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
 
         $this->configuration = self::$dic['configuration'];
 
@@ -50,18 +42,20 @@ class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
         $this->parameters['format'] = 'json';
 
         $expectedPath = '/' . $this->configuration->getContext()
-                      . '/' . $expectedAction;
+            . '/' . $expectedAction;
 
-        $expectedParameters = array(
+        $expectedParameters = [
             'channel' => 'de',
-            'format' => 'json'
-        );
+            'format'  => 'json',
+        ];
 
         $this->assertUrlEquals(
             $expectedPath,
             $expectedParameters,
-            $this->urlBuilder->getNonAuthenticationUrl($expectedAction,
-                                                       $this->parameters)
+            $this->urlBuilder->getNonAuthenticationUrl(
+                $expectedAction,
+                $this->parameters
+            )
         );
     }
 
@@ -74,21 +68,23 @@ class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
         $this->parameters['format'] = 'json';
 
         $expectedPath = '/' . $this->configuration->getContext()
-                      . '/' . $expectedAction;
+            . '/' . $expectedAction;
 
-        $expectedParameters = array(
-            'channel' => 'de',
-            'format' => 'json',
+        $expectedParameters = [
+            'channel'   => 'de',
+            'format'    => 'json',
             'timestamp' => '%d',
-            'username' => $this->configuration->getUserName(),
-            'password' => md5($this->configuration->getPassword())
-        );
+            'username'  => $this->configuration->getUserName(),
+            'password'  => md5($this->configuration->getPassword()),
+        ];
 
         $this->assertUrlEquals(
             $expectedPath,
             $expectedParameters,
-            $this->urlBuilder->getAuthenticationUrl($expectedAction,
-                                                    $this->parameters)
+            $this->urlBuilder->getAuthenticationUrl(
+                $expectedAction,
+                $this->parameters
+            )
         );
     }
 
@@ -101,12 +97,14 @@ class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
         $this->parameters['format'] = 'json';
 
         $expectedPath = '/' . $this->configuration->getContext()
-                      . '/' . $expectedAction;
+            . '/' . $expectedAction;
 
-        $url = $this->urlBuilder->getAuthenticationUrl($expectedAction,
-                                                       $this->parameters);
+        $url = $this->urlBuilder->getAuthenticationUrl(
+            $expectedAction,
+            $this->parameters
+        );
 
-        $tempParameters = array();
+        $tempParameters = [];
         parse_str(parse_url($url, PHP_URL_QUERY), $tempParameters);
         $timestamp = $tempParameters['timestamp'];
 
@@ -114,19 +112,21 @@ class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
         $prefix = $this->configuration->getAuthenticationPrefix();
         $postfix = $this->configuration->getAuthenticationPostfix();
 
-        $expectedParameters = array(
-            'channel' => 'de',
-            'format' => 'json',
+        $expectedParameters = [
+            'channel'   => 'de',
+            'format'    => 'json',
             'timestamp' => $timestamp,
-            'username' => $this->configuration->getUserName(),
-            'password' => md5($prefix . time() . "000" . $pwHash . $postfix)
-        );
+            'username'  => $this->configuration->getUserName(),
+            'password'  => md5($prefix . time() . "000" . $pwHash . $postfix),
+        ];
 
         $this->assertUrlEquals(
             $expectedPath,
             $expectedParameters,
-            $this->urlBuilder->getAuthenticationUrl($expectedAction,
-                                                    $this->parameters)
+            $this->urlBuilder->getAuthenticationUrl(
+                $expectedAction,
+                $this->parameters
+            )
         );
     }
 
@@ -139,18 +139,20 @@ class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
         $this->parameters['format'] = 'json';
 
         $expectedPath = '/' . $this->configuration->getContext()
-                      . '/' . $expectedAction;
+            . '/' . $expectedAction;
 
-        $expectedParameters = array(
+        $expectedParameters = [
             'channel' => 'de',
-            'format' => 'json'
-        );
+            'format'  => 'json',
+        ];
 
         $this->assertUrlEquals(
             $expectedPath,
             $expectedParameters,
-            $this->urlBuilder->getAuthenticationUrl($expectedAction,
-                                                    $this->parameters),
+            $this->urlBuilder->getAuthenticationUrl(
+                $expectedAction,
+                $this->parameters
+            ),
             $this->configuration->getUserName(),
             $this->configuration->getPassword()
         );
@@ -164,18 +166,20 @@ class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
         $this->parameters['channel'] = 'en';
 
         $expectedPath = '/' . $this->configuration->getContext()
-                      . '/' . $expectedAction;
+            . '/' . $expectedAction;
 
-        $expectedParameters = array(
+        $expectedParameters = [
             'channel' => 'en',
-            'format' => 'json'
-        );
+            'format'  => 'json',
+        ];
 
         $this->assertUrlEquals(
             $expectedPath,
             $expectedParameters,
-            $this->urlBuilder->getNonAuthenticationUrl($expectedAction,
-                                                       $this->parameters)
+            $this->urlBuilder->getNonAuthenticationUrl(
+                $expectedAction,
+                $this->parameters
+            )
         );
     }
 
@@ -187,18 +191,19 @@ class UrlBuilderTest extends \FACTFinder\Test\BaseTestCase
         $expectedPassword = null
     ) {
         $this->assertStringMatchesFormat($expectedPath, parse_url($actualUrl, PHP_URL_PATH));
-        if(!is_null($expectedUser))
+        if (!is_null($expectedUser)) {
             $this->assertStringMatchesFormat($expectedUser, parse_url($actualUrl, PHP_URL_USER));
-        if(!is_null($expectedPassword))
+        }
+        if (!is_null($expectedPassword)) {
             $this->assertStringMatchesFormat($expectedPassword, parse_url($actualUrl, PHP_URL_PASS));
+        }
 
-        $actualParameters = array();
+        $actualParameters = [];
         parse_str(parse_url($actualUrl, PHP_URL_QUERY), $actualParameters);
 
         $this->assertEquals(count($expectedParameters), count($actualParameters));
 
-        foreach($expectedParameters as $key => $value)
-        {
+        foreach ($expectedParameters as $key => $value) {
             $this->assertArrayHasKey($key, $actualParameters);
             $this->assertStringMatchesFormat($value, $actualParameters[$key]);
         }

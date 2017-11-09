@@ -6,11 +6,6 @@ use FACTFinder\Loader as FF;
 class SearchStatusTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
-     * @var \FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var string
      */
     protected $statusClass;
@@ -20,8 +15,6 @@ class SearchStatusTest extends \FACTFinder\Test\BaseTestCase
         parent::setUp();
 
         $this->statusClass = FF::getClassName('Data\SearchStatus');
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
     }
 
     public function testTypeSafety()

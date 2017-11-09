@@ -1,15 +1,11 @@
 <?php
+
 namespace FACTFinder\Test\Adapter;
 
 use FACTFinder\Loader as FF;
 
 class TrackingTest extends \FACTFinder\Test\BaseTestCase
 {
-    /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
     /**
      * @var FACTFinder\Adapter\Tracking
      */
@@ -22,18 +18,14 @@ class TrackingTest extends \FACTFinder\Test\BaseTestCase
         // For the request parser to retrieve
         $_SERVER['QUERY_STRING'] = 'event=cart&id=1&masterId=2&title=product&sid=mysid&cookieId=mycid&count=5&price=6&userId=7&query=query';
 
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
-
         $this->adapter = FF::getInstance(
             'Adapter\Tracking',
-            self::$dic['loggerClass'],
             self::$dic['configuration'],
             self::$dic['request'],
             self::$dic['clientUrlBuilder']
         );
     }
-    
+
     public function testTrackingFromRequest()
     {
         $this->assertTrue($this->adapter->doTrackingFromRequest());
@@ -60,7 +52,7 @@ class TrackingTest extends \FACTFinder\Test\BaseTestCase
         );
         $this->assertTrue($result);
     }
-    
+
     public function testTrackCart()
     {
         $result = $this->adapter->trackCart(
@@ -78,7 +70,7 @@ class TrackingTest extends \FACTFinder\Test\BaseTestCase
 
         $this->assertTrue($result);
     }
-    
+
     public function testTrackCheckout()
     {
         $result = $this->adapter->trackCheckout(
@@ -103,7 +95,7 @@ class TrackingTest extends \FACTFinder\Test\BaseTestCase
         $result = $this->adapter->trackRecommendationClick(
             1,
             2,
-            3,  
+            3,
             'mysid',
             'mycid',
             6
@@ -111,7 +103,7 @@ class TrackingTest extends \FACTFinder\Test\BaseTestCase
 
         $this->assertTrue($result);
     }
-    
+
     public function testTrackLogin()
     {
         $result = $this->adapter->trackLogin(

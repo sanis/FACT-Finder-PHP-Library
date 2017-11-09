@@ -6,11 +6,6 @@ use FACTFinder\Loader as FF;
 class BreadCrumbTypeTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
-     * @var \FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var string
      */
     protected $typeClass;
@@ -20,8 +15,6 @@ class BreadCrumbTypeTest extends \FACTFinder\Test\BaseTestCase
         parent::setUp();
 
         $this->typeClass = FF::getClassName('Data\BreadCrumbType');
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
     }
 
     public function testTypeSafety()

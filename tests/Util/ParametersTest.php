@@ -7,11 +7,6 @@ use FACTFinder\Loader as FF;
 class ParameterTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
-    /**
      * @var FACTFinder\Util\Parameters
      */
     protected $parameters;
@@ -21,9 +16,6 @@ class ParameterTest extends \FACTFinder\Test\BaseTestCase
         parent::setUp();
 
         $this->parameters = FF::getInstance('Util\Parameters');
-
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
     }
 
     private function assertParameters($expectedParameters)

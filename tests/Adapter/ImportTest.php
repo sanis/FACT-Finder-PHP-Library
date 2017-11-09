@@ -1,15 +1,11 @@
 <?php
+
 namespace FACTFinder\Test\Adapter;
 
 use FACTFinder\Loader as FF;
 
 class ImportTest extends \FACTFinder\Test\BaseTestCase
 {
-    /**
-     * @var FACTFinder\Util\LoggerInterface
-     */
-    private $log;
-
     /**
      * @var FACTFinder\Adapter\Import
      */
@@ -19,12 +15,8 @@ class ImportTest extends \FACTFinder\Test\BaseTestCase
     {
         parent::setUp();
 
-        $loggerClass = self::$dic['loggerClass'];
-        $this->log = $loggerClass::getLogger(__CLASS__);
-
         $this->adapter = FF::getInstance(
             'Adapter\Import',
-            self::$dic['loggerClass'],
             self::$dic['configuration'],
             self::$dic['request'],
             self::$dic['clientUrlBuilder']
@@ -45,7 +37,7 @@ class ImportTest extends \FACTFinder\Test\BaseTestCase
     {
         $this->adapter->triggerRecommendationImport();
     }
-    
+
     public function testMultipleImports()
     {
         $oReport1 = $this->adapter->triggerDataImport();
