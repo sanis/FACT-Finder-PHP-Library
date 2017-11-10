@@ -1,9 +1,8 @@
 /FACT-Finder-PHP-Library.sublime-workspace
-
 /tests/ff.log
-
 /countloc.ps1
 /tests/report
-
 phpdoc*.log
 .idea/
+/vendor/
+
