@@ -10,8 +10,6 @@ namespace FACTFinder\Util;
 interface CurlInterface
 {
     /**
-     * Easy interface
-     *
      * @param $ch
      *
      * @return
@@ -34,14 +32,6 @@ interface CurlInterface
 
     public function setopt($ch, $option, $value);
 
-    /**
-     * Multi interface
-     *
-     * @param $mh
-     * @param $ch
-     *
-     * @return
-     */
     public function multi_add_handle($mh, $ch);
 
     public function multi_close($mh);
@@ -58,12 +48,5 @@ interface CurlInterface
 
     public function multi_select($mh, $timeout = 1.0);
 
-    /**
-     * Miscellaneous
-     *
-     * @param int $age
-     *
-     * @return
-     */
     public function version($age = CURLVERSION_NOW);
 }

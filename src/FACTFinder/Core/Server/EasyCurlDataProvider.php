@@ -2,6 +2,8 @@
 
 namespace FACTFinder\Core\Server;
 
+use FACTFinder\Util\Parameters;
+
 /**
  * This implementation retrieves the FACT-Finder data by using the "easy cURL
  * interface" (I didn't even make that up; that's what cURL itself calls it:
@@ -95,6 +97,11 @@ class EasyCurlDataProvider extends AbstractDataProvider
         $this->logResult($response);
     }
 
+    /**
+     * @param ConnectionData $connectionData
+     *
+     * @return Parameters
+     */
     private function prepareHttpHeaders($connectionData)
     {
         $httpHeaderFields = clone $connectionData->getHttpHeaderFields();
@@ -107,6 +114,11 @@ class EasyCurlDataProvider extends AbstractDataProvider
         return $httpHeaderFields;
     }
 
+    /**
+     * @param ConnectionData $connectionData
+     *
+     * @return Parameters
+     */
     private function prepareParameters($connectionData)
     {
         $parameters = clone $connectionData->getParameters();
@@ -118,10 +130,18 @@ class EasyCurlDataProvider extends AbstractDataProvider
         return $parameters;
     }
 
+    /**
+     * @param ConnectionData $connectionData
+     * @param Parameters     $httpHeaderFields
+     * @param Parameters     $parameters
+     *
+     * @return string
+     * @throws \Exception
+     */
     private function prepareConnectionOptions($connectionData, $httpHeaderFields, $parameters)
     {
-        if ($this->configuration->isDebugEnabled()
-            && isset($_SERVER['HTTP_REFERER']) && !$connectionData->issetConnectionOption(CURLOPT_REFERER)) {
+        if (isset($_SERVER['HTTP_REFERER']) && $this->configuration->isDebugEnabled()
+            && !$connectionData->issetConnectionOption(CURLOPT_REFERER)) {
             $connectionData->setConnectionOption(CURLOPT_REFERER, $_SERVER['HTTP_REFERER']);
         }
 
@@ -134,6 +154,11 @@ class EasyCurlDataProvider extends AbstractDataProvider
         return $url;
     }
 
+    /**
+     * @param ConnectionData $connectionData
+     *
+     * @return NullResponse|Response
+     */
     private function retrieveResponse($connectionData)
     {
         $curlHandle = $this->curl->init();
@@ -163,6 +188,9 @@ class EasyCurlDataProvider extends AbstractDataProvider
         return new Response($responseText, $httpCode, $curlErrorNumber, $curlError);
     }
 
+    /**
+     * @param Response $response
+     */
     private function logResult($response)
     {
         $httpCode = $response->getHttpCode();

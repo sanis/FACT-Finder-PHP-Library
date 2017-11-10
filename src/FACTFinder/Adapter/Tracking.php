@@ -251,6 +251,18 @@ class Tracking extends AbstractAdapter
      * Use this method directly if you want to separate the setup from sending
      * the request. This is particularly useful when using the
      * MultiCurlRequestFactory.
+     *
+     * @param        $id
+     * @param null   $masterId
+     * @param string $title
+     * @param null   $query
+     * @param null   $sid
+     * @param null   $cookieId
+     * @param int    $count
+     * @param null   $price
+     * @param null   $userId
+     * @param null   $campaign
+     * @param bool   $instoreAds
      */
     public function setupCartTracking(
         $id,
@@ -307,7 +319,7 @@ class Tracking extends AbstractAdapter
      *
      * @param string  $id         tracking id of product (see field with the role "Product number for tracking")
      * @param string  $masterId   master id of the product (see field with the role "Master article number")
-     * @param string  $tile       title of product (optional - is empty by default)
+     * @param string  $title
      * @param string  $query      query which led to the product (only if module Semantic Enhancer is used)
      * @param string  $sid        session id (if empty, then try to set using the function session_id() )
      * @param string  $cookieId   cookie id (optional)
@@ -352,6 +364,18 @@ class Tracking extends AbstractAdapter
      * Use this method directly if you want to separate the setup from sending
      * the request. This is particularly useful when using the
      * MultiCurlRequestFactory.
+     *
+     * @param        $id
+     * @param null   $masterId
+     * @param string $title
+     * @param null   $query
+     * @param null   $sid
+     * @param null   $cookieId
+     * @param int    $count
+     * @param null   $price
+     * @param null   $userId
+     * @param null   $campaign
+     * @param bool   $instoreAds
      */
     public function setupCheckoutTracking(
         $id,
@@ -432,6 +456,13 @@ class Tracking extends AbstractAdapter
      * Use this method directly if you want to separate the setup from sending
      * the request. This is particularly useful when using the
      * MultiCurlRequestFactory.
+     *
+     * @param      $id
+     * @param      $mainId
+     * @param null $masterId
+     * @param null $sid
+     * @param null $cookieId
+     * @param null $userId
      */
     public function setupRecommendationClickTracking(
         $id,
@@ -486,6 +517,10 @@ class Tracking extends AbstractAdapter
      * Use this method directly if you want to separate the setup from sending
      * the request. This is particularly useful when using the
      * MultiCurlRequestFactory.
+     *
+     * @param null $sid
+     * @param null $cookieId
+     * @param null $userId
      */
     public function setupLoginTracking($sid = null, $cookieId = null, $userId = null)
     {

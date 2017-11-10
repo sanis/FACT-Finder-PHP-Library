@@ -157,6 +157,7 @@ class UrlBuilder
             $configuration->getUserName(),
             $configuration->getPassword()
         );
+
         if ($authentication == ':@') {
             $authentication = '';
         }
@@ -171,7 +172,7 @@ class UrlBuilder
     /**
      * If no channel is set, try to fill it from configuration data.
      *
-     * @param FACTFinder\Util\Parameters $parameters The parameters object to
+     * @param \FACTFinder\Util\Parameters $parameters The parameters object to
      *                                               check.
      */
     protected function ensureChannelParameter($parameters)

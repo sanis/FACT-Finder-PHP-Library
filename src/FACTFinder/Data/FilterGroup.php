@@ -144,6 +144,7 @@ class FilterGroup extends \ArrayIterator
      */
     public function hasSelectedItems()
     {
+        /** @var Filter $filter */
         foreach ($this->getArrayCopy() as $filter) {
             if ($filter->isSelected()) {
                 return true;

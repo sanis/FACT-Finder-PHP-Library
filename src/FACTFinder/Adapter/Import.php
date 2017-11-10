@@ -26,6 +26,8 @@ class Import extends AbstractAdapter
      * Trigger a search data import.
      *
      * @param bool $download If true, update import files prior to import.
+     *
+     * @return array|mixed|object
      */
     public function triggerDataImport($download = false)
     {
@@ -44,6 +46,8 @@ class Import extends AbstractAdapter
      * Trigger a suggest data import.
      *
      * @param bool $download If true, update import files prior to import.
+     *
+     * @return array|mixed|object
      */
     public function triggerSuggestImport($download = false)
     {
@@ -68,6 +72,8 @@ class Import extends AbstractAdapter
      * Trigger a recommendation data import.
      *
      * @param bool $download If true, update import files prior to import.
+     *
+     * @return array|mixed|object
      */
     public function triggerRecommendationImport($download = false)
     {

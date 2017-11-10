@@ -8,7 +8,7 @@ use FACTFinder\Data\Result;
 class Recommendation extends PersonalisedResponse
 {
     /**
-     * @var FACTFinder\Data\Result
+     * @var \FACTFinder\Data\Result
      */
     private $recommendations;
 
@@ -66,6 +66,8 @@ class Recommendation extends PersonalisedResponse
      * any IDs previously set.
      *
      * @param string|string[] $productIDs One or more product IDs.
+     *
+     * @throws \FACTFinder\Util\InvalidArgumentException
      */
     public function addProductIDs($productIDs)
     {

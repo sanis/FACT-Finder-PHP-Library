@@ -516,7 +516,7 @@ class CurlStub implements CurlInterface
 
     private function getHashAndSetOptionMaps($requiredOptions)
     {
-        ksort($requiredOptions);
+        ksort($requiredOptions, SORT_STRING);
         $hash = md5(http_build_query($requiredOptions));
 
         $this->mapOptionCounts[$hash] = count($requiredOptions);

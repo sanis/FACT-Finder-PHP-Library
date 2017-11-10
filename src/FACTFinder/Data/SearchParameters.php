@@ -66,8 +66,7 @@ class SearchParameters
         foreach ($parameters->getArray() as $key => $value) {
             if (strpos($key, 'filter') === 0) {
                 $this->filters[substr($key, strlen('filter'))] = $value;
-            } elseif (strpos($key, 'sort') === 0
-                && ($value == 'asc' || $value == 'desc')) {
+            } elseif (($value == 'asc' || $value == 'desc') && strpos($key, 'sort') === 0) {
                 $this->sortings[substr($key, strlen('sort'))] = $value;
             }
         }

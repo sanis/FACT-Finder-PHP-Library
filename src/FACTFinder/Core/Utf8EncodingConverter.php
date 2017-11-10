@@ -19,7 +19,7 @@ class Utf8EncodingConverter extends AbstractEncodingConverter
 
     protected function convertString($inCharset, $outCharset, $string)
     {
-        if (strtolower($inCharset) != strtolower($outCharset) && !empty($inCharset) && !empty($outCharset)) {
+        if (!empty($inCharset) && !empty($outCharset) && strtolower($inCharset) != strtolower($outCharset)) {
             if (strtolower($inCharset) == 'utf-8') {
                 if (strtolower($outCharset) != 'iso-8859-1') {
                     $this->logger && $this->logger->warning(

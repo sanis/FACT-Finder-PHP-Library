@@ -2,6 +2,8 @@
 
 namespace FACTFinder\Core\Server;
 
+use FACTFinder\Util\Parameters;
+
 /**
  * This implementation retrieves the FACT-Finder data by using the cURL's "multi
  * interface".
@@ -97,9 +99,9 @@ class MultiCurlDataProvider extends AbstractDataProvider
         // From now on we ignore what parameter has been passed in and just load
         // all available responses.
         $connectionsToFetch = [];
-        foreach ($this->connectionData as $id => $connectionData) {
+        foreach ($this->connectionData as $connectionId => $connectionData) {
             $action = $connectionData->getAction();
-            if (!$this->hasUrlChanged($id) || empty($action)) {
+            if (empty($action) || !$this->hasUrlChanged($connectionId)) {
                 continue;
             }
 
@@ -107,7 +109,7 @@ class MultiCurlDataProvider extends AbstractDataProvider
             $parameters = $this->prepareParameters($connectionData);
             $url = $this->prepareConnectionOptions($connectionData, $httpHeaderFields, $parameters);
 
-            $connectionsToFetch[$id] = [
+            $connectionsToFetch[$connectionId] = [
                 'connection' => $connectionData,
                 'url'        => $url,
             ];
@@ -115,7 +117,7 @@ class MultiCurlDataProvider extends AbstractDataProvider
 
         if (count($connectionsToFetch)) {
             if ($this->usedBefore) {
-                $this->logger && $this->logger->warn(
+                $this->logger && $this->logger->warning(
                     'loadResponse() has been called before. You should try to configure all requests '
                     . 'before loading the first response so that all connections can be made in parallel.'
                 );
@@ -127,6 +129,11 @@ class MultiCurlDataProvider extends AbstractDataProvider
         }
     }
 
+    /**
+     * @param ConnectionData $connectionData
+     *
+     * @return Parameters
+     */
     private function prepareHttpHeaders($connectionData)
     {
         $httpHeaderFields = clone $connectionData->getHttpHeaderFields();
@@ -139,6 +146,11 @@ class MultiCurlDataProvider extends AbstractDataProvider
         return $httpHeaderFields;
     }
 
+    /**
+     * @param ConnectionData $connectionData
+     *
+     * @return Parameters
+     */
     private function prepareParameters($connectionData)
     {
         $parameters = clone $connectionData->getParameters();
@@ -150,10 +162,18 @@ class MultiCurlDataProvider extends AbstractDataProvider
         return $parameters;
     }
 
+    /**
+     * @param ConnectionData $connectionData
+     * @param Parameters     $httpHeaderFields
+     * @param Parameters     $parameters
+     *
+     * @return string
+     * @throws \Exception
+     */
     private function prepareConnectionOptions($connectionData, $httpHeaderFields, $parameters)
     {
-        if ($this->configuration->isDebugEnabled()
-            && isset($_SERVER['HTTP_REFERER']) && !$connectionData->issetConnectionOption(CURLOPT_REFERER)
+        if (isset($_SERVER['HTTP_REFERER']) && $this->configuration->isDebugEnabled()
+            && !$connectionData->issetConnectionOption(CURLOPT_REFERER)
         ) {
             $connectionData->setConnectionOption(CURLOPT_REFERER, $_SERVER['HTTP_REFERER']);
         }
@@ -168,6 +188,9 @@ class MultiCurlDataProvider extends AbstractDataProvider
         return $this->urlBuilder->getNonAuthenticationUrl($connectionData->getAction(), $parameters);
     }
 
+    /**
+     * @param ConnectionData[] $connectionsToFetch
+     */
     private function retrieveResponses($connectionsToFetch)
     {
         $curl = $this->curl;
@@ -198,9 +221,8 @@ class MultiCurlDataProvider extends AbstractDataProvider
             // We cannot use array_merge() here, because that does not preserve
             // numeric keys. So we use array union instead. However, as opposed
             // to array_merge() the left-hand operator's keys will be preserved.
-            $curlOptions = $this->necessaryCurlOptions
-                + $data['connection']->getConnectionOptions()
-                + $this->defaultCurlOptions;
+            $curlOptions =
+                $this->necessaryCurlOptions + $data['connection']->getConnectionOptions() + $this->defaultCurlOptions;
 
             $curl->setopt_array($data['handle'], $curlOptions);
 
@@ -268,6 +290,9 @@ class MultiCurlDataProvider extends AbstractDataProvider
         }
     }
 
+    /**
+     * @param Response $response
+     */
     private function logResult($response)
     {
         $httpCode = $response->getHttpCode();

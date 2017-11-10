@@ -896,6 +896,8 @@ class Search extends PersonalisedResponse
      * @param bool    $recursive    If this is set the entire advisor tree below this
      *                              question will be created. Otherwise, follow-up questions of
      *                              answers are omitted.
+     *
+     * @return AdvisorQuestion
      */
     private function createAdvisorQuestion($questionData, $recursive = false)
     {
@@ -913,6 +915,8 @@ class Search extends PersonalisedResponse
      *                            JSON for a single advisor answer.
      * @param bool    $recursive  If this is set the entire advisor tree below the
      *                            subquestion of this ansewr will be created as well.
+     *
+     * @return AdvisorAnswer
      */
     private function createAdvisorAnswer($answerData, $recursive = false)
     {

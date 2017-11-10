@@ -27,7 +27,7 @@ abstract class AbstractAdapter
      */
     protected $request;
     /**
-     * @var FACTFinder\Util\Parameters
+     * @var \FACTFinder\Util\Parameters
      */
     protected $parameters;
     /**
@@ -40,7 +40,7 @@ abstract class AbstractAdapter
     protected $upToDate = false;
 
     /**
-     * @var \FACTFinder\Util\ContentProcessorInterface
+     * @var callable
      */
     private $responseContentProcessor;
 
@@ -176,7 +176,7 @@ abstract class AbstractAdapter
      * @param object $callable A function (or invokable object) that processes
      *                         a single string parameter.
      *
-     * @throws InvalidArgumentException if $callable is not callable.
+     * @throws \InvalidArgumentException if $callable is not callable.
      */
     protected function useResponseContentProcessor($callable)
     {

@@ -37,7 +37,7 @@ class TagCloud extends AbstractAdapter
      *
      * @param
      *
-     * @return FACTFinder\Data\TagQuery[]
+     * @return \FACTFinder\Data\TagQuery[]
      */
     public function getTagCloud($requestQuery = null)
     {

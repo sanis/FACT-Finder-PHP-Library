@@ -14,7 +14,7 @@ class ProductCampaign extends PersonalisedResponse
     protected $isShoppingCartCampaign = false;
     protected $isLandingPageCampaign = false;
     /**
-     * @var FACTFinder\Data\Result
+     * @var \FACTFinder\Data\Result
      */
     private $campaigns;
 
@@ -53,6 +53,8 @@ class ProductCampaign extends PersonalisedResponse
      * numbers previously set.
      *
      * @param string|string[] $productNumbers One or more product numbers.
+     *
+     * @throws \FACTFinder\Util\InvalidArgumentException
      */
     public function addProductNumbers($productNumbers)
     {
@@ -65,6 +67,8 @@ class ProductCampaign extends PersonalisedResponse
      * Set the page id to get landing page campaigns.
      *
      * @param string $pageId The id which determines the campaigns for a page.
+     *
+     * @throws \FACTFinder\Util\InvalidArgumentException
      */
     public function setPageId($pageId)
     {

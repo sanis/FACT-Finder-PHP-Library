@@ -72,6 +72,11 @@ class FileSystemDataProvider extends AbstractDataProvider
         $connectionData->setResponse($response, $fileName);
     }
 
+    /**
+     * @param ConnectionData $connectionData
+     *
+     * @return null|string|string[]
+     */
     private function getFileNamePrefix($connectionData)
     {
         $action = $connectionData->getAction();
@@ -80,6 +85,11 @@ class FileSystemDataProvider extends AbstractDataProvider
         return preg_replace('/[.]ff$/i', '.', $action);
     }
 
+    /**
+     * @param ConnectionData $connectionData
+     *
+     * @return string
+     */
     private function getFileExtension($connectionData)
     {
         $parameters = $connectionData->getParameters();
@@ -92,6 +102,11 @@ class FileSystemDataProvider extends AbstractDataProvider
         return $fileExtension;
     }
 
+    /**
+     * @param ConnectionData $connectionData
+     *
+     * @return string
+     */
     private function getQueryString($connectionData)
     {
         $parameters = clone $connectionData->getParameters();

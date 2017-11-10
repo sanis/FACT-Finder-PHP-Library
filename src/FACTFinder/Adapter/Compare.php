@@ -14,7 +14,7 @@ class Compare extends ConfigurableResponse
     private $comparableAttributes;
 
     /**
-     * @var FACTFinder\Data\Result
+     * @var \FACTFinder\Data\Result
      */
     private $comparedRecords;
 

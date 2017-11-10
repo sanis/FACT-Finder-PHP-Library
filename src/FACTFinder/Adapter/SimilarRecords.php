@@ -14,7 +14,7 @@ class SimilarRecords extends ConfigurableResponse
     private $similarAttributes;
 
     /**
-     * @var FACTFinder\Data\Result
+     * @var \FACTFinder\Data\Result
      */
     private $similarRecords;
 
