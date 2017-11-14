@@ -3,12 +3,16 @@
 namespace FACTFinder\Core\Server;
 
 use FACTFinder\Util\Curl;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 
 /**
  * This implementation backs the Request with a MultiCurlDataProvider.
  */
 class MultiCurlRequestFactory implements RequestFactoryInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var \FACTFinder\Core\ConfigurationInterface
      */
@@ -45,6 +49,18 @@ class MultiCurlRequestFactory implements RequestFactoryInterface
         );
 
         $this->requestParameters = $requestParameters;
+    }
+
+    /***
+     * TODO: this is workaround for bad DI implementation
+     *
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+
+        $this->dataProvider->setLogger($logger);
     }
 
     /**

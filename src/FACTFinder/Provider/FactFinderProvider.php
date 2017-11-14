@@ -44,10 +44,16 @@ class FactFinderProvider implements \Pimple\ServiceProviderInterface
         };
 
         $pimple['factfinder.requestfactory'] = function (\Pimple\Container $container) {
-            return new \FACTFinder\Core\Server\MultiCurlRequestFactory(
+            $requestFactory = new \FACTFinder\Core\Server\MultiCurlRequestFactory(
                 $container['factfinder.configuration'],
                 $container['factfinder.requestparser']->getRequestParameters()
             );
+
+            if ($container->offsetExists('factfinder.logger')) {
+                $requestFactory->setLogger($container['factfinder.logger']);
+            }
+
+            return $requestFactory;
         };
 
         $pimple['factfinder.request'] = function (\Pimple\Container $container) {
@@ -65,6 +71,10 @@ class FactFinderProvider implements \Pimple\ServiceProviderInterface
             }
 
             return $urlBuilder;
+        };
+
+        $pimple['factfinder.serverurlbuilder'] = function (\Pimple\Container $container) {
+
         };
 
         $pimple['factfinder.adapter.search'] = $pimple->factory(
