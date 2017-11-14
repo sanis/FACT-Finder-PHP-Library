@@ -365,4 +365,3 @@ abstract class AbstractConfiguration implements ConfigurationInterface
         return 'UTF-8';
     }
 }
-

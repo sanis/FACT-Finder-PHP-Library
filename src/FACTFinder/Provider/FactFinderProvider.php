@@ -73,10 +73,6 @@ class FactFinderProvider implements \Pimple\ServiceProviderInterface
             return $urlBuilder;
         };
 
-        $pimple['factfinder.serverurlbuilder'] = function (\Pimple\Container $container) {
-
-        };
-
         $pimple['factfinder.adapter.search'] = $pimple->factory(
             function (\Pimple\Container $container) {
                 $search = new \FACTFinder\Adapter\Search(
@@ -111,5 +107,4 @@ class FactFinderProvider implements \Pimple\ServiceProviderInterface
             }
         );
     }
-
 }

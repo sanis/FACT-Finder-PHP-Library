@@ -201,5 +201,4 @@ class FilterGroup extends \ArrayIterator
     {
         return $this->type == FilterType::Number();
     }
-
 }

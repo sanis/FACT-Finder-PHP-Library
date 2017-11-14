@@ -195,4 +195,3 @@ class ManualConfiguration extends AbstractConfiguration
         return $this->configuration['authenticationType'];
     }
 }
-

@@ -71,12 +71,14 @@ class Tracking extends AbstractAdapter
      * @param int     $pos          position of product in the search result
      * @param string  $masterId     master id of the product (see field with the role "Master article number")
      * @param string  $cookieId     cookie id (optional)
-     * @param int     $origPos      original position of product in the search result. this data is delivered by FACT-Finder (optional - is set equals to $position by default)
+     * @param int     $origPos      original position of product in the search result. this data is delivered by
+     *                              FACT-Finder (optional - is set equals to $position by default)
      * @param int     $page         page number where the product was clicked (optional - is 1 by default)
      * @param float   $simi         similiarity of the product (optional - is 100.00 by default)
      * @param string  $title        title of product (optional - is empty by default)
      * @param int     $pageSize     size of the page where the product was found (optional - is 12 by default)
-     * @param int     $origPageSize original size of the page before the user could have changed it (optional - is set equals to $page by default)
+     * @param int     $origPageSize original size of the page before the user could have changed it (optional - is set
+     *                              equals to $page by default)
      * @param string  $userId       id of user (optional if modul personalisation is not used)
      * @param string  $campaign     campaign name (optional)
      * @param boolean $instoreAds   determines whether it's a sponsered product (optional)

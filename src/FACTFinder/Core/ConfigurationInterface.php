@@ -211,4 +211,3 @@ interface ConfigurationInterface
      */
     public function getClientUrlEncoding();
 }
-

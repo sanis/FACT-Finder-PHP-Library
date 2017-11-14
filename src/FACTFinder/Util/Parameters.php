@@ -377,7 +377,7 @@ class Parameters implements \ArrayAccess, \Countable
     {
         $pairs = $this->getPairs($query);
 
-        foreach ($pairs AS $key => $pair) {
+        foreach ($pairs as $key => $pair) {
             // Java ignores parameters only if they are completely empty (i.e.
             // neither key name nor equals sign).
             if ($pair === '') {
@@ -401,7 +401,7 @@ class Parameters implements \ArrayAccess, \Countable
     {
         $pairs = $this->getPairs($query);
 
-        foreach ($pairs AS $key => $pair) {
+        foreach ($pairs as $key => $pair) {
             // Java ignores parameters only if they are completely empty (i.e.
             // neither key name nor equals sign).
             if ($pair === '') {

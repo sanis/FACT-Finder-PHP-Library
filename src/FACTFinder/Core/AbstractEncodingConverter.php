@@ -100,7 +100,7 @@ abstract class AbstractEncodingConverter
         if ($inCharset == $outCharset) {
             return $data;
         }
-        return $this->convert_recursive($inCharset, $outCharset, $data);
+        return $this->convertRecursive($inCharset, $outCharset, $data);
     }
 
     /**
@@ -115,7 +115,7 @@ abstract class AbstractEncodingConverter
      *
      * @return mixed
      */
-    protected function convert_recursive($inCharset, $outCharset, $data)
+    protected function convertRecursive($inCharset, $outCharset, $data)
     {
         if ($data instanceof Parameters) {
             if (count($data->getArray()) == 1 && current(array_keys($data->getArray())) == '') {
@@ -126,8 +126,8 @@ abstract class AbstractEncodingConverter
         } elseif (is_array($data)) {
             $result = [];
             foreach ($data as $k => $v) {
-                $k = $this->convert_recursive($inCharset, $outCharset, $k);
-                $result[$k] = $this->convert_recursive($inCharset, $outCharset, $v);
+                $k = $this->convertRecursive($inCharset, $outCharset, $k);
+                $result[$k] = $this->convertRecursive($inCharset, $outCharset, $v);
             }
         } elseif (is_string($data)) {
             $result = $this->convertString($inCharset, $outCharset, $data);

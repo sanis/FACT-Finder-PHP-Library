@@ -130,7 +130,6 @@ class RequestParser
             $this->clientRequestParameters =
                 $this->encodingConverter != null
                     ? $this->encodingConverter->decodeClientUrlData($parameters) : $parameters;
-
         }
 
         return $this->clientRequestParameters;

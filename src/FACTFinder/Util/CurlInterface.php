@@ -1,5 +1,5 @@
 <?php
-
+// @codingStandardsIgnoreFile
 namespace FACTFinder\Util;
 
 /**
