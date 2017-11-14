@@ -184,6 +184,8 @@ class MultiCurlDataProvider extends AbstractDataProvider
 
         $connectionData->setConnectionOption(CURLOPT_URL, $url);
 
+        $this->logger && $this->logger->debug('CURL url set', [$url]);
+
         // Return non-authentication URL for reproducability.
         return $this->urlBuilder->getNonAuthenticationUrl($connectionData->getAction(), $parameters);
     }
