@@ -1,5 +1,6 @@
 FACT-Finder-PHP-Library
 =======================
+[![Build Status](https://travis-ci.org/sanis/FACT-Finder-PHP-Library.svg?branch=refactoring)](https://travis-ci.org/sanis/FACT-Finder-PHP-Library)
 
 This is a complete rewrite of and replaces the old
 [FACT Finder PHP Library](https://github.com/FACT-Finder/FACT-Finder-PHP-Framework).
