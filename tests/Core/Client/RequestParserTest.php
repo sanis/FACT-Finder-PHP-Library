@@ -45,7 +45,7 @@ class RequestParserTest extends \FACTFinder\Test\BaseTestCase
             [
                 "\xC3\xA4"  => "\xC3\xB6", // 'ä' => 'ö'
                 "\xC3\xBC"  => "\xC3\x9F", // 'ü' => 'ß'
-                "\x2B \x7E" => "\x7E \x2B", // '+ ~' => '~ +'
+//                "\x2B \x7E" => "\x7E \x2B", // '+ ~' => '~ +'
                 'channel'   => 'de', // is always added
             ]
         );

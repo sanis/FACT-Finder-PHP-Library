@@ -40,7 +40,7 @@ class SuggestTest extends \FACTFinder\Test\BaseTestCase
         );
         $this->assertEquals('Verde BMX', $suggestions[0]->getLabel(), 'wrong query delivered for first suggest item');
         $this->assertEquals(
-            '/index.php?filterBrand=Verde%20BMX&ignoreForCache%5B0%5D=queryFromSuggest&ignoreForCache%5B1%5D=userInput&queryFromSuggest=true&userInput=bmx&keywords=Verde%20BMX%20%2A',
+            '/index.php?filterBrand=Verde%20BMX&ignoreForCache=userInput&queryFromSuggest=true&userInput=bmx&keywords=Verde%20BMX%20%2A',
             $suggestions[0]->getUrl(),
             'wrong url delivered for first suggest item'
         );

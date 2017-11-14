@@ -159,7 +159,7 @@ class Parameters implements \ArrayAccess, \Countable
     public function setAll($parameters)
     {
         foreach ($parameters as $k => $v) {
-            $this[$k] = $v;
+            $this->parameters[$k] = $v;
         }
     }
 
@@ -176,7 +176,7 @@ class Parameters implements \ArrayAccess, \Countable
      */
     public function set($name, $value)
     {
-        $this[$name] = $value;
+        $this->parameters[$name] = $value;
     }
 
     /**
@@ -346,12 +346,13 @@ class Parameters implements \ArrayAccess, \Countable
 
     protected function addString($name, $value)
     {
-        if (!isset($this[$name])) {
-            $this->parameters[$name] = $value;
-        } elseif (is_array($this[$name])) {
+        if (isset($this->parameters[$name])) {
+            if (!is_array($this->parameters[$name])) {
+                $this->parameters[$name] = [$this->parameters[$name]];
+            }
             $this->parameters[$name][] = $value;
         } else {
-            $this->parameters[$name] = [$this[$name], $value];
+            $this->parameters[$name] = $value;
         }
     }
 
@@ -359,13 +360,13 @@ class Parameters implements \ArrayAccess, \Countable
     {
         // Drop the keys, so that array_merge won't overwrite any existing ones.
         $value = array_values($value);
-        if (!isset($this[$name])) {
+        if (!isset($this->parameters[$name])) {
             $this->parameters[$name] = $value;
         } else {
-            if (!is_array($this[$name])) {
-                $oldValue = [$this[$name]];
+            if (!is_array($this->parameters[$name])) {
+                $oldValue = [$this->parameters[$name]];
             } else {
-                $oldValue = $this[$name];
+                $oldValue = $this->parameters[$name];
             }
 
             $this->parameters[$name] = array_merge($oldValue, $value);
@@ -374,61 +375,67 @@ class Parameters implements \ArrayAccess, \Countable
 
     private function parseFromPhpQueryString($query)
     {
-        if (strpos($query, '?') !== false) {
-            $parts = explode('?', $query, 2);
-            $query = $parts[1];
-        }
+        $pairs = $this->getPairs($query);
 
-        $pairs = explode('&', $query);
-        foreach ($pairs AS $pair) {
-            $pair = explode('=', $pair);
-
-            if (count($pair) == 1) {
-                $pair[1] = '';
+        foreach ($pairs AS $key => $pair) {
+            // Java ignores parameters only if they are completely empty (i.e.
+            // neither key name nor equals sign).
+            if ($pair === '') {
+                continue;
             }
 
-            // Use urldecode() because in the QUERY_STRING space is replaced by '+' (http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1)
-            $k = urldecode($pair[0]);
-            $v = urldecode($pair[1]);
-
-            // TODO: This does not currently pay attention to potential array
-            //       keys in the parameter name and simply appends the value
-            //       whenever it encounters an array parameter. Should this
-            //       functionality be added?
-            if (preg_match('/^[^\]]*(?=\[[^\]]*\])/', $k, $matches)) {
-                $this->add($matches[0], $v);
+            if (is_array($pair)) {
+                foreach ($pair as $item) {
+                    if (is_string($item)) {
+                        $item = rawurldecode($item);
+                    }
+                    $this->add(rawurldecode($key), $item);
+                }
             } else {
-                $this[$k] = $v;
+                $this->add(rawurldecode($key), rawurldecode($pair));
             }
         }
     }
 
     private function parseFromJavaQueryString($query)
     {
-        if (strpos($query, '?') !== false) {
-            $parts = explode('?', $query, 2);
-            $query = $parts[1];
-        }
+        $pairs = $this->getPairs($query);
 
-        $pairs = explode('&', $query);
-        foreach ($pairs AS $pair) {
+        foreach ($pairs AS $key => $pair) {
             // Java ignores parameters only if they are completely empty (i.e.
             // neither key name nor equals sign).
-            if ($pair == '') {
+            if ($pair === '') {
                 continue;
             }
 
-            $pair = explode('=', $pair);
-
-            if (count($pair) == 1) {
-                $pair[1] = '';
+            if (is_array($pair)) {
+                foreach ($pair as $item) {
+                    if (is_string($item)) {
+                        $item = urldecode($item);
+                    }
+                    $this->add(urldecode($key), $item);
+                }
+            } else {
+                $this->add(urldecode($key), urldecode($pair));
             }
-
-            // Use urldecode(), because Tomcat does encode spaces as '+'.
-            $k = urldecode($pair[0]);
-            $v = urldecode($pair[1]);
-
-            $this->add($k, $v);
         }
+    }
+
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    private function getPairs($query)
+    {
+        $url = parse_url($query);
+
+        if (isset($url['query'])) {
+            $query = $url['query'];
+        }
+
+        parse_str($query, $pairs);
+
+        return $pairs;
     }
 }

@@ -8,7 +8,7 @@ use FACTFinder\Util\Parameters;
 class ParameterTest extends \FACTFinder\Test\BaseTestCase
 {
     /**
-     * @var FACTFinder\Util\Parameters
+     * @var \FACTFinder\Util\Parameters
      */
     protected $parameters;
 
@@ -228,12 +228,10 @@ class ParameterTest extends \FACTFinder\Test\BaseTestCase
     public function testParametersFromPhpQueryString()
     {
 
-        $parameters = new Parameters(
-            'a%20b=c&d=e%20f'
-        );
+        $parameters = new Parameters('a%20b=c&d=e%20f');
 
         $expectedParameters = [
-            'a b' => 'c',
+            'a_b' => 'c',
             'd'   => 'e f',
         ];
         $this->assertEquals($expectedParameters, $parameters->getArray());
@@ -242,9 +240,7 @@ class ParameterTest extends \FACTFinder\Test\BaseTestCase
     public function testParametersFromPhpUrl()
     {
 
-        $parameters = new Parameters(
-            'index.php?a=b&c=d'
-        );
+        $parameters = new Parameters('index.php?a=b&c=d');
 
         $expectedParameters = [
             'a' => 'b',
@@ -255,9 +251,7 @@ class ParameterTest extends \FACTFinder\Test\BaseTestCase
 
     public function testParametersFromPhpQueryStringWithMultipleValues()
     {
-        $parameters = new Parameters(
-            'a=1&a=2&b[]=3&b[]=4&b%5B%5D=5'
-        );
+        $parameters = new Parameters('a=1&a=2&b[]=3&b[]=4&b%5B%5D=5');
 
         $expectedParameters = [
             'a' => '2',
@@ -268,12 +262,9 @@ class ParameterTest extends \FACTFinder\Test\BaseTestCase
 
     public function testParametersFromPhpQueryStringWithEmptyParameterNames()
     {
-        $parameters = new Parameters(
-            '=1&&[]=3&%5B%5D=4'
-        );
+        $parameters = new Parameters('=1&&[]=3&%5B%5D=4');
 
         $expectedParameters = [
-            '' => ['', '3', '4'],
         ];
 
         $this->assertEquals($expectedParameters, $parameters->getArray());
@@ -282,13 +273,10 @@ class ParameterTest extends \FACTFinder\Test\BaseTestCase
     public function testParametersFromJavaQueryString()
     {
 
-        $parameters = new Parameters(
-            'a+b=c&d=e+f',
-            true
-        );
+        $parameters = new Parameters('a+b=c&d=e+f', true);
 
         $expectedParameters = [
-            'a b' => 'c',
+            'a_b' => 'c',
             'd'   => 'e f',
         ];
         $this->assertEquals($expectedParameters, $parameters->getArray());
@@ -297,10 +285,7 @@ class ParameterTest extends \FACTFinder\Test\BaseTestCase
     public function testParametersFromJavaUrl()
     {
 
-        $parameters = new Parameters(
-            'index.php?a=b&c=d',
-            true
-        );
+        $parameters = new Parameters('index.php?a=b&c=d', true);
 
         $expectedParameters = [
             'a' => 'b',
@@ -311,28 +296,29 @@ class ParameterTest extends \FACTFinder\Test\BaseTestCase
 
     public function testParametersFromJavaQueryStringWithMultipleValues()
     {
-        $parameters = new Parameters(
-            'a=1&a=2&b=3&b=4&b[]=5',
-            true
-        );
+        $parameters = new Parameters('a=1&a=2&b=3&b=4&b[]=5', true);
 
         $expectedParameters = [
-            'a'   => ['1', '2'],
-            'b'   => ['3', '4'],
-            'b[]' => '5',
+            'a' => '2',
+            'b' => '5',
         ];
         $this->assertEquals($expectedParameters, $parameters->getArray());
     }
 
     public function testParametersFromJavaQueryStringWithEmptyParameterNames()
     {
-        $parameters = new Parameters(
-            '=1&=2&&=&=3',
-            true
-        );
+        $parameters = new Parameters('=1&=2&&=&=3', true);
+
+        $expectedParameters = [];
+        $this->assertEquals($expectedParameters, $parameters->getArray());
+    }
+
+    public function testParametersFromJavaQueryStringWithMultipleSelections()
+    {
+        $parameters = new Parameters('a[]=123&a[]=321', true);
 
         $expectedParameters = [
-            '' => ['1', '2', '', '3'],
+            'a' => ['123', '321'],
         ];
         $this->assertEquals($expectedParameters, $parameters->getArray());
     }
