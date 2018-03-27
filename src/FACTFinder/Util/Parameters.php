@@ -124,6 +124,7 @@ class Parameters implements \ArrayAccess, \Countable
                 $count += count($value);
             }
         }
+
         return $count;
     }
 
@@ -250,6 +251,7 @@ class Parameters implements \ArrayAccess, \Countable
             ['%20', '~'],
             $queryString
         );
+
         return $queryString;
     }
 

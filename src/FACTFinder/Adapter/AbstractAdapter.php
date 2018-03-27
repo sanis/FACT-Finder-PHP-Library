@@ -42,17 +42,17 @@ abstract class AbstractAdapter
     /**
      * @var callable
      */
-    private $responseContentProcessor;
+    protected $responseContentProcessor;
 
     /**
      * @var \FACTFinder\Core\Server\Response
      */
-    private $lastResponse;
+    protected $lastResponse;
 
     /**
      * @var object The processed response content.
      */
-    private $responseContent;
+    protected $responseContent;
 
     /**
      * @var string The last error message.
